@@ -1,114 +1,94 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
+ * Created by Anvita on 18/02/2017.
  *
  * @format
- * @flow strict-local
  */
 
-import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-} from 'react-native';
+import React, { Component } from 'react';
+import { PermissionsAndroid, Platform, LogBox } from 'react-native';
+import { Provider } from 'react-redux';
+import { persistStore } from 'redux-persist';
+import { PersistGate } from 'redux-persist/es/integration/react';
+// import messaging from '@react-native-firebase/messaging';
+import Geolocation from 'react-native-geolocation-service';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import { toast } from './src/Omni';
+import store from './src/store/ConfigureStore';
+import Router from './src/Router';
+import { Languages } from './src/common';
 
-const App: () => React$Node = () => {
-  return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView>
-        <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={styles.scrollView}>
-          <Header />
-          {global.HermesInternal == null ? null : (
-            <View style={styles.engine}>
-              <Text style={styles.footer}>Engine: Hermes</Text>
-            </View>
-          )}
-          <View style={styles.body}>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Hello world</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <Text style={styles.sectionDescription}>
-                <DebugInstructions />
-              </Text>
-            </View>
-            <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs to discover what to do next:
-              </Text>
-            </View>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </>
-  );
+const requestLocationPermission = () => {
+  PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
+    .then(granted => {
+      if (!granted) {
+        return PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, {
+          title: 'Bookstore cần biết vị trí của bạn',
+          message: 'Chúng tôi cần biết vị trí của bạn để xác định điểm giao hàng tốt nhất.',
+          buttonNeutral: 'Để sau',
+          buttonNegative: 'Không',
+          buttonPositive: 'Cho phép',
+        }).then(() => {
+        });
+      }
+
+      return Promise.resolve();
+    })
+    .catch(() => {});
 };
 
-const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
-  },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
-});
+class BookstoreApp extends Component {
+  async componentDidMount() {
+    LogBox.ignoreLogs([
+      'VirtualizedLists should never be nested', // turn off the warning because the Parallax layout need it.
+      'componentWillMount has been renamed', // turn off untill we upgrade/replace tcomb-form-native and react-native-fluid-slider.
+      'componentWillReceiveProps has been renamed', // turn off untill we upgrade/replace tcomb-form-native and react-native-fluid-slider.
+    ]);
 
-export default App;
+    const language = 'vi'; // store.getState().language;
+    // set default Language for App
+    Languages.setLanguage(language);
+
+    // messaging()
+    //   .hasPermission()
+    //   .then(enabled => {
+    //     if (enabled >= 0) {
+    //       // firebase
+    //       //   .messaging()
+    //       //   .getToken()
+    //       //   .then(token => {
+    //       //     log(`FCM Token: ${token}`);
+    //       //   });
+    //       // user has permissions
+    //     } else {
+    //       messaging()
+    //         .requestPermission()
+    //         .then(() => {
+    //           toast('Bạn đã có thể nhận thông báo từ Ubofood');
+    //         })
+    //         .catch(() => {
+    //           toast('Bạn sẽ không nhận được thông báo khi mua hàng');
+    //           // User has rejected permissions
+    //         });
+    //     }
+    //   });
+
+    if (Platform.OS === 'ios') Geolocation.requestAuthorization('whenInUse');
+    else if (Platform.OS === 'android') {
+      requestLocationPermission();
+    }
+  }
+
+  render() {
+    const persistor = persistStore(store);
+
+    return (
+      <Provider store={store}>
+        <PersistGate persistor={persistor}>
+          <Router />
+        </PersistGate>
+      </Provider>
+    );
+  }
+}
+
+export default BookstoreApp;

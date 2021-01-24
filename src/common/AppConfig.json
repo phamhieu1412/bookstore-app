@@ -1,0 +1,37 @@
+{
+  "api": {
+    "url": "https://dev.ubofood.com/api"
+  },
+
+  "HorizonLayout": [
+    {
+      "layout": "categoryBubbles"
+    },
+    {
+      "name": "posBasedPromotion",
+      "layout": "twoColumn",
+      "predefined": "pos-based-promotion"
+    },
+    {
+      "name": "hotDeal",
+      "image": "",
+      "layout": "twoColumn",
+      "predefined": "hot-deal"
+    },
+    {
+      "name": "bestSelling",
+      "image": "",
+      "layout": "twoColumn",
+      "predefined": "most-purchased"
+    }
+  ],
+
+  "VerticalLayout": {
+    "name": "Product",
+    "layout": "twoColumn"
+  },
+
+  "MainColor": "#FF0025",
+  "SecondColor": "#4CD964"
+}
+  
