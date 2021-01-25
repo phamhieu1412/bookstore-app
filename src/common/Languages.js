@@ -239,6 +239,8 @@ export default new LocalizedStrings({
     FinishCart: 'Tiếp tục',
     AddInfo: 'Điền thông tin',
     ErrorGetTimeFrame: 'Có lỗi khi lấy khung giờ giao hàng',
+    Wallet: 'Ví',
+    Orders: 'Đơn hàng',
 
     // // Cart and Checkout
     OutOfStock: 'Tạm hết hàng',
@@ -267,6 +269,10 @@ export default new LocalizedStrings({
     AddShippingAddress: 'Thêm địa chỉ nhận hàng',
     UboWallet: 'Ví Ubo',
     Note: 'Ghi chú',
+    UploadPhoto: 'Tải ảnh lên',
+    ChooseYourProfilePicture: 'Chọn ảnh hồ sơ của bạn',
+    TakePhoto: 'Chụp ảnh',
+    ChooseFromLibrary: 'Chọn từ thư viện ảnh',
 
     // address form
     DetailAddress: 'Địa chỉ cụ thể',
@@ -296,6 +302,23 @@ export default new LocalizedStrings({
     ShipTo: 'Ship tới',
     OrderStatus: 'Trạng thái ',
     OrderDetails: 'Chi tiết',
+
+    // login register
+    Username: 'Tên đăng nhập',
+    Password: 'Mật khẩu',
+    YourUsername: 'Hãy nhập tên đăng nhập',
+    YourPassword: 'Hãy nhập mật khẩu',
+    YourConfirmPassword: 'Hãy nhập lại mật khẩu',
+    // WrongInput: '',
+    UsernameOrPasswordIsNotEmpty: 'Tên đăng nhập hoặc mật khẩu không được để trống',
+    // InvalidUser: '',
+    UsernameOrPasswordIsIncorrect: 'Tên đăng nhập hoặc mật khẩu không chính xác',
+    ConfirmPassword: 'Nhập lại mật khẩu',
+    PasswordNotMatch: 'Mật khẩu không khớp',
+    UsernameMustBeMoreThanCharacters: 'Tên người dùng phải có trên 4 ký tự',
+    PasswordMustBeMoreThanCharacters: 'Mật khẩu phải có trên 8 kí tự',
+    CreateAccountSuccess : 'Tạo mới tài khoản thành công',
+    CreateAccountFailure : 'Tạo mới tài khoản lỗi',
 
     // mymessage
     NoMessage: 'Không có thông báo',
@@ -336,6 +359,7 @@ export default new LocalizedStrings({
     GetDataError: 'Có lỗi khi kết nối với máy chủ',
     NoConnection: 'Điện thoại đang không kết nối internet',
     Login: 'Đăng nhập',
+    SignUp: 'Đăng ký',
     Logout: 'Đăng xuất',
     LoggedOut: 'Bạn đã đăng xuất',
     Guest: 'Chưa đăng nhập',

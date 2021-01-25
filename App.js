@@ -1,9 +1,3 @@
-/**
- * Created by Anvita on 18/02/2017.
- *
- * @format
- */
-
 import React, { Component } from 'react';
 import { PermissionsAndroid, Platform, LogBox } from 'react-native';
 import { Provider } from 'react-redux';
@@ -13,7 +7,7 @@ import { PersistGate } from 'redux-persist/es/integration/react';
 import Geolocation from 'react-native-geolocation-service';
 
 import { toast } from './src/Omni';
-import store from './src/store/ConfigureStore';
+import store from './src/store/configureStore';
 import Router from './src/Router';
 import { Languages } from './src/common';
 

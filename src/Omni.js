@@ -3,19 +3,24 @@ import { Platform, Linking } from 'react-native';
 import _EventEmitter from 'react-native/Libraries/vendor/emitter/EventEmitter';
 import _Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import _IconIO from 'react-native-vector-icons/Ionicons';
-import { createIconSetFromFontello } from 'react-native-vector-icons';
+import _IconAntd from 'react-native-vector-icons/AntDesign';
+import _IconMI from 'react-native-vector-icons/MaterialIcons';
+import _IconSLI from 'react-native-vector-icons/SimpleLineIcons';
+import _IconFA from 'react-native-vector-icons/FontAwesome';
+import _IconFeather from 'react-native-vector-icons/Feather';
 import _Timer from 'react-timer-mixin';
 
-import ubofoodFontConfig from './fonts/fontello-ubofood_icon.json';
 import _Validate from './ultils/Validate';
 import _BlockTimer from './ultils/BlockTimer';
 import Constants from './common/Constants';
 
 export const Icon = _Icon;
 export const IconIO = _IconIO;
-export const UboIcon = createIconSetFromFontello(
-  ubofoodFontConfig
-);
+export const UboIcon = _IconAntd;
+export const IconMI = _IconMI;
+export const IconSLI = _IconSLI;
+export const IconFA = _IconFA;
+export const IconFeather = _IconFeather;
 export const EventEmitter = new _EventEmitter();
 export const Timer = _Timer;
 export const Validate = _Validate;

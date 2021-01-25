@@ -9,9 +9,9 @@ const Constants = {
   useReactotron: true,
   Language: 'en', // ar, en. Default to set redux. Only use first time
   VND: '₫',
-  fontFamily: 'OpenSans',
-  fontHeader: 'OpenSans',
-  fontHeaderAndroid: 'OpenSans',
+  fontFamily: 'verdana',
+  fontHeader: 'verdana',
+  fontHeaderAndroid: 'verdana',
   isoDateFormat: 'YYYY-MM-DD',
   displayDateFormat: 'DD-MM-YYYY',
   allCategorySlug: 'show-all-category',

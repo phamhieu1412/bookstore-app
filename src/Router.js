@@ -13,7 +13,7 @@ import apiWorker from './api/apiWorker';
 // import { logEventSetUser, logEventNotificationOpen } from './api/eventLogger';
 import { MyToast } from './containers/index';
 // import AppIntro from './components/AppIntro/index';
-// import AppNavigator from './navigation/index';
+import AppNavigator from './navigation/index';
 import Languages from './common/Languages';
 import Styles from './common/Styles';
 import Color from './common/Color';
@@ -194,8 +194,9 @@ class Router extends React.PureComponent {
 
   render() {
     return (
-      <View style={{backgroundColor: 'red'}}>
-          <Text style={{color: 'white'}}>hello</Text>
+      <View style={[Styles.app, { backgroundColor: Color.background }]}>
+        {/* <MyToast /> */}
+        <AppNavigator ref={comp => (this.navigator = comp)} /> 
       </View>
     );
 //   render() {
