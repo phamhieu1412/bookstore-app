@@ -9,7 +9,7 @@ import SignInScreen from './SignInScreen';
 import SignUpScreen from './SignUpScreen';
 import SplashScreen from './SplashScreen';
 import HomeScreen from './HomeScreen';
-// import CategoriesScreen from './CategoriesScreen';
+import CategoriesScreen from './CategoriesScreen';
 // import CategoryScreen from './CategoryScreen';
 // import DetailScreen from './DetailScreen';
 // import CartScreen from './CartScreen';
@@ -64,21 +64,21 @@ function HomeStack() {
   );
 }
 
-// function CategoryStack() {
-//   return (
-//     <Stack.Navigator
-//       initialRouteName="CategoriesScreen"
-//       headerMode="float"
-//       screenOptions={{ ...defaultHeaderStyle, headerBackTitle: Languages.Back }}
-//       gestureDirection="horizontal">
-//       <Stack.Screen
-//         name="CategoriesScreen"
-//         component={CategoriesScreen}
-//         // options={({ navigation, screenProps }) => ({})}
-//       />
-//     </Stack.Navigator>
-//   );
-// }
+function CategoryStack() {
+  return (
+    <Stack.Navigator
+      initialRouteName="CategoriesScreen"
+      headerMode="float"
+      screenOptions={{ ...defaultHeaderStyle, headerBackTitle: Languages.Back }}
+      gestureDirection="horizontal">
+      <Stack.Screen
+        name="CategoriesScreen"
+        component={CategoriesScreen}
+        // options={({ navigation, screenProps }) => ({})}
+      />
+    </Stack.Navigator>
+  );
+}
 
 // function MyMessagesStack() {
 //   return (
@@ -137,7 +137,7 @@ function AppStack() {
           tabBarIcon: ({ color }) => <TabBarIcon icon="home" color={color} />,
         }}
       />
-      {/* <Tab.Screen
+      <Tab.Screen
         name="CategoriesScreen"
         component={CategoryStack}
         options={{
@@ -149,7 +149,7 @@ function AppStack() {
           tabBarIcon: ({ color }) => <TabBarIcon icon="package" color={color} />,
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="MyMessages"
         component={MyMessagesStack}
         options={{
