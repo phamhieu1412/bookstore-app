@@ -117,7 +117,7 @@ export default {
 
   showStatusBar: true,
   LogoLoading: '',
-  // LogoLoading: require('@images/logo.png'),
+  LogoLoading: require('../images/logo.png'),
 
   appFacebookId: '1788796174511520',
 
