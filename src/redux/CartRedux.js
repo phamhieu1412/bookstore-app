@@ -4,7 +4,7 @@ import { actions as UserRedux } from './UserRedux';
 import { actions as ProductRedux } from './ProductRedux';
 import antradeWorker from '../api/apiWorker';
 // import { logEventAddToCart, logEventPurchase } from '../api/eventLogger';
-import { checkPromotionGiftProducts } from '../ultils/product';
+import { checkPromotionGiftProducts } from '../ultils/Product';
 import Languages from '../common/Languages';
 
 const types = {

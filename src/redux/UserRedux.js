@@ -219,10 +219,11 @@ export const actions = {
             dispatch(actions.registerFirebaseDeviceSuccess(json, fcmToken));
           }
         });
-        if (user.user && user.user.defaultPosCode)
+        if (user.user && user.user.defaultPosCode) {
         //   messaging()
         //     .subscribeToTopic(`topic.pos.${user.user.defaultPosCode}`)
         //     .catch(() => {});
+        }
       } else {
         dispatch(actions.registerFirebaseDeviceFailure('No device token'));
       }

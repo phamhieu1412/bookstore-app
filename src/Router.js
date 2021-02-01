@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { View, Platform, Text, TouchableOpacity } from 'react-native';
+// import { NavigationActions } from 'react-navigation';
 import { connect } from 'react-redux';
 import { NavigationActions } from '@react-navigation/compat';
 // import firebase from '@react-native-firebase/app';
@@ -62,7 +63,7 @@ class Router extends React.PureComponent {
   }
 
   static propTypes = {
-    introStatus: PropTypes.bool,
+    // introStatus: PropTypes.bool,
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -82,13 +83,13 @@ class Router extends React.PureComponent {
 
       newState.initialized = true;
     }
-    if (nextProps.introStatus && !prevState.watchingLocation) {
+    // if (nextProps.introStatus && !prevState.watchingLocation) {
       // only watch location after user finished the intro screen
       // it's to make sure that the permission is granted
     //   nextProps.watchLocation();
 
-      newState.watchingLocation = true;
-    }
+    //   newState.watchingLocation = true;
+    // }
 
     return Object.keys(newState).length ? newState : null;
   }
@@ -113,36 +114,34 @@ class Router extends React.PureComponent {
 
   fetchCommonData() {
     const {
-    //   fetchTopCategories,
-    //   fetchCategories,
-    //   fetchWishList,
-    //   fetchPOS,
-    //   getTimeFrame,
-    //   loadAddressList,
-    //   createCartFromItems,
-    //   refetchMyOrders,
-    //   refetchMyMessages,
-    //   getFirebaseRegistrationToken,
-    //   registerFirebaseDevice,
-    //   userInfo,
-    //   isConnected,
+      fetchTopCategories,
+      fetchCategories,
+      fetchWishList,
+      getTimeFrame,
+      loadAddressList,
+      createCartFromItems,
+      refetchMyOrders,
+      refetchMyMessages,
+      getFirebaseRegistrationToken,
+      registerFirebaseDevice,
+      userInfo,
+      isConnected,
     } = this.props;
 
     if (isConnected) {
-    //   fetchTopCategories();
-    //   fetchCategories();
-    //   fetchWishList();
-    //   fetchPOS();
-    //   getTimeFrame();
-    //   loadAddressList();
-    //   createCartFromItems();
-    //   refetchMyOrders();
-    //   refetchMyMessages();
-    //   getFirebaseRegistrationToken();
-    //   registerFirebaseDevice();
-    //   if (userInfo && userInfo.name) {
-    //     logEventSetUser(userInfo);
-    //   }
+      fetchTopCategories();
+      fetchCategories();
+      fetchWishList();
+      getTimeFrame();
+      loadAddressList();
+      createCartFromItems();
+      refetchMyOrders();
+      refetchMyMessages();
+      getFirebaseRegistrationToken();
+      registerFirebaseDevice();
+      if (userInfo && userInfo.name) {
+        logEventSetUser(userInfo);
+      }
     } else {
       toast(Languages.noConnection);
     }
@@ -193,47 +192,38 @@ class Router extends React.PureComponent {
   };
 
   render() {
+    // if (!this.props.introStatus) {
+    //   return <AppIntro />;
+    // }
+
     return (
       <View style={[Styles.app, { backgroundColor: Color.background }]}>
-        {/* <MyToast /> */}
-        <AppNavigator ref={comp => (this.navigator = comp)} /> 
+        <MyToast />
+        <AppNavigator ref={comp => (this.navigator = comp)} />
       </View>
     );
-//   render() {
-//     if (!this.props.introStatus) {
-//       return <AppIntro />;
-//     }
-
-//     return (
-//       <View style={[Styles.app, { backgroundColor: Color.background }]}>
-//           <Text>hello</Text>
-//         {/* <MyToast />
-//         <AppNavigator ref={comp => (this.navigator = comp)} /> */}
-//       </View>
-//     );
   }
 }
 
 const mapStateToProps = state => ({
-//   introStatus: state.user.finishIntro,
-//   userInfo: state.user.user,
-//   token: state.user.token,
-//   netInfo: state.netInfo,
-//   isConnected: state.netInfo.isConnected,
-//   allCategories: state.categories.flattenList,
+  // introStatus: state.user.finishIntro,
+  userInfo: state && state.user && state.user.user,
+  token: state && state.user && state.user.token,
+  netInfo: state.netInfo,
+  isConnected: state && state.netInfo && state.netInfo.isConnected,
+  allCategories: state && state.categories && state.categories.flattenList,
 });
 
 const mergeProps = (stateProps, dispatchProps, ownProps) => {
-//   const { actions: AppActions } = require('@redux/AppRedux');
-//   const { actions: NetInfoActions } = require('@redux/NetInfoRedux');
-//   const { actions: CategoryAction } = require('@redux/CategoryRedux');
-//   const { actions: WishListActions } = require('@redux/WishListRedux');
-//   const { actions: POSActions } = require('@redux/POSRedux');
-//   const { actions: CartActions } = require('@redux/CartRedux');
-//   const { actions: MessageActions } = require('@redux/MessageRedux');
-//   const { actions: OrderActions } = require('@redux/OrderRedux');
-//   const { actions: UserActions } = require('@redux/UserRedux');
-//   const { actions: ProductActions } = require('@redux/ProductRedux');
+  const { actions: AppActions } = require('./redux/AppRedux');
+  const { actions: NetInfoActions } = require('./redux/NetInfoRedux');
+  const { actions: CategoryAction } = require('./redux/CategoryRedux');
+  const { actions: WishListActions } = require('./redux/WishListRedux');
+  const { actions: CartActions } = require('./redux/CartRedux');
+  const { actions: MessageActions } = require('./redux/MessageRedux');
+  const { actions: OrderActions } = require('./redux/OrderRedux');
+  const { actions: UserActions } = require('./redux/UserRedux');
+  const { actions: ProductActions } = require('./redux/ProductRedux');
 
   const { token } = stateProps;
   const { dispatch } = dispatchProps;
@@ -241,44 +231,47 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
   return {
     ...ownProps,
     ...stateProps,
-    // login: code => {
-    //   dispatch(UserActions.login(code));
-    // },
-    // watchLocation: () => {
-    //   dispatch(AppActions.watchLocation());
-    // },
-    // renewConnectionStatus: () => NetInfoActions.renewConnectionStatus(dispatch),
-    // subscribeToConnectionStatus: () => dispatch(NetInfoActions.subscribeToConnectionStatus()),
-    // fetchHomeBanner: () => {
-    //   dispatch(AppActions.fetchHomeBanner());
-    // },
-    // fetchAppConfig: () => {
-    //   dispatch(AppActions.fetchAppConfig());
-    // },
-    // fetchTopCategories: () => CategoryAction.fetchTopCategories(dispatch),
-    // fetchCategories: () => CategoryAction.fetchCategories(dispatch),
-    // fetchWishList: () => WishListActions.fetchWishList(dispatch),
-    // fetchPOS: () => dispatch(POSActions.fetchPOS()),
-    // createCartFromItems: () => dispatch(CartActions.createCartFromItems()),
-    // getTimeFrame: () => dispatch(CartActions.getTimeFrame()),
-    // refetchMyOrders: () => {
-    //   OrderActions.fetchMyOrder(dispatch, 1);
-    // },
-    // refetchMyMessages: () => {
-    //   MessageActions.fetchMyMessages(dispatch, 1);
-    // },
-    // setMessageRead: notiId => {
-    //   if (token) {
-    //     MessageActions.setMessageRead(dispatch, notiId);
-    //   }
-    // },
-    // loadAddressList: () => {
-    //   dispatch(UserActions.loadAddressList());
-    // },
-    // findAndSetReferral: () => dispatch(UserActions.findAndSetReferral()),
-    // getFirebaseRegistrationToken: () => UserActions.getFirebaseRegistrationToken(dispatch),
-    // registerFirebaseDevice: () => dispatch(UserActions.registerFirebaseDevice()),
-    // clearViewedProducts: () => dispatch(ProductActions.clearViewedProducts()),
+    login: code => {
+      dispatch(UserActions.login(code));
+    },
+    watchLocation: () => {
+      dispatch(AppActions.watchLocation());
+    },
+    // updateConnectionStatus: isConnected =>
+    //   dispatch(NetInfoActions.updateConnectionStatus(isConnected)),
+    renewConnectionStatus: () => NetInfoActions.renewConnectionStatus(dispatch),
+    subscribeToConnectionStatus: () => dispatch(NetInfoActions.subscribeToConnectionStatus()),
+    fetchHomeBanner: () => {
+      dispatch(AppActions.fetchHomeBanner());
+    },
+    fetchAppConfig: () => {
+      dispatch(AppActions.fetchAppConfig());
+    },
+    fetchTopCategories: () => CategoryAction.fetchTopCategories(dispatch),
+    fetchCategories: () => CategoryAction.fetchCategories(dispatch),
+    fetchWishList: () => WishListActions.fetchWishList(dispatch),
+    createCartFromItems: () => dispatch(CartActions.createCartFromItems()),
+    getTimeFrame: () => dispatch(CartActions.getTimeFrame()),
+    refetchMyOrders: () => {
+      OrderActions.fetchMyOrder(dispatch, 1);
+    },
+    refetchMyMessages: () => {
+      // MessageActions.clearMyMessages(dispatch);
+      MessageActions.fetchMyMessages(dispatch, 1);
+    },
+    setMessageRead: notiId => {
+      if (token) {
+        MessageActions.setMessageRead(dispatch, notiId);
+      }
+    },
+    // clearMyMessages: () => MessageActions.clearMyMessages(dispatch),
+    loadAddressList: () => {
+      dispatch(UserActions.loadAddressList());
+    },
+    findAndSetReferral: () => dispatch(UserActions.findAndSetReferral()),
+    getFirebaseRegistrationToken: () => UserActions.getFirebaseRegistrationToken(dispatch),
+    registerFirebaseDevice: () => dispatch(UserActions.registerFirebaseDevice()),
+    clearViewedProducts: () => dispatch(ProductActions.clearViewedProducts()),
   };
 };
 
