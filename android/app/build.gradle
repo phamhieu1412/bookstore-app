@@ -184,6 +184,14 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation project(':react-native-device-info')
+    implementation project(':react-native-fast-image')
+    implementation project(':react-native-geolocation-service')
+    implementation project(':react-native-gesture-handler')
+    implementation project(':react-native-appstore-version-checker')
+    implementation project(':react-native-version-number')
+    implementation project(':react-native-linear-gradient')
+    implementation project(':react-native-localization')
     implementation project(':react-native-vector-icons')
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
