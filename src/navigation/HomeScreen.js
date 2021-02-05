@@ -265,13 +265,11 @@ class HomeScreen extends Component {
       isNewVersionModalOpen,
       hasNewVersion,
     } = this.state;
-
-    const banners =
-      homeBanner && homeBanner.length
-        ? homeBanner.map(({ imageUrl }) => ({
-          uri: imageUrl,
-        }))
-        : [Images.defaultTopBanner];
+    const banners = [
+      require('../images/banners/banner_01.jpg'),
+      require('../images/banners/banner_02.jpg'),
+      require('../images/banners/banner_03.jpg'),
+    ]
 
     return (
       <View style={{ flex: 1 }}>

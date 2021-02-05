@@ -11,7 +11,7 @@ import SplashScreen from './SplashScreen';
 import HomeScreen from './HomeScreen';
 import CategoriesScreen from './CategoriesScreen';
 // import CategoryScreen from './CategoryScreen';
-// import DetailScreen from './DetailScreen';
+import DetailScreen from './DetailScreen';
 // import CartScreen from './CartScreen';
 // import CheckoutScreen from './CheckoutScreen';
 // import MyOrdersScreen from './MyOrdersScreen';
@@ -146,7 +146,7 @@ function AppStack() {
               {Languages.Categories}
             </Text>
           ),
-          tabBarIcon: ({ color }) => <TabBarIcon icon="package" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon icon="book" color={color} />,
         }}
       />
       {/* <Tab.Screen
@@ -215,8 +215,8 @@ class AppNavigator extends React.Component {
           {/* Component of tabbottom */}
           <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
 
-          {/* <Stack.Screen name="DetailScreen" component={DetailScreen} />
-          <Stack.Screen name="ListAllScreen" component={ListAllScreen} />
+          <Stack.Screen name="DetailScreen" component={DetailScreen} />
+          {/* <Stack.Screen name="ListAllScreen" component={ListAllScreen} />
           <Stack.Screen
             name="CategoryScreen"
             component={CategoryScreen}

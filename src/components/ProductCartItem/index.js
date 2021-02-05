@@ -137,7 +137,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const { buyOne } = stateProps;
   const { dispatch } = dispatchProps;
   const { product } = ownProps;
-  const { actions } = require('@redux/CartRedux');
+  const { actions } = require('../../redux/CartRedux');
   return {
     ...ownProps,
     ...stateProps,

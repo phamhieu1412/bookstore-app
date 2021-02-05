@@ -8,6 +8,7 @@ import styles from './styles';
 import WishListIcon from '../WishListIcon/index';
 import ProductMeta from '../ProductMeta/index';
 import ProductNewTag from '../ProductNewTag/index';
+import ProductPrice from '../ProductPrice';
 import Styles from '../../common/Styles';
 import Color from '../../common/Color';
 
@@ -20,8 +21,8 @@ class ProductSwiperItem extends PureComponent {
   render() {
     const { product, onViewProduct, showSelect, selected, disableMeta } = this.props;
 
-    const imageSource = getProductImageSource(product.webImage); // @TODO: change back to mobiImage
-    const onSale = product && product.price && product.price.discountText;
+    const imageSource = getProductImageSource(product.images && product.images.length > 0 && product.images[0]); // @TODO: change back to mobiImage
+    const onSale = product && product.price;
 
     return (
       <TouchableOpacity
@@ -51,7 +52,7 @@ class ProductSwiperItem extends PureComponent {
           )}
           {!disableMeta ? (
             <>
-              <WishListIcon product={product} style={{ left: 10 }} />
+              {/* <WishListIcon product={product} style={{ left: 10 }} /> */}
               <ProductNewTag
                 product={product}
                 style={{ width: 21, height: 21 }}
@@ -69,11 +70,11 @@ class ProductSwiperItem extends PureComponent {
         </View>
         <View style={Styles.Common.itemBriefInfo}>
           <Text style={[styles.itemInfo]}>{getPricePerMeasurementUnit(product)}</Text>
-          <Text style={[styles.itemTitle]}>{product.name}</Text>
+          <Text style={[styles.itemTitle]}>{product.title}</Text>
           {/* {product.price && product.price.unit ? (
             <Text style={[styles.itemInfo]}>{product.price.unit}</Text>
           ) : null} */}
-          {/* <ProductPrice product={product} /> */}
+          <ProductPrice product={product} />
         </View>
       </TouchableOpacity>
     );

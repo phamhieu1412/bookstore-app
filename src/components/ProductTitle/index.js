@@ -11,11 +11,11 @@ class ProductTitle extends PureComponent {
     return product.uboFast ? (
       <Text style={[styles.productName, style && style]} numberOfLines={numberOfLines || 3}>
         <Icon name="flash" size={18} color={Color.primary}></Icon>
-        {product.name || product.productName}
+        {product.title}
       </Text>
     ) : (
         <Text style={[styles.productName, style && style]} numberOfLines={numberOfLines || 3}>
-          {product.name || product.productName}
+          {product.title}
         </Text>
       );
   }

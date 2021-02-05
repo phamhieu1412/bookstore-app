@@ -26,6 +26,358 @@ class APIWorker {
     this.authzToken = '';
   }
 
+  // API
+  loginBookstore = async (payload) => {
+    const res = await this.post('/api/v1/login', {
+      params: payload,
+    });
+
+    return res.error ? res : res.data;
+  };
+  getUserProfile = async (userId) => {
+    if (this.authzToken) {
+      const res = await this.get(`/api/v1/user/${userId}`);
+
+      return res;
+    }
+
+    return undefined;
+  };
+  setUserProfile = async (userId, payload) => {
+    if (this.authzToken) {
+      const res = await this.put(`/api/v1/user/${userId}`, { params: payload });
+
+      return res;
+    }
+
+    return undefined;
+  };
+  updateAddressUser = async (userId, payload) => {
+    if (this.authzToken) {
+      const res = await fetch(`https://bookstore-api-v1.herokuapp.com/api/v1/user/${userId}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload),
+        headers: {
+          Authorization: this.authzToken,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        }
+      }).then(res => {
+        if (res.status >= 200 && res.status <= 299) {
+          return res.json();
+        } else if (res.status >= 300) {
+          res.error = {
+            status: res.status,
+            code: res.code,
+            detail: res.detail,
+          };
+          res.data = {};
+
+          return res;
+        }
+
+        return false;
+      })
+      .then(res => {
+        if (!res) {
+          return { data: {} };
+        } else if (res.error) {
+          return res;
+        }
+
+        return {
+          ...res,
+          data: toCamelCase(res),
+        };
+      })
+      .catch(() => {
+        const res = {
+          error: {
+            status: 0,
+            code: 'UNKNOWN',
+            detail: 'Probably lost connection',
+          },
+          data: {},
+        };
+
+        return res;
+      })
+
+      return res;
+    }
+    return undefined;
+  };
+  registerBookstore = async (payload) => {
+    const res = await this.post('/api/v1/register', {
+      params: payload,
+    });
+
+    return res;
+  };
+  updateDefaultShippingAddress = async address => {
+    // if (this.authzToken) {
+    //   const res = await this.put('/supplier/v1/client/customers/me/shipping/address', {
+    //     params: {
+    //       DefaultShippingAddress: address,
+    //     },
+    //   });
+
+    //   return res.data.data;
+    // }
+
+    return undefined;
+  };
+  getAddressList = () => {
+    // return this.get('/supplier/v1/address/all').then(res => res.data);
+  };
+
+  addAddress = payload => {
+    // return this.post('/supplier/v1/address/', {
+    //   params: payload,
+    // }).then(res => res.data);
+  };
+
+  updateAddress = (addressId, payload) => {
+    // return this.put(`/supplier/v1/address/${addressId}`, {
+    //   params: payload,
+    // }).then(res => res.data);
+  };
+
+  getProvinces = () => {
+    return this.get('/api/v1/address/').then(res => res);
+  };
+
+  getDistricts = (provinceId) => {
+    return this.get(`/api/v1/address/province/${provinceId}`).then(res => res);
+  };
+
+  getWards = (districtId) => {
+    return this.get(`/api/v1/address/district/${districtId}`).then(res => res);
+  };
+
+  getCategoriesBookstore = async () => {
+    const res = await this.get('/api/v1/categories');
+
+    return res;
+  };
+  searchCategoriesById = async (categoryId) => {
+    const res = await this.get(`/api/v1/categories/${categoryId}`);
+
+    return res;
+  };
+
+  // Api product
+  getBookDetail = async productId => {
+    const res = await this.get(`/api/v1/products/${productId}`);
+
+    return res;
+  };
+  getAllBooks = async (page) => {
+    const res = await this.get('/api/v1/products', {params: { page }});
+
+    return res;
+  };
+  getBooksByCategory = async (payload) => {
+    const res = await this.get('/api/v1/products', {params: { payload }});
+
+    return res;
+  };
+  searchBooks = async (keyword) => {
+    const res = await this.get('/api/v1/products', {
+      params: keyword
+    });
+
+    return res;
+  };
+  searchBooksByPrice = async (keyword) => {
+    const res = await this.get('/api/v1/products', {
+      params: keyword
+    });
+
+    return res;
+  };
+
+  getPublisherById = async (id) => {
+    const res = await this.get(`/api/v1/publishers/${id}`);
+
+    return res;
+  };
+
+  getAuthorById = async (id) => {
+    const res = await this.get(`/api/v1/authors/${id}`);
+
+    return res;
+  };
+
+  getCart = async () => {
+    if (this.authzToken) {
+      const res = await this.get('/api/v1/carts');
+      return res;
+    }
+
+    return false;
+  };
+  deleteBookInCart = async (id) => {
+    const res = await this.delete(`/api/v1/carts/${id}`);
+
+    return res;
+  };
+  updateQuantity = async (id, payload) => {
+    const res = await this.put(`/api/v1/carts/${id}`, {
+      params: {quantity: payload}
+    });
+
+    return res;
+  };
+  addToCart = async (payload) => {
+    const res = await this.post('/api/v1/carts', {
+      params: payload
+    });
+
+    return res;
+  };
+
+  getMyOrders = async () => {
+    if (this.authzToken) {
+      const res = await this.get('/api/v1/orders');
+
+      return res;
+    }
+
+    return undefined;
+  };
+  getOrderDetail = async orderNumber => {
+    if (this.authzToken) {
+      const res = await this.get(`/api/v1/orders/${orderNumber}`);
+
+      return res;
+    }
+
+    return undefined;
+  };
+  createNewOrder = async (payload) => {
+    if (this.authzToken) {
+      const res = await fetch('https://bookstore-api-v1.herokuapp.com/api/v1/orders', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+          headers: {
+            Authorization: this.authzToken,
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          }
+        }).then(res => {
+          if (res.status >= 200 && res.status <= 299) {
+            return res.json();
+          } else if (res.status >= 300) {
+            res.error = {
+              status: res.status,
+              code: res.code,
+              detail: res.detail,
+            };
+            res.data = {};
+
+            return res;
+          }
+
+          return false;
+        })
+        .then(res => {
+          if (!res) {
+            return { data: {} };
+          } else if (res.error) {
+            return res;
+          }
+
+          return {
+            ...res,
+            data: toCamelCase(res),
+          };
+        })
+        .catch(() => {
+          const res = {
+            error: {
+              status: 0,
+              code: 'UNKNOWN',
+              detail: 'Probably lost connection',
+            },
+            data: {},
+          };
+
+          return res;
+        })
+
+      return res;
+    }
+    return undefined;
+  }
+
+  getCouponDetail = async id => {
+    if (this.authzToken) {
+      const res = await this.get(`/api/v1/coupons/${id}`);
+
+      return res;
+    }
+
+    return undefined;
+  };
+
+  changePassword  = async (id, payload) => {
+    if (this.authzToken) {
+      const res = await fetch(`https://bookstore-api-v1.herokuapp.com/api/v1/user/${id}`, {
+          method: 'PATCH',
+          body: JSON.stringify(payload),
+          headers: {
+            Authorization: this.authzToken,
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          }
+        }).then(res => {
+          if (res.status >= 200 && res.status <= 299) {
+            return res.json();
+          } else if (res.status >= 300) {
+            res.error = {
+              status: res.status,
+              code: res.code,
+              detail: res.detail,
+            };
+            res.data = {};
+
+            return res;
+          }
+
+          return false;
+        })
+        .then(res => {
+          if (!res) {
+            return { data: {} };
+          } else if (res.error) {
+            return res;
+          }
+
+          return {
+            ...res,
+            data: toCamelCase(res),
+          };
+        })
+        .catch(() => {
+          const res = {
+            error: {
+              status: 0,
+              code: 'UNKNOWN',
+              detail: 'Probably lost connection',
+            },
+            data: {},
+          };
+
+          return res;
+        })
+
+      return res;
+    }
+    return undefined;
+  };
+
+  //////////////////////////////////////////
   getHomeBanner = async posCode => {
     const res = await this.get(`/supplier/v1/banners${posCode ? `?PosCode=${posCode}` : ''}`);
 

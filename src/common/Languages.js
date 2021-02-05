@@ -108,7 +108,7 @@ export default new LocalizedStrings({
     NoResultError: 'Your search keyword did not match any products.',
 
     // filter panel
-    Categories: 'Nhóm hàng',
+    Categories: 'Thể loại',
 
     // filter panel
     Loading: 'LOADING...',
@@ -120,7 +120,7 @@ export default new LocalizedStrings({
 
     // Place holder
     TypeNotSelectedError: 'Please choose one',
-    TypeEmail: 'ubofood@gmail.com',
+    TypeEmail: 'phamhieu@gmail.com',
     TypeShippingAddress: 'Shipping address',
     close: 'CLOSE',
     noConnection: 'NO INTERNET ACCESS',
@@ -197,15 +197,15 @@ export default new LocalizedStrings({
     Result: 'Kết quả',
 
     // filter panel
-    Categories: 'Nhóm hàng',
-    Category: 'Nhóm hàng',
+    Categories: 'Thể loại',
+    Category: 'Thể loại',
 
     // Product
     AddtoCart: 'Thêm vào giỏ hàng',
     AddtoWishlist: 'Yêu thích',
     AdditionalInformation: 'Thông tin chi tiết',
     FrequentlyBoughtTogether: 'Mặt hàng hay mua cùng',
-    ProductRelated: 'Mặt hàng liên quan',
+    ProductRelated: 'Sách cùng thể loại',
     BUYNOW: 'THÊM VÀO GIỎ',
     ProductSupplier: 'Chứng nhận chất lượng',
 
@@ -336,7 +336,7 @@ export default new LocalizedStrings({
     TypePhone: 'Điền Số điện thoại',
     TypeNotSelectedError: 'Chưa chọn',
     TypeGender: 'Nam/Nữ',
-    TypeEmail: 'ubofood@gmail.com',
+    TypeEmail: 'phamhieu@gmail.com',
     TypeShippingAddress: 'Địa chỉ để ship',
     TypeSupportGroup: 'Mã nhóm tư vấn',
     TypeReferralCode: 'Số ĐT người giới thiệu',

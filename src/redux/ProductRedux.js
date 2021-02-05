@@ -33,12 +33,37 @@ const types = {
   ADD_TO_BUY_ONE: 'ADD_TO_BUY_ONE',
   CLEAR_BUY_ONE: 'CLEAR_BUY_ONE',
 
+  FETCH_PUBLISHER_PENDING: 'FETCH_PUBLISHER_PENDING',
+  FETCH_PUBLISHER_SUCCESS: 'FETCH_PUBLISHER_SUCCESS',
+  FETCH_PUBLISHER_FAIL: 'FETCH_PUBLISHER_FAIL',
+
+  FETCH_AUTHOR_PENDING: 'FETCH_AUTHOR_PENDING',
+  FETCH_AUTHOR_SUCCESS: 'FETCH_AUTHOR_SUCCESS',
+  FETCH_AUTHOR_FAIL: 'FETCH_AUTHOR_FAIL',
+
   FETCH_PRODUCTS_DETAIL_PENDING: 'FETCH_PRODUCTS_DETAIL_PENDING',
   FETCH_PRODUCTS_DETAIL_SUCCESS: 'FETCH_PRODUCTS_DETAIL_SUCCESS',
   FETCH_PRODUCTS_DETAIL_FAIL: 'FETCH_PRODUCTS_DETAIL_FAIL',
+
+  FETCH_BOOKS_BY_NAME_DETAIL_PENDING: 'FETCH_BOOKS_BY_NAME_DETAIL_PENDING',
+  FETCH_BOOKS_BY_NAME_DETAIL_SUCCESS: 'FETCH_BOOKS_BY_NAME_DETAIL_SUCCESS',
+  FETCH_BOOKS_BY_NAME_DETAIL_FAIL: 'FETCH_BOOKS_BY_NAME_DETAIL_FAIL',
+
+  FETCH_BOOKS_BY_PRICE_DETAIL_PENDING: 'FETCH_BOOKS_BY_PRICE_DETAIL_PENDING',
+  FETCH_BOOKS_BY_PRICE_DETAIL_SUCCESS: 'FETCH_BOOKS_BY_PRICE_DETAIL_SUCCESS',
+  FETCH_BOOKS_BY_PRICE_DETAIL_FAIL: 'FETCH_BOOKS_BY_PRICE_DETAIL_FAIL',
+
+  FETCH_CATEGORY_BY_ID_PENDING: 'FETCH_CATEGORY_BY_ID_PENDING',
+  FETCH_CATEGORY_BY_ID_SUCCESS: 'FETCH_CATEGORY_BY_ID_SUCCESS',
+  FETCH_CATEGORY_BY_ID_FAIL: 'FETCH_CATEGORY_BY_ID_FAIL',
+
+  FETCH_BOOK_BY_CATEGORY_PENDING: 'FETCH_BOOK_BY_CATEGORY_PENDING',
+  FETCH_BOOK_BY_CATEGORY_SUCCESS: 'FETCH_BOOK_BY_CATEGORY_SUCCESS',
+  FETCH_BOOK_BY_CATEGORY_FAIL: 'FETCH_BOOK_BY_CATEGORY_FAIL',
   // SWITCH_LAYOUT_HOME: 'SWITCH_LAYOUT_HOME',
   SAVE_SEARCH_HISTORY: 'SAVE_SEARCH_HISTORY',
   CLEAR_SEARCH_HISTORY: 'CLEAR_SEARCH_HISTORY',
+  CLEAR_BOOKS: 'CLEAR_BOOKS',
 };
 
 function _parseFilter(filters = {}) {
@@ -54,27 +79,142 @@ function _parseFilter(filters = {}) {
 }
 
 export const actions = {
-  fetchProductsByCategorySlug: async (
-    dispatch,
-    categorySlug,
-    page,
-    pageSize = Constants.pagingLimit,
-    filters = {}
-  ) => {
-    dispatch({ type: types.FETCH_PRODUCTS_PENDING });
-    const filterParams = _parseFilter(filters);
-    const slug =
-      categorySlug || (filterParams && filterParams.category ? filterParams.category : '');
-    delete filterParams.category; // already have categorySlug
-    const json = await antradeWorker.productsByCategorySlug(slug, page, pageSize, filterParams);
-    if (json === undefined || json.error) {
-      toast(Languages.ErrorMessageRequest);
-      if (json && json.error.status === 0) {
-        NetInfoActions.renewConnectionStatus(dispatch);
-      }
-      dispatch(actions.fetchProductsFailure(Languages.GetDataError));
+  fetchCategoriesById: categoryId => async (dispatch) => {
+    dispatch({ type: types.FETCH_CATEGORY_BY_ID_PENDING });
+    const json = await antradeWorker.searchCategoriesById(categoryId);
+
+    if (json.books) {
+      dispatch({
+        type: types.FETCH_CATEGORY_BY_ID_SUCCESS,
+        items: json,
+      });
     } else {
-      dispatch(actions.fetchProductsSuccess(json));
+      dispatch({
+        type: types.FETCH_CATEGORY_BY_ID_FAIL,
+        message: Languages.ErrorMessageRequest,
+      });
+    }
+  },
+  getPublisherById: id => async (dispatch, getState) => {
+    dispatch({ type: types.FETCH_PUBLISHER_PENDING });
+    const json = await antradeWorker.getPublisherById(id);
+
+    if (json.id) {
+      dispatch({ type: types.FETCH_PUBLISHER_SUCCESS, items: json });
+    } else {
+      toast(Languages.ErrorMessageRequest);
+      dispatch({
+        type: types.FETCH_PUBLISHER_FAIL,
+        message: json.message,
+      });
+    }
+  },
+  getAuthorById: id => async (dispatch, getState) => {
+    dispatch({ type: types.FETCH_AUTHOR_PENDING });
+    const json = await antradeWorker.getAuthorById(id);
+
+    if (json.id) {
+      dispatch({ type: types.FETCH_AUTHOR_SUCCESS, items: json });
+    } else {
+      toast(Languages.ErrorMessageRequest);
+      dispatch({
+        type: types.FETCH_AUTHOR_FAIL,
+        message: json.message,
+      });
+    }
+  },
+  getBookDetail: productId => async (dispatch, getState) => {
+    dispatch({ type: types.FETCH_PRODUCTS_DETAIL_PENDING });
+    const json = await antradeWorker.getBookDetail(productId);
+
+    if (json.code === 200 && json.data) {
+      dispatch({ type: types.FETCH_PRODUCTS_DETAIL_SUCCESS, items: json.data });
+    } else {
+      toast(Languages.ErrorMessageRequest);
+      dispatch({
+        type: types.FETCH_PRODUCTS_DETAIL_FAIL,
+        message: json.message,
+      });
+    }
+  },
+  fetchBooksByCategory: (payload) => async (dispatch) => {
+    dispatch({ type: types.FETCH_BOOK_BY_CATEGORY_PENDING });
+    const json = await antradeWorker.getBooksByCategory(payload);
+
+    if (json.data && json.code === 200) {
+      dispatch({
+        type: types.FETCH_BOOK_BY_CATEGORY_SUCCESS,
+        items: json.data,
+      });
+    } else {
+      dispatch({
+        type: types.FETCH_BOOK_BY_CATEGORY_FAIL,
+        message: Languages.ErrorMessageRequest,
+      });
+    }
+  },
+  fetchAllBooks: async (dispatch, page = 1, pageSize = Constants.pagingLimit) => {
+    // if (page === 1)
+    dispatch({ type: types.FETCH_PRODUCTS_PENDING });
+    const json = await antradeWorker.getAllBooks(page);
+
+    if (json.code === 200 && json.data) {
+      if (page > 1) {
+        dispatch({
+          type: types.FETCH_ALL_PRODUCTS_MORE,
+          items: json.data.data,
+          page,
+        });
+      } else {
+        dispatch({
+          type: types.FETCH_ALL_PRODUCTS_SUCCESS,
+          items: json.data.data,
+          page,
+        });
+      }
+    } else {
+      dispatch({
+        type: types.FETCH_PRODUCTS_FAILURE,
+        message: Languages.ErrorMessageRequest,
+      });
+    }
+  },
+  fetchBooksIfNeeded: (page = 1, pageSize = Constants.pagingLimit) => (dispatch, getState) => {
+    // actions.clearBooks(dispatch);
+    const state = getState().products;
+
+    if (!state.isFetching && state.stillFetchAll  && page === state.currentPage + 1) {
+      actions.fetchAllBooks(dispatch, page, pageSize);
+    }
+  },
+  searchBooksByName: payload => async (dispatch, page = 1, pageSize = Constants.pagingLimit) => {
+    dispatch({ type: types.FETCH_BOOKS_BY_NAME_DETAIL_PENDING });
+    const json = await antradeWorker.searchBooks(payload);
+
+    if (json.items) {
+      dispatch({
+        type: types.FETCH_BOOKS_BY_NAME_DETAIL_SUCCESS,
+        items: json,
+      });
+    } else {
+      dispatch({
+        type: types.FETCH_BOOKS_BY_NAME_DETAIL_FAIL,
+      });
+    }
+  },
+  searchBooksByPrice: payload => async (dispatch, page = 1, pageSize = Constants.pagingLimit) => {
+    dispatch({ type: types.FETCH_BOOKS_BY_PRICE_DETAIL_PENDING });
+    const json = await antradeWorker.searchBooksByPrice(payload);
+
+    if (json.items) {
+      dispatch({
+        type: types.FETCH_BOOKS_BY_PRICE_DETAIL_SUCCESS,
+        items: json,
+      });
+    } else {
+      dispatch({
+        type: types.FETCH_BOOKS_BY_PRICE_DETAIL_FAIL,
+      });
     }
   },
   fetchProductsSuccess: items => ({
@@ -115,28 +255,6 @@ export const actions = {
         productsByName: json,
         isMore: json.length === pageSize,
         currentSearchPage: page,
-      });
-    }
-  },
-  fetchAllProducts: async (dispatch, page = 1, pageSize = Constants.pagingLimit) => {
-    dispatch({ type: types.FETCH_PRODUCTS_PENDING });
-    const json = await antradeWorker.getAllProducts(page, pageSize);
-    if (json === undefined || json.error) {
-      dispatch({
-        type: types.FETCH_PRODUCTS_FAILURE,
-        message: Languages.ErrorMessageRequest,
-      });
-    } else if (page > 1) {
-      dispatch({
-        type: types.FETCH_ALL_PRODUCTS_MORE,
-        items: json,
-        page,
-      });
-    } else {
-      dispatch({
-        type: types.FETCH_ALL_PRODUCTS_SUCCESS,
-        items: json,
-        page,
       });
     }
   },
@@ -256,6 +374,9 @@ export const actions = {
   clearSearchHistory: dispatch => {
     dispatch({ type: types.CLEAR_SEARCH_HISTORY });
   },
+  clearBooks: (dispatch) => {
+    dispatch({ type: types.CLEAR_BOOKS });
+  },
 
   _getCachedProduct: (code, viewedProducts) => {
     const cachedProduct = viewedProducts[code];
@@ -300,10 +421,16 @@ const initialState = {
   buyOne: [],
   stillFetch: true,
   stillFetchAll: true,
-  page: 1,
+  pages: 1,
   isFetchingDetail: false,
   productDetail: {},
+  publisherDetail: {},
+  authorDetail: {},
   productsByName: [],
+  booksByName: [],
+  booksByPrice: [],
+  currentPage: 0,
+  booksRelate: [],
 };
 
 export const reducer = (state = initialState, action) => {
@@ -311,11 +438,54 @@ export const reducer = (state = initialState, action) => {
 
   switch (type) {
     case types.FETCH_PRODUCTS_PENDING:
+    case types.FETCH_BOOKS_BY_NAME_DETAIL_PENDING:
       return {
         ...state,
         isFetching: true,
-        error: null,
-        message: '',
+      }
+    case types.FETCH_BOOKS_BY_PRICE_DETAIL_PENDING:
+      return {
+        ...state,
+        isFetching: true,
+      }
+
+      // return {
+      //   ...state,
+      //   isFetching: true,
+      //   error: null,
+      //   message: '',
+      // };
+
+    case types.FETCH_CATEGORY_BY_ID_SUCCESS:
+      return {
+        ...state,
+        booksRelate: items.books,
+        isFetching: false,
+      }
+
+    case types.FETCH_CATEGORY_BY_ID_FAIL:
+      return {
+        ...state,
+        isFetching: false,
+        error,
+      };
+
+    case types.FETCH_BOOK_BY_CATEGORY_PENDING:
+      return {
+        ...state,
+        isFetching: true,
+      }
+    case types.FETCH_BOOK_BY_CATEGORY_SUCCESS:
+      return {
+        ...state,
+        booksRelate: items.data,
+        isFetching: false,
+      }
+    case types.FETCH_BOOK_BY_CATEGORY_FAIL:
+      return {
+        ...state,
+        isFetching: false,
+        error,
       };
 
     case types.FETCH_PRODUCTS_FAILURE:
@@ -328,20 +498,46 @@ export const reducer = (state = initialState, action) => {
     case types.FETCH_ALL_PRODUCTS_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
-        listAll: items,
-        stillFetchAll: items.length !== 0,
+        listAll: items.items,
+        stillFetchAll: items.items.length !== 0,
         error: null,
-        page,
+        currentPage: action.page,
       });
+      // return {
+      //   ...state,
+      //   listAll: items.items,
+      //   // numberOfUnread:
+      //   //   action.json.meta && action.json.meta.numberOfUnread ? action.json.meta.numberOfUnread : 0,
+      //   curP: items.page,
+      //   stillFetchAll: items.items.length !== 0,
+      //   // meta: action.json.meta,
+      //   error: null,
+      //   isFetching: false,
+      //   pages: items.pages,
+      // };
 
     case types.FETCH_ALL_PRODUCTS_MORE: {
       return Object.assign({}, state, {
         isFetching: false,
-        listAll: state.listAll.concat(items),
-        stillFetchAll: items.length !== 0,
+        listAll: state.listAll.concat(items.items),
+        stillFetchAll: items.items.length !== 0,
         error: null,
-        page,
+        currentPage: action.page
       });
+
+      // return {
+      //   ...state,
+      //   listAll: state.listAll.concat(items.items),
+      //   // numberOfUnread:
+      //   //   action.json.meta && action.json.meta.numberOfUnread ? action.json.meta.numberOfUnread : 0,
+      //   error: null,
+      //   pages: items.pages,
+      //   curP: items.page,
+      //   stillFetchAll: items.items.length !== 0,
+      //   // meta: action.json.meta,
+      //   isFetching: false,
+      //   // didInvalidate: false,
+      // };
     }
 
     case types.FETCH_PRODUCTS_SUCCESS: {
@@ -376,6 +572,29 @@ export const reducer = (state = initialState, action) => {
       };
     }
 
+    case types.FETCH_BOOKS_BY_NAME_DETAIL_SUCCESS: {
+      return {
+        ...state,
+        isFetching: false,
+        booksByPrice: items.items,
+      };
+    }
+
+    case types.FETCH_BOOKS_BY_PRICE_DETAIL_SUCCESS: {
+      return {
+        ...state,
+        isFetching: false,
+        booksByPrice: items.items,
+      };
+    }
+
+    case types.FETCH_BOOKS_BY_PRICE_DETAIL_FAIL: {
+      return {
+        ...state,
+        isFetching: false,
+      };
+    }
+
     case types.FETCH_PRODUCTS_BY_NAME_MORE: {
       return {
         ...state,
@@ -384,6 +603,49 @@ export const reducer = (state = initialState, action) => {
         isSearchMore: action.isMore,
         currentSearchPage: action.currentSearchPage,
       };
+    }
+
+    case types.FETCH_PUBLISHER_PENDING:
+      return {
+        ...state,
+        isFetchingDetail: true,
+      };
+    case types.FETCH_CATEGORY_BY_ID_PENDING:
+      return {
+        ...state,
+        isFetchingDetail: true,
+      };
+
+    case types.FETCH_PUBLISHER_FAIL:
+      return {
+        ...state,
+        publisherDetail: {},
+        isFetchingDetail: false,
+      };
+
+    case types.FETCH_PUBLISHER_SUCCESS: {
+      const nextState = { ...state, isFetchingDetail: false, publisherDetail: items };
+
+      return nextState;
+    }
+
+    case types.FETCH_AUTHOR_PENDING:
+      return {
+        ...state,
+        isFetchingDetail: true,
+      };
+
+    case types.FETCH_AUTHOR_FAIL:
+      return {
+        ...state,
+        authorDetail: {},
+        isFetchingDetail: false,
+      };
+
+    case types.FETCH_AUTHOR_SUCCESS: {
+      const nextState = { ...state, isFetchingDetail: false, authorDetail: items };
+
+      return nextState;
     }
 
     case types.FETCH_PRODUCTS_DETAIL_PENDING:
@@ -400,14 +662,7 @@ export const reducer = (state = initialState, action) => {
       };
 
     case types.FETCH_PRODUCTS_DETAIL_SUCCESS: {
-      const nextState = { ...state, isFetchingDetail: false, productDetail: items };
-      if (!action.isCached && !items.Quantity) {
-        // don't cache product that has limited quantity
-        nextState.viewedProducts[items.code] = {
-          ...items,
-          viewedTime: moment(),
-        };
-      }
+      const nextState = { ...state, isFetchingDetail: false, productDetail: items.data };
 
       return nextState;
     }
@@ -529,6 +784,11 @@ export const reducer = (state = initialState, action) => {
       return {
         ...state,
         histories: [],
+      };
+    }
+    case types.CLEAR_BOOKS: {
+      return {
+        ...initialState,
       };
     }
     default: {
