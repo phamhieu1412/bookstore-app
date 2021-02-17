@@ -10,21 +10,21 @@ import SignUpScreen from './SignUpScreen';
 import SplashScreen from './SplashScreen';
 import HomeScreen from './HomeScreen';
 import CategoriesScreen from './CategoriesScreen';
-// import CategoryScreen from './CategoryScreen';
+import CategoryScreen from './CategoryScreen';
 import DetailScreen from './DetailScreen';
-// import CartScreen from './CartScreen';
-// import CheckoutScreen from './CheckoutScreen';
+import CartScreen from './CartScreen';
+import CheckoutScreen from './CheckoutScreen';
 // import MyOrdersScreen from './MyOrdersScreen';
 // import OrderDetailScreen from './OrderDetailScreen';
 // import MyMessagesScreen from './MyMessagesScreen';
 // import WishListScreen from './WishListScreen';
-// import SearchScreen from './SearchScreen';
+import SearchScreen from './SearchScreen';
 // import ListAllScreen from './ListAllScreen';
 import UserProfileScreen from './UserProfileScreen';
 import EditProfileScreen from './EditProfileScreen';
 // import ShippingAddressScreen from './ShippingAddressScreen';
 // import EditAddressScreen from './EditAddressScreen';
-// import FiltersScreen from './FiltersScreen';
+import FiltersScreen from './FiltersScreen';
 // import InformationScreen from './InformationScreen';
 // import LoginScreen from './LoginScreen';
 
@@ -216,7 +216,6 @@ class AppNavigator extends React.Component {
           <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
 
           <Stack.Screen name="DetailScreen" component={DetailScreen} />
-          {/* <Stack.Screen name="ListAllScreen" component={ListAllScreen} />
           <Stack.Screen
             name="CategoryScreen"
             component={CategoryScreen}
@@ -239,13 +238,6 @@ class AppNavigator extends React.Component {
             })}
           />
           <Stack.Screen
-            name="WishListScreen"
-            component={WishListScreen}
-            options={() => ({
-              headerTitleAlign: 'left',
-            })}
-          />
-          <Stack.Screen
             name="CartScreen"
             component={CartScreen}
             options={() => ({
@@ -255,6 +247,14 @@ class AppNavigator extends React.Component {
           <Stack.Screen
             name="CheckoutScreen"
             component={CheckoutScreen}
+            options={() => ({
+              headerTitleAlign: 'left',
+            })}
+          />
+          {/* <Stack.Screen name="ListAllScreen" component={ListAllScreen} />
+          <Stack.Screen
+            name="WishListScreen"
+            component={WishListScreen}
             options={() => ({
               headerTitleAlign: 'left',
             })}

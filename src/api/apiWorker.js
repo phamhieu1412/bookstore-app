@@ -27,16 +27,17 @@ class APIWorker {
   }
 
   // API
+  //Api user && login && register 
   loginBookstore = async (payload) => {
-    const res = await this.post('/api/v1/login', {
+    const res = await this.post('/api/v1/auth/login', {
       params: payload,
     });
 
     return res.error ? res : res.data;
   };
-  getUserProfile = async (userId) => {
+  getUserProfile = async () => {
     if (this.authzToken) {
-      const res = await this.get(`/api/v1/user/${userId}`);
+      const res = await this.get('/api/v1/user/profile');
 
       return res;
     }
@@ -108,8 +109,9 @@ class APIWorker {
     return undefined;
   };
   registerBookstore = async (payload) => {
-    const res = await this.post('/api/v1/register', {
-      params: payload,
+    const res = await this.post('/api/v1/user/register', {
+      payload,
+      // params: payload,
     });
 
     return res;
@@ -130,38 +132,34 @@ class APIWorker {
   getAddressList = () => {
     // return this.get('/supplier/v1/address/all').then(res => res.data);
   };
-
   addAddress = payload => {
     // return this.post('/supplier/v1/address/', {
     //   params: payload,
     // }).then(res => res.data);
   };
-
   updateAddress = (addressId, payload) => {
     // return this.put(`/supplier/v1/address/${addressId}`, {
     //   params: payload,
     // }).then(res => res.data);
   };
-
   getProvinces = () => {
     return this.get('/api/v1/address/').then(res => res);
   };
-
   getDistricts = (provinceId) => {
     return this.get(`/api/v1/address/province/${provinceId}`).then(res => res);
   };
-
   getWards = (districtId) => {
     return this.get(`/api/v1/address/district/${districtId}`).then(res => res);
   };
 
+  // API category
   getCategoriesBookstore = async () => {
-    const res = await this.get('/api/v1/categories');
+    const res = await this.get('/api/v1/category');
 
     return res;
   };
   searchCategoriesById = async (categoryId) => {
-    const res = await this.get(`/api/v1/categories/${categoryId}`);
+    const res = await this.get(`/api/v1/category/${categoryId}`);
 
     return res;
   };
@@ -196,6 +194,11 @@ class APIWorker {
 
     return res;
   };
+  getBooksBestSeller = async (page) => {
+    const res = await this.get('/api/v1/products/best-seller', {params: { page }});
+
+    return res;
+  };
 
   getPublisherById = async (id) => {
     const res = await this.get(`/api/v1/publishers/${id}`);
@@ -209,28 +212,30 @@ class APIWorker {
     return res;
   };
 
+  // API cart
   getCart = async () => {
     if (this.authzToken) {
-      const res = await this.get('/api/v1/carts');
+      const res = await this.get('/api/v1/cart/get');
       return res;
     }
 
     return false;
   };
   deleteBookInCart = async (id) => {
-    const res = await this.delete(`/api/v1/carts/${id}`);
+    const res = await this.delete(`/api/v1/cart/${id}`);
 
     return res;
   };
   updateQuantity = async (id, payload) => {
-    const res = await this.put(`/api/v1/carts/${id}`, {
-      params: {quantity: payload}
+    const res = await this.put(`/api/v1/cart/${id}`, {
+      params: payload,
     });
 
     return res;
   };
   addToCart = async (payload) => {
-    const res = await this.post('/api/v1/carts', {
+    const res = await this.post('/api/v1/cart/add_to_cart', {
+      // payload,
       params: payload
     });
 
@@ -587,25 +592,25 @@ class APIWorker {
     return res.error ? res : res.data.data;
   };
 
-  getUserProfile = async () => {
-    if (this.authzToken) {
-      const res = await this.get('/supplier/v1/client/customers/me');
+  // getUserProfile = async () => {
+  //   if (this.authzToken) {
+  //     const res = await this.get('/supplier/v1/client/customers/me');
 
-      return res.error ? res : res.data.data;
-    }
+  //     return res.error ? res : res.data.data;
+  //   }
 
-    return undefined;
-  };
+  //   return undefined;
+  // };
 
-  setUserProfile = async profile => {
-    if (this.authzToken) {
-      const res = await this.put('/supplier/v1/client/customers/me', { params: profile });
+  // setUserProfile = async profile => {
+  //   if (this.authzToken) {
+  //     const res = await this.put('/supplier/v1/client/customers/me', { params: profile });
 
-      return res.data.data;
-    }
+  //     return res.data.data;
+  //   }
 
-    return undefined;
-  };
+  //   return undefined;
+  // };
 
   updateDefaultShippingAddress = async address => {
     if (this.authzToken) {
@@ -698,18 +703,18 @@ class APIWorker {
     return res.data.data;
   };
 
-  getCart = async (cartToken, location) => {
-    if (this.authzToken) {
-      let params = cartToken ? { token: cartToken } : {};
-      params = this._addLocationToParams(params, location);
-      const res = await this.get('/supplier/v1/orders/cart', {
-        params,
-      });
-      return res.error ? res : res.data;
-    }
+  // getCart = async (cartToken, location) => {
+  //   if (this.authzToken) {
+  //     let params = cartToken ? { token: cartToken } : {};
+  //     params = this._addLocationToParams(params, location);
+  //     const res = await this.get('/supplier/v1/orders/cart', {
+  //       params,
+  //     });
+  //     return res.error ? res : res.data;
+  //   }
 
-    return false;
-  };
+  //   return false;
+  // };
 
   createCartFromItems = async (items, cartToken, location) => {
     if (this.authzToken && items && items.length) {

@@ -6,17 +6,51 @@ import {
   TouchableOpacity,
   FlatList,
   RefreshControl,
-  Image,
 } from 'react-native';
-import { connect } from 'react-redux';
-// import LinearGradient from 'react-native-linear-gradient';
-// import { toast } from '@app/Omni';
+import {connect} from 'react-redux';
+import LinearGradient from 'react-native-linear-gradient';
+
 import styles from './styles';
 import Color from '../../common/Color';
 import Empty from '../../components/Empty';
 import LogoSpinner from '../../components/LogoSpinner';
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+const categoryLinearGradient = [
+  {
+    gradient: ['#E3CE33', '#E5D3E3'],
+  },
+  {
+    gradient: ['#322F20', '#6A5837'],
+  },
+  {
+    gradient: ['#982649', '#FE5F00'],
+  },
+  {
+    gradient: ['#ABEDC6', '#98D9C2'],
+  },
+  {
+    gradient: ['#7D7E75', '#B0B2B8'],
+  },
+  {
+    gradient: ['#C08497', '#F7AF9D'],
+  },
+  {
+    gradient: ['#F59B23', '#C2F8CB'],
+  },
+  {
+    gradient: ['#FCA17D', '#F9DBBD'],
+  },
+  {
+    gradient: ['#654597', '#E2ADF2'],
+  },
+  {
+    gradient: ['#BFD1E5', '#D8BFAA'],
+  },
+  {
+    gradient: ['#D2F898', '#F6F930'],
+  },
+];
 
 class CategoriesScreen extends React.PureComponent {
   state = {
@@ -24,13 +58,13 @@ class CategoriesScreen extends React.PureComponent {
   };
 
   componentDidMount() {
-    // const { fetchCategories } = this.props;
-    // fetchCategories();
+    const {fetchCategories} = this.props;
+    fetchCategories();
   }
 
   onRowClickHandle = (category, color) => {
-    const { onViewCategory } = this.props;
-    onViewCategory({ mainCategory: category, catColor: color });
+    const {onViewCategory} = this.props;
+    onViewCategory({mainCategory: category, catColor: color});
     // BlockTimer.execute(() => {
     //   // setSelectedCategory({
     //   //   ...category,
@@ -40,47 +74,43 @@ class CategoriesScreen extends React.PureComponent {
     // }, 500);
   };
 
-  renderItem = ({ item, index }) => {
+  renderItem = ({item, index}) => {
     const listColors = this.listColors;
-    const imageCategory = item.mobiThumbnail ? { uri: item.mobiThumbnail } : false;
-    const catColor = item.color
-      ? item.color
-      : listColors && listColors.length
-      ? listColors[index % listColors.length]
-      : Color.primary;
 
     return (
       <TouchableOpacity
         activeOpacity={0.85}
         style={[styles.categoryContainer]}
         key={item.slug}
-        onPress={() => this.onRowClickHandle(item, catColor)}>
-        <View style={styles.imageContainer}>
-          {imageCategory ? (
-            <Image source={imageCategory} style={styles.categoryImage} />
-          ) : (
-            <View style={[styles.categoryImage, styles.placeholder]}>
-              <Text style={styles.placeholderText}>Ubofood</Text>
-            </View>
-          )}
+        onPress={() => this.onRowClickHandle(item, categoryLinearGradient[index].gradient[0])}>
+        <View
+          style={{
+            width: '100%',
+            height: 40,
+            marginTop: 10,
+            borderRadius: 4,
+            overflow: 'hidden',
+          }}>
+            <LinearGradient
+              start={{x: 0, y: 0}}
+              end={{x: 1.5, y: 1.5}}
+              colors={categoryLinearGradient[index].gradient}
+              style={{
+                flex: 1,
+                paddingVertical: 10,
+                borderRadius: 5,
+              }}>
+              <Text style={styles.titleText} numberOfLines={2}>
+                {item.name}
+              </Text>
+            </LinearGradient>
         </View>
-
-        <View style={styles.titleWrapper}>
-          <Text style={styles.titleText} numberOfLines={2}>
-            {item.name}
-          </Text>
-        </View>
-        {/* <LinearGradient colors={['transparent', '#0d1c33']} style={styles.titleWrapper}>
-          <Text style={styles.titleText} numberOfLines={2}>
-            {item.name}
-          </Text>
-        </LinearGradient> */}
       </TouchableOpacity>
     );
   };
 
   render() {
-    const { categories, fetchCategories } = this.props;
+    const {categories, fetchCategories} = this.props;
 
     if (categories.error) {
       return <Empty text={categories.error} />;
@@ -100,20 +130,20 @@ class CategoriesScreen extends React.PureComponent {
         <AnimatedFlatList
           scrollEventThrottle={16}
           contentContainerStyle={styles.flatlist}
-          keyExtractor={(item, index) => `${item.slug} || ${index}`}
+          keyExtractor={(item, index) => `${item.id} || ${index}`}
           onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: this.state.scrollY } } }],
-            { useNativeDriver: Platform.OS !== 'android' }
+            [{nativeEvent: {contentOffset: {y: this.state.scrollY}}}],
+            {useNativeDriver: Platform.OS !== 'android'},
           )}
           data={mainCategories}
           refreshing={categories.isFetching}
           refreshControl={
             <RefreshControl
               refreshing={categories.isFetching}
-              // onRefresh={() => fetchCategories()}
+              onRefresh={() => fetchCategories()}
             />
           }
-          numColumns={3}
+          numColumns={1}
           renderItem={this.renderItem}
         />
       </View>
@@ -121,7 +151,7 @@ class CategoriesScreen extends React.PureComponent {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     categories: state.categories,
     netInfo: state.netInfo,
@@ -130,21 +160,15 @@ const mapStateToProps = state => {
 };
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
-  const { netInfo } = stateProps;
-  const { dispatch } = dispatchProps;
-  // const { actions } = require('@redux/CategoryRedux');
+  const {netInfo} = stateProps;
+  const {dispatch} = dispatchProps;
+  const {actions} = require('../../redux/CategoryRedux');
   // const { actions: NetInfoActions } = require('@redux/NetInfoRedux');
 
   return {
     ...ownProps,
     ...stateProps,
-    // fetchCategories: () => {
-    //   if (!netInfo.isConnected) {
-    //     NetInfoActions.renewConnectionStatus(dispatch);
-    //   } else {
-    //     actions.fetchCategories(dispatch);
-    //   }
-    // },
+    fetchCategories: () => actions.fetchCategories(dispatch),
     // setActiveLayout: value => dispatch(actions.setActiveLayout(value)),
     // setSelectedCategory: category => dispatch(actions.setSelectedCategory(category)),
   };
@@ -153,5 +177,5 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
 export default connect(
   mapStateToProps,
   undefined,
-  mergeProps
+  mergeProps,
 )(CategoriesScreen);

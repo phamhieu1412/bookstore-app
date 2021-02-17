@@ -40,35 +40,35 @@ class MyCart extends PureComponent {
     const { removeCartItem } = this.props;
     const { removingProduct } = this.state;
 
-    removeCartItem(removingProduct.cartId);
+    removeCartItem(removingProduct.id);
     this.closeConfirmModal();
   };
 
   render() {
     const { user, carts, updateCartNote, onViewProduct, products } = this.props;
-    const arrayCarts = [];
+    // const arrayCarts = [];
 
-    if(carts.orderItems && products.listAll) {
-      for (let i = 0; i < carts.orderItems.length; i++) {
-        const element = carts.orderItems[i].book_id;
-        var __FOUND = products.listAll.find(function(book, index) {
-        if(book.id == element)
-          return true;
-        });
-        arrayCarts.push({
-          ...__FOUND,
-          quantityInCart: carts.orderItems[i].quantity,
-          cartId: carts.orderItems[i].id
-        })
-      }
-    }
+    // if(carts.orderItems && products.listAll) {
+    //   for (let i = 0; i < carts.orderItems.length; i++) {
+    //     const element = carts.orderItems[i].book_id;
+    //     var __FOUND = products.listAll.find(function(book, index) {
+    //     if(book.id == element)
+    //       return true;
+    //     });
+    //     arrayCarts.push({
+    //       ...__FOUND,
+    //       quantityInCart: carts.orderItems[i].quantity,
+    //       cartId: carts.orderItems[i].id
+    //     })
+    //   }
+    // }
 
     return (
       <View style={styles.container}>
         <KeyboardAwareScrollView enableOnAndroid>
           <View style={[styles.list, Styles.Common.shadowBottom]}>
-            {arrayCarts.length &&
-              arrayCarts.map((item, index) => (
+            {carts.orderItems && carts.orderItems.length &&
+              carts.orderItems.map((item, index) => (
                 <SwipeRow
                   key={`swipeRow-${index}-${item.id}`}
                   disableRightSwipe
@@ -115,7 +115,7 @@ class MyCart extends PureComponent {
       <TouchableOpacity
         key={`hiddenRow-${index}-${rowData.productSlug}`}
         style={styles.hiddenRow}
-        onPress={() => this.props.removeCartItem(rowData)}>
+        onPress={() => this.props.removeCartItem(rowData.id)}>
         <View style={{ marginRight: 23 }}>
           <FontAwesome name="trash" size={30} color="white" />
         </View>
@@ -141,13 +141,13 @@ const mapStateToProps = ({ carts, products, user }) => {
 function mergeProps(stateProps, dispatchProps, ownProps) {
   const { carts } = stateProps;
   const { dispatch } = dispatchProps;
-  const { actions } = require('@redux/CartRedux');
+  const { actions } = require('../../../redux/CartRedux');
 
   return {
     ...ownProps,
     ...stateProps,
     removeCartItem: product => {
-      actions.removeCartItem(dispatch, product, carts);
+      dispatch(actions.removeCartItem(product));
     },
     updateCartNote: note => {
       dispatch(actions.updateCartNote(note, carts));

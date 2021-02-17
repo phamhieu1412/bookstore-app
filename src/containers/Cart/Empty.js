@@ -4,7 +4,7 @@ import { Text, View } from 'react-native';
 
 import Languages from '../../common/Languages';
 import ShopButton from '../../components/ShopButton';
-import { UboIcon } from '../../Omni';
+import { Icon } from '../../Omni';
 import styles from './styles';
 
 const CartEmpty = ({ onViewHome }) => {
@@ -12,7 +12,7 @@ const CartEmpty = ({ onViewHome }) => {
     <View style={styles.container}>
       <View style={styles.contentEmpty}>
         <View>
-          <UboIcon name="cart" style={styles.icon} />
+          <Icon name="cart" style={styles.icon} />
         </View>
         <Text style={styles.title}>{Languages.ShoppingCartIsEmpty}</Text>
         {/* <Text style={styles.message}>{Languages.AddProductToCart}</Text> */}

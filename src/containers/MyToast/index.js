@@ -84,7 +84,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => {
-  const { actions } = require('../../redux/index');
+  const { actions } = require('../../redux/ToastRedux');
   return {
     addToast: (msg, key) => dispatch(actions.addToast(msg, key)),
     removeToast: msg => dispatch(actions.removeToast(msg)),

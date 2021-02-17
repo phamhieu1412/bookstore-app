@@ -5,20 +5,21 @@ import styles from './styles';
 import Button from '../../components/Button/Button';
 import Color from '../../common/Color';
 import Constants from '../../common/Constants';
+import { currencyFormatter } from '../../ultils/Product';
 
 const BottomActions = ({ isAbsolute, carts, nextText, onNext }) => {
   let totalMoney = 0;
   for (let i = 0; i < carts.orderItems.length; i++) {
     const element = carts.orderItems[i];
-    totalMoney +=  element.total;
+    totalMoney +=  (element.productPrice - element.productDiscount);
   }
-
+  
   return (
     <View style={[styles.bottomView, isAbsolute && styles.floatView]}>
       <View style={styles.bottomInfo}>
         <Text style={styles.bottomCountLabel}>{carts.orderItems.length} mặt hàng</Text>
         <View style={styles.seperator} />
-        <Text style={[styles.bottomAmountLabel, {color: Color.organge}]}>{totalMoney} {Constants.VND}</Text>
+        <Text style={[styles.bottomAmountLabel, {color: Color.organge}]}>{currencyFormatter(totalMoney)} {Constants.VND}</Text>
       </View>
       <View style={styles.buttonContainer}>
         <Button

@@ -64,6 +64,11 @@ const types = {
   SAVE_SEARCH_HISTORY: 'SAVE_SEARCH_HISTORY',
   CLEAR_SEARCH_HISTORY: 'CLEAR_SEARCH_HISTORY',
   CLEAR_BOOKS: 'CLEAR_BOOKS',
+
+  FETCH_PRODUCTS_BEST_SELLER_PENDING: 'FETCH_PRODUCTS_BEST_SELLER_PENDING',
+  FETCH_ALL_PRODUCTS_BEST_SELLER_MORE: 'FETCH_ALL_PRODUCTS_BEST_SELLER_MORE',
+  FETCH_ALL_PRODUCTS_BEST_SELLER_SUCCESS: 'FETCH_ALL_PRODUCTS_BEST_SELLER_SUCCESS',
+  FETCH_PRODUCTS_BEST_SELLER_FAILURE: 'FETCH_PRODUCTS_BEST_SELLER_FAILURE',
 };
 
 function _parseFilter(filters = {}) {
@@ -214,6 +219,32 @@ export const actions = {
     } else {
       dispatch({
         type: types.FETCH_BOOKS_BY_PRICE_DETAIL_FAIL,
+      });
+    }
+  },
+  getBooksBestSeller: async (dispatch, page = 1, pageSize = Constants.pagingLimit) => {
+    // if (page === 1)
+    dispatch({ type: types.FETCH_PRODUCTS_BEST_SELLER_PENDING });
+    const json = await antradeWorker.getBooksBestSeller(page);
+
+    if (json.code === 200 && json.data) {
+      if (page > 1) {
+        dispatch({
+          type: types.FETCH_ALL_PRODUCTS_BEST_SELLER_MORE,
+          items: json.data.data,
+          page,
+        });
+      } else {
+        dispatch({
+          type: types.FETCH_ALL_PRODUCTS_BEST_SELLER_SUCCESS,
+          items: json.data.data,
+          page,
+        });
+      }
+    } else {
+      dispatch({
+        type: types.FETCH_PRODUCTS_BEST_SELLER_FAILURE,
+        message: Languages.ErrorMessageRequest,
       });
     }
   },
@@ -431,6 +462,8 @@ const initialState = {
   booksByPrice: [],
   currentPage: 0,
   booksRelate: [],
+  booksBestSeller: [],
+  stillFetchBestSeller: true,
 };
 
 export const reducer = (state = initialState, action) => {
@@ -438,6 +471,15 @@ export const reducer = (state = initialState, action) => {
 
   switch (type) {
     case types.FETCH_PRODUCTS_PENDING:
+      return {
+        ...state,
+        isFetching: true,
+      }
+    case types.FETCH_PRODUCTS_BEST_SELLER_PENDING:
+      return {
+        ...state,
+        isFetching: true,
+      }
     case types.FETCH_BOOKS_BY_NAME_DETAIL_PENDING:
       return {
         ...state,
@@ -494,6 +536,13 @@ export const reducer = (state = initialState, action) => {
         isFetching: false,
         error,
       };
+    
+      case types.FETCH_PRODUCTS_BEST_SELLER_FAILURE:
+      return {
+        ...state,
+        isFetching: false,
+        error,
+      };
 
     case types.FETCH_ALL_PRODUCTS_SUCCESS:
       return Object.assign({}, state, {
@@ -503,6 +552,7 @@ export const reducer = (state = initialState, action) => {
         error: null,
         currentPage: action.page,
       });
+      
       // return {
       //   ...state,
       //   listAll: items.items,
@@ -516,6 +566,15 @@ export const reducer = (state = initialState, action) => {
       //   pages: items.pages,
       // };
 
+    case types.FETCH_ALL_PRODUCTS_BEST_SELLER_SUCCESS:
+      return Object.assign({}, state, {
+        isFetching: false,
+        booksBestSeller: items.items,
+        stillFetchBestSeller: items.items.length !== 0,
+        error: null,
+        currentPage: action.page,
+      });
+
     case types.FETCH_ALL_PRODUCTS_MORE: {
       return Object.assign({}, state, {
         isFetching: false,
@@ -524,7 +583,6 @@ export const reducer = (state = initialState, action) => {
         error: null,
         currentPage: action.page
       });
-
       // return {
       //   ...state,
       //   listAll: state.listAll.concat(items.items),
@@ -538,6 +596,16 @@ export const reducer = (state = initialState, action) => {
       //   isFetching: false,
       //   // didInvalidate: false,
       // };
+    }
+
+    case types.FETCH_ALL_PRODUCTS_BEST_SELLER_MORE: {
+      return Object.assign({}, state, {
+        isFetching: false,
+        booksBestSeller: state.booksBestSeller.concat(items.items),
+        stillFetchBestSeller: items.items.length !== 0,
+        error: null,
+        currentPage: action.page
+      });
     }
 
     case types.FETCH_PRODUCTS_SUCCESS: {

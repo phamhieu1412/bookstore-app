@@ -3,7 +3,7 @@ import { View, TouchableOpacity, Text } from 'react-native';
 
 import styles from './styles';
 import cartStyles from '../styles';
-import { currencyFormatter } from '../../../ultils/product';
+// import { currencyFormatter } from '../../../ultils/product';
 import Color from '../../../common/Color';
 import Constants from '../../../common/Constants';
 import Device from '../../../common/Device';

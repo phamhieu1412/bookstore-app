@@ -8,8 +8,8 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { Icon, UboIcon, toast } from '../../../Omni';
 import { checkPromotionGiftProducts } from '../../../ultils/Product';
 import DeliveryDateSelect from './DeliveryDateSelect';
-import PromotionCode from './PromotionCode';
-import RequestShipping from './RequestShipping';
+// import PromotionCode from './PromotionCode';
+// import RequestShipping from './RequestShipping';
 import BottomActions from './CheckoutBottomActions';
 import styles from './styles';
 import cartStyles from '../styles';

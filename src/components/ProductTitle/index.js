@@ -8,10 +8,10 @@ import Constants from '../../common/Constants';
 class ProductTitle extends PureComponent {
   render() {
     const { product, style, numberOfLines } = this.props;
-    return product.uboFast ? (
+    return product.productTitle ? (
       <Text style={[styles.productName, style && style]} numberOfLines={numberOfLines || 3}>
         <Icon name="flash" size={18} color={Color.primary}></Icon>
-        {product.title}
+        {product.productTitle}
       </Text>
     ) : (
         <Text style={[styles.productName, style && style]} numberOfLines={numberOfLines || 3}>

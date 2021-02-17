@@ -186,9 +186,9 @@ export default new LocalizedStrings({
     // search
     Search: 'Tìm kiếm',
     Filters: 'Lọc kết quả',
-    SearchPlaceHolder: 'Tên mặt hàng',
-    NoResultError: 'Không tìm thấy sản phảm.',
-    ProductCatalog: 'Nhóm hàng',
+    SearchPlaceHolder: 'Tên sách',
+    NoResultError: 'Không tìm thấy sách.',
+    ProductCatalog: 'Thể loại',
     Pricing: 'Giá tiền',
     Filter: 'Chọn',
     Select: 'Chọn',
@@ -322,6 +322,7 @@ export default new LocalizedStrings({
 
     // mymessage
     NoMessage: 'Không có thông báo',
+    TypePhone: 'Số điện thoại',
 
     // form
     NotSelected: 'Chưa chọn',
@@ -363,7 +364,19 @@ export default new LocalizedStrings({
     Logout: 'Đăng xuất',
     LoggedOut: 'Bạn đã đăng xuất',
     Guest: 'Chưa đăng nhập',
+    LoginSuccess: 'Đăng nhập thành công!',
     LoginFailed: 'Có lỗi khi đăng nhập...',
     SaveProfileFailed: 'Có lỗi khi lưu thông tin đăng nhập...',
+
+    // user login
+    Username: 'Tên đăng nhập',
+    Password: 'Mật khẩu',
+    YourUsername: 'Hãy nhập tên đăng nhập',
+    YourPassword: 'Hãy nhập mật khẩu',
+    // WrongInput: '',
+    UsernameOrPasswordIsNotEmpty: 'Tên đăng nhập hoặc mật khẩu không được để trống',
+    // InvalidUser: '',
+    UsernameOrPasswordIsIncorrect: 'Tên đăng nhập hoặc mật khẩu không chính xác',
+    PasswordNotMatch: 'Nhập lại mật khẩu không khớp mật khẩu',
   },
 });

@@ -2,6 +2,7 @@ import { StyleSheet } from 'react-native';
 
 import Constants from '../../common/Constants';
 import Color from '../../common/Color';
+import Styles from '../../common/Styles';
 
 export default StyleSheet.create({
   container: {
@@ -71,5 +72,10 @@ export default StyleSheet.create({
     fontSize: 15,
     margin: 10,
     color: '#b7c4cb',
+  },
+  price: {
+    color: Color.primary,
+    fontSize: Styles.FontSize.header,
+    fontWeight: 'bold',
   },
 });

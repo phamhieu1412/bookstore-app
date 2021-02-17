@@ -46,7 +46,7 @@ class HomeScreen extends Component {
   };
 
   componentDidMount() {
-    const { navigation } = this.props;
+    const { navigation, fetchCart, user } = this.props;
 
     navigation.setOptions({
       headerTitle: null,
@@ -57,6 +57,7 @@ class HomeScreen extends Component {
       setBarStyle(statusBarStyle);
       setTranslucent(true);
       setBackgroundColor('transparent');
+      // fetchCart(user.token);
     });
   }
 
@@ -313,12 +314,17 @@ const mapStateToProps = ({ }) => ({
 });
 
 const mergeProps = (stateProps, dispatchProps, ownProps) => {
-  const { isConnected } = stateProps;
   const { dispatch } = dispatchProps;
+  const { actions: cartAction } = require('../redux/CartRedux');
 
   return {
     ...ownProps,
     ...stateProps,
+    fetchCart: cartToken => {
+      if (cartToken) {
+        dispatch(cartAction.fetchCart(cartToken));
+      }
+    },
   };
 };
 

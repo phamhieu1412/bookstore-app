@@ -10,6 +10,7 @@ class CartIcons extends Component {
     const {
       color,
       carts,
+      userProfile,
       // wishList,
       navigation,
       numberColor,
@@ -20,8 +21,10 @@ class CartIcons extends Component {
     } = this.props;
     // const totalCart = carts.orderItems?.length;
     const totalCart = 0;
+    const user = userProfile.user || {};
+    const token = userProfile.token || '';
     // const wishListTotal = wishList.wishListItems.length;
-
+    
     return (
       <View style={Styles.Common.Row}>
         {withSearch && (
@@ -47,7 +50,7 @@ class CartIcons extends Component {
             icon="cart"
             number={totalCart}
             numberColor={numberColor}
-            onPress={() => navigation.navigate('CartScreen')}
+            onPress={(!user || !token) ? () => navigation.navigate('SignInScreen') : () => navigation.navigate('CartScreen')}
             color={color}
           />
         )}
@@ -66,6 +69,10 @@ class CartIcons extends Component {
   }
 }
 
-const mapStateToProps = ({ carts, wishList }) => ({ carts, wishList });
+const mapStateToProps = ({ carts, wishList, user }) => ({
+  carts,
+  wishList,
+  userProfile: user, 
+});
 
 export default connect(mapStateToProps)(CartIcons);

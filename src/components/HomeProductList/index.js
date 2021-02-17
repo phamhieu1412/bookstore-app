@@ -76,8 +76,8 @@ class HomeProductList extends Component {
   };
 
   render() {
-    const { list, isFetching } = this.props;
-
+    const { list, isFetching, booksBestSeller } = this.props;
+    console.log('booksBestSeller', booksBestSeller)
     return (
       <FlatList
         // listKey="home-vertical"
@@ -85,7 +85,7 @@ class HomeProductList extends Component {
         contentContainerStyle={Styles.Common.listContainer}
         style={[Styles.Common.columnFlatlist]}
         data={list}
-        keyExtractor={(item, index) => `post_${item.slug}_${index}`}
+        keyExtractor={(item, index) => `post_${item.id}_${index}`}
         renderItem={this.renderItem}
         scrollEventThrottle={16}
         numColumns={2}
@@ -104,6 +104,7 @@ class HomeProductList extends Component {
 
 const mapStateToProps = ({ products }) => ({
   list: products.listAll,
+  booksBestSeller: products.booksBestSeller,
   isFetching: products.isFetching,
   pages: products.pages,
   currentPage: products.currentPage,

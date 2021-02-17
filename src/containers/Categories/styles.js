@@ -3,25 +3,19 @@ import Color from '../../common/Color';
 import Styles from '../../common/Styles';
 const { width } = Styles;
 
-const listItemWidth = (width - 11 - 17 * 3) / 3;
+const listItemWidth = width;
 // const listColors = ['#FF8A8A', '#95D45A', '#88D3FF', '#FFC635', '#BA9E88', '#912F3C', '#FAB8A0'];
 
 export default {
   listView: {
     flex: 1,
     backgroundColor: Color.backgroundLightGrey,
-    paddingLeft: 14,
-    paddingRight: 13,
-    ...Platform.select({
-      android: {
-        marginTop: 0,
-      },
-    }),
+    paddingHorizontal: 10,
   },
   flatlist: {
     flexDirection: 'column',
     paddingBottom: 40,
-    paddingTop: 20,
+    paddingTop: 10,
   },
   categoryContainer: {
     verflow: 'hidden',
@@ -29,22 +23,15 @@ export default {
     paddingRight: 0,
     flexDirection: 'column',
     borderWidth: 0,
-    borderRadius: Styles.Radius.productList,
+    borderRadius: 0,
     borderColor: 'transparent',
-    width: listItemWidth,
-    marginLeft: 5,
-    marginRight: 6,
-    marginTop: 6,
-    marginBottom: 5,
+    margin: 6,
     overflow: 'hidden',
   },
   imageContainer: {
     position: 'relative',
     padding: 0,
     borderWidth: 0,
-  },
-  categoryImage: {
-    minHeight: (listItemWidth * 4) / 5,
   },
   placeholder: {
     alignItems: 'center',
@@ -64,14 +51,15 @@ export default {
   titleWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    height: 36,
-    paddingHorizontal: 7,
+    paddingHorizontal: 10,
+    paddingVertical: 15,
     backgroundColor: Color.white,
   },
   titleText: {
     color: Color.Text,
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
+    color: Color.white,
   },
 };

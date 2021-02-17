@@ -10,7 +10,7 @@ import HomeProductList from '../HomeProductList/index';
 // @withNavigation
 class HorizonList extends Component {
   static propTypes = {
-    fetchAllProductsLayout: PropTypes.func.isRequired,
+    // fetchAllProductsLayout: PropTypes.func.isRequired,
     fetchProductsByCollections: PropTypes.func,
     list: PropTypes.array,
     onShowAll: PropTypes.func,

@@ -58,16 +58,16 @@ const config = {
 };
 
 export default persistCombineReducers(config, {
-  // app: AppReducer,
-  // categories: CategoryReducer,
+  app: AppReducer,
+  categories: CategoryReducer,
   products: ProductRedux,
-  // netInfo: NetInfoReducer,
+  netInfo: NetInfoReducer,
   toast: ToastReducer,
-  // user: UserRedux,
-  // carts: CartRedux,
-  // myOrders: OrderRedux,
-  // myMessages: MessageRedux,
-  // wishList: WishListRedux,
+  user: UserRedux,
+  carts: CartRedux,
+  myOrders: OrderRedux,
+  myMessages: MessageRedux,
+  wishList: WishListRedux,
   // pos: POSRedux,
-  // layouts: LayoutRedux,
+  layouts: LayoutRedux,
 });

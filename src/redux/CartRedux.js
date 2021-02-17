@@ -18,6 +18,8 @@ const types = {
   INVALIDATE_CUSTOMER_INFO: 'INVALIDATE_CUSTOMER_INFO',
   UPDATE_CART_NOTE_PENDING: 'UPDATE_CART_NOTE_PENDING',
   UPDATE_CART_PENDING: 'UPDATE_CART_PENDING',
+  UPDATE_CART_SUCCESS: 'UPDATE_CART_SUCCESS',
+  UPDATE_CART_FAILURE: 'UPDATE_CART_FAILURE',
 
   CREATE_CART_FROM_ITEMS_PENDING: 'CREATE_CART_FROM_ITEMS_PENDING',
   FETCH_CART_PENDING: 'FETCH_CART_PENDING',
@@ -55,47 +57,77 @@ const types = {
   GET_TIME_FRAME_BY_ID_PENDDING: 'GET_TIME_FRAME_BY_ID_PENDDING',
   GET_TIME_FRAME_BY_ID_SUCCESS: 'GET_TIME_FRAME_BY_ID_SUCCESS',
   GET_TIME_FRAME_BY_ID_FAILURE: 'GET_TIME_FRAME_BY_ID_FAILURE',
+
+
+  GET_DETAIL_COUPON_SUCCESS: 'GET_DETAIL_COUPON_SUCCESS',
+  GET_DETAIL_COUPON_FAILURE: 'GET_DETAIL_COUPON_FAILURE',
+
+  CREATE_ORDER_SUCCESS: 'CREATE_ORDER_SUCCESS',
+  CREATE_ORDER_FAILURE: 'CREATE_ORDER_FAILURE',
+
+  CLEAR_COUPON: 'CLEAR_COUPON',
+
 };
 
 export const actions = {
-  addCartItem: (dispatch, product, quantity, carts) => {
-    const { orderItems } = carts;
-    const orderItem = productInfoToOrderItem(product, quantity);
-    const indexItem = orderItemIndexInCart(orderItem, orderItems); // check if existed
+  createNewOrder: (payload, meta) => async dispatch => {
+    const json = await antradeWorker.createNewOrder(payload);
 
-    if (indexItem >= 0) {
-      const updateQuantity = indexItem >= 0 ? orderItems[indexItem].quantity + quantity : quantity;
-      orderItem.quantity = updateQuantity;
-      actions.updateCartItem(dispatch, orderItem, updateQuantity);
+    if (json.id) {
+      dispatch({ type: types.CREATE_ORDER_SUCCESS,json });
+      meta.onSuccess();
     } else {
-      actions.silentAddCartItem(dispatch, orderItem);
-      dispatch({
-        type: types.ADD_CART_ITEM,
-        orderItem,
-        quantity,
-      });
-      // eventLogger
-    //   logEventAddToCart(orderItem);
+      dispatch({ type: types.CREATE_ORDER_FAILURE });
+      meta.onFailure();
+    }
+  },
+  getCouponDetail: (id, meta) => async dispatch => {
+    const json = await antradeWorker.getCouponDetail(id);
+
+    if (json.id) {
+      dispatch({ type: types.GET_DETAIL_COUPON_SUCCESS,json });
+      meta.onSuccess();
+    } else {
+      dispatch({ type: types.GET_DETAIL_COUPON_FAILURE });
+      meta.onFailure();
+    }
+  },
+  addToCart: (payload, meta) => async dispatch => {
+    const json = await antradeWorker.addToCart(payload);
+
+    if (json.code === 200 && json.data) {
+      toast(json.message);
+      meta.onSuccess();
+    } else {
+      toast(json.message);
+      meta.onFailure();
     }
   },
   updateCartItem: (dispatch, product, quantity) => {
-    const orderItem = product.productCode ? product : productInfoToOrderItem(product, quantity);
-    dispatch(actions.silentUpdateCartItem({ productCode: orderItem.productCode, quantity }));
-    dispatch({
-      type: types.UPDATE_CART_ITEM,
-      orderItem,
-      quantity,
-    });
+    // const orderItem = product.productCode ? product : productInfoToOrderItem(product, quantity);
+    // dispatch(actions.silentUpdateCartItem({ productCode: orderItem.productCode, quantity }));
+    // dispatch({
+    //   type: types.UPDATE_CART_ITEM,
+    //   orderItem,
+    //   quantity,
+    // });
     // eventLogger
     // logEventAddToCart(orderItem);
   },
 
-  removeCartItem: (dispatch, orderItem) => {
-    dispatch({
-      type: types.REMOVE_CART_ITEM,
-      orderItem,
-    });
-    dispatch(actions.silentRemoveCartItem(orderItem));
+  removeCartItem: (bookId)=> async (dispatch, getState) => {
+    dispatch({ type: types.UPDATE_CART_PENDING });
+    const { user } = getState();
+    const json = await antradeWorker.deleteBookInCart(bookId);
+
+    dispatch(actions.fetchCart(user.token));
+    if ((json.code === 200 || json.code === 204) && json.status === true) {
+      dispatch({ type: types.UPDATE_CART_SUCCESS });
+      toast('Đã cập nhật giỏ hàng');
+    } else {
+      dispatch({ type: types.UPDATE_CART_FAILURE });
+      toast('Cập nhật giỏ hàng lỗi');
+    }
   },
 
   updateCartNote: note => async (dispatch, getState) => {
@@ -113,63 +145,17 @@ export const actions = {
     }
   },
 
-  updateCart: payload => async (dispatch, getState) => {
-    const { app: appState, carts: cartsState } = getState();
-    const cartPayload = actions._cartToPayload(cartsState);
-    const combinedPayload = { ...cartPayload, ...payload };
-    if (!combinedPayload.Token) {
-      // don't update if there's no cart
-      return;
-    }
-
+  updateCart: (id, payload) => async (dispatch, getState) => {
     dispatch({ type: types.UPDATE_CART_PENDING });
-    const json = await antradeWorker.updateCart(combinedPayload, appState.location);
-
-    if (json === undefined || json.error || !json.token) {
-      toast('Hiện không thể cập nhật giỏ hàng');
-      dispatch(actions.fetchCartFailure(Languages.GetDataError));
+    const json = await antradeWorker.updateQuantity(id, payload);
+console.log('updateCart', json)
+    if (json.id) {
+      dispatch({ type: types.UPDATE_CART_SUCCESS });
+      toast('Đã cập nhật giỏ hàng');
     } else {
-      if (json.order) {
-        if (
-          cartsState.orderItems.length &&
-          (!json.order.orderItems ||
-            !json.order.orderItems.length ||
-            json.order.orderItems.length < cartsState.orderItems.length)
-        ) {
-          toast('Đã có mặt hàng bị xóa khỏi giỏ.');
-        } else if (json.order.paymentAmount !== cartsState.paymentAmount) {
-          toast('Đã cập nhật giỏ hàng');
-        }
-      }
-      dispatch(actions.fetchCartSuccess(json));
-      if (checkPromotionGiftProducts(json.order)) {
-        dispatch(ProductRedux.getAndStoreProductsToCache(json.order.promotion.value.giftProducts));
-      }
+      dispatch({ type: types.UPDATE_CART_FAILURE });
+      toast('Cập nhật giỏ hàng lỗi');
     }
-  },
-
-  getTimeFrame: () => async dispatch => {
-    dispatch({ type: types.GET_TIME_FRAME_PENDDING });
-    const json = await antradeWorker.getTimeFrame();
-
-    if (json === undefined || json.error) {
-      dispatch(actions.getTimeFrameFailure(Languages.ErrorGetTimeFrame));
-    } else {
-      dispatch(actions.getTimeFrameSuccess(json));
-    }
-  },
-
-  setSelectedAddress: addressId => (dispatch, getState) => {
-    const { user: userState } = getState();
-    if (!userState || !userState.user || !userState.user.name) {
-      return;
-    }
-
-    dispatch(
-      actions.updateCart({
-        ShippingAddressId: addressId,
-      })
-    );
   },
 
   checkout: (payload, onFinishOrder) => async (dispatch, getState) => {
@@ -188,15 +174,27 @@ export const actions = {
         message: Languages.OrderFailed,
       });
     } else {
+      // dispatch({type: types.EMPTY_CART});
       dispatch({ type: types.CHECKOUT_SUCCESS });
       onFinishOrder(json.order.orderNumber);
       dispatch(actions.fetchCart(undefined, true)); // start new cart
 
       // eventLogger
-    //   logEventPurchase(json.order);
+      logEventPurchase(json.order);
     }
   },
+  setSelectedAddress: addressId => (dispatch, getState) => {
+    const { user: userState } = getState();
+    if (!userState || !userState.user || !userState.user.name) {
+      return;
+    }
 
+    dispatch(
+      actions.updateCart({
+        ShippingAddressId: addressId,
+      })
+    );
+  },
   fetchPromotionCodes: async (dispatch, cartToken) => {
     dispatch({ type: types.FETCH_PROMOTION_CODES_PENDING });
     const json = await antradeWorker.getPromotionCodes(cartToken);
@@ -214,37 +212,19 @@ export const actions = {
       actions.fetchPromotionCodes(dispatch, carts.token);
     }
   },
-  fetchCart: (cartToken, noMessage = false) => async (dispatch, getState) => {
-    const { carts: cartsState, app: appState, user } = getState();
-    if (!user || !user.user || !user.user.name) {
-      return;
-    }
-
-    if (cartsState.isFetching) {
+  fetchCart: () => async (dispatch, getState) => {
+    const { user } = getState();
+    if (!user || !user.token) {
       return;
     }
 
     dispatch({ type: types.FETCH_CART_PENDING });
-    const json = await antradeWorker.getCart(cartToken, appState.location);
+    const json = await antradeWorker.getCart();
 
-    if (json === false) {
-      dispatch(actions.fetchCartFailure());
-    } else if (json === undefined || json.error || !json.token) {
-      dispatch(actions.fetchCartFailure(Languages.GetDataError));
-      if (json && json.error && json.error.status === 401) {
-        UserRedux.logout(dispatch);
-      }
+    if (json.code === 200 && json.data) {
+      dispatch(actions.fetchCartSuccess(json.data.data));
     } else {
-      if (json.order && json.order.paymentAmount !== cartsState.paymentAmount) {
-        if (!noMessage) toast('Giỏ hàng có thay đổi sau khi đồng bộ với hệ thống');
-      }
-      dispatch(actions.fetchCartSuccess(json));
-      if (checkPromotionGiftProducts(json.order)) {
-        dispatch(ProductRedux.getAndStoreProductsToCache(json.order.promotion.value.giftProducts));
-      }
-      if ((!json.order.shipping || !json.order.shipping.shippingAddress) && user.defaultAddress) {
-        dispatch(actions.setSelectedAddress(user.defaultAddress.id, user.defaultAddress));
-      }
+      dispatch(actions.fetchCartFailure(Languages.GetDataError));
     }
   },
   fetchCartSuccess: json => {
@@ -286,15 +266,13 @@ export const actions = {
   setDonotDisplayPromotionModal: () => ({
     type: types.SET_DONOT_DISPLAY_PROMOTION_MODAL,
   }),
-  getTimeFrameSuccess: timeFrame => {
-    return { type: types.GET_TIME_FRAME_SUCCESS, timeFrame };
-  },
-  getTimeFrameFailure: error => {
-    return { type: types.GET_TIME_FRAME_FAILURE, error };
-  },
   clearCart: () => {
     // used when LOGOUT
     return { type: types.CLEAR_CART };
+  },
+  clearCoupon: () => {
+    // used when LOGOUT
+    return { type: types.CLEAR_COUPON };
   },
   clearCartToken: () => {
     // used when LOGOUT
@@ -306,7 +284,7 @@ export const actions = {
   silentUpdateCartItem: (item, isAdding = false) => async (dispatch, getState) => {
     const { app: appState, carts, user } = getState();
     let cartToken = carts.token;
-    if (!cartToken && user.token && user.user.name) {
+    if (!cartToken && user.token && user.user.defaultPosCode) {
       const getCart = await antradeWorker.getCart();
       if (getCart && !getCart.error && getCart.token) {
         cartToken = getCart.token;
@@ -345,7 +323,6 @@ export const actions = {
               break;
           }
         }
-
         dispatch(actions.fetchCart(cartToken, true));
       } else {
         dispatch(
@@ -361,22 +338,21 @@ export const actions = {
       }
     }
   },
-  silentRemoveCartItem: item => async (dispatch, getState) => {
-    const { app: appState, carts } = getState();
-    if (carts.token) {
-      const json = await antradeWorker.removeCartItem(carts.token, item, appState.location);
+  silentRemoveCartItem: cartId => async (dispatch, getState) => {
+    // const { app: appState, user } = getState();
+    // const json = await antradeWorker.deleteBookInCart(cartId);
 
-      if (json === undefined || json.error || !json.token) {
-        dispatch(actions.silenceRemoveCartItemsFailure(Languages.GetDataError));
-        dispatch(actions.fetchCart(carts.token));
-      } else {
-        dispatch(actions.silenceRemoveCartItemsSuccess(json));
-      }
-    }
+    // if (json.message == "Cart deleted.") {
+    //   dispatch(actions.silenceRemoveCartItemsSuccess(json));
+    //   dispatch(actions.fetchCart(user.token));
+    // } else {
+    //   dispatch(actions.silenceRemoveCartItemsFailure(Languages.GetDataError));
+    //   dispatch(actions.fetchCart(user.token));
+    // }
   },
   createCartFromItems: () => async (dispatch, getState) => {
     const { app: appState, carts, user } = getState();
-    if (!user || !user.user || !user.user.name) {
+    if (!user || !user.user || !user.user.defaultPosCode) {
       return;
     }
 
@@ -392,7 +368,7 @@ export const actions = {
       if (json === undefined || json.error || !json.token) {
         dispatch(actions.fetchCartFailure(Languages.GetDataError));
         if (json && json.error && json.error.status === 401) {
-          dispatch(actions.fetchCart(undefined, true));
+          UserRedux.logout(dispatch);
         }
       } else {
         if (
@@ -415,17 +391,17 @@ export const actions = {
       POSCode: carts.shipping.posCode,
       PromotionId: carts.promotion.promotionId || '',
       SelectedGiftProductCode:
-        carts.promotion && carts.promotion.value && carts.promotion.value.selectedGiftProduct
-          ? carts.promotion.value.selectedGiftProduct
+        carts.promotion && carts.promotion.value && carts.promotion.value.selectedGiftProductCode
+          ? carts.promotion.value.selectedGiftProductCode
           : '',
       PaidFromWallet: !!carts.promotion.isPaidFromWallet,
       ShowGiftProducts: carts.promotion.showGiftProducts,
       ShipToCustomer: !!carts.shipping.shipToCustomer,
-      ShippingAddressId: carts?.shipping?.shippingAddressId || undefined,
     };
-
-    payload.DeliveryDate = carts.shipping.deliveryTimeTo;
-    payload.DeliveryTWId = carts.shipping.deliveryTwId;
+    const deliveryTime = carts.shipping.deliveryTime;
+    const deliveryMoment = moment(deliveryTime);
+    payload.DeliveryDate = deliveryMoment.format(Constants.isoDateFormat);
+    payload.DeliveryTime = deliveryMoment.format('HH:mm');
 
     return payload;
   },
@@ -442,16 +418,13 @@ const initialState = {
   paymentAmount: 0,
   paymentAfterSaleOff: 0,
   isFetching: false,
-  isFetchingCheckout: false,
-  isFetchingTimeFrame: false,
   isFetchingPromotionCodes: false,
   didInvalidatePromotionCodes: true,
   note: '',
   donotDisplayPromotionModalAgain: false,
   token: '',
-  arrayTimeFrame: [],
-  selectedAddressId: '',
-  selectedAddressText: '',
+  couponDetail: {},
+  infoCart: {},
 };
 
 export const reducer = (state = initialState, action) => {
@@ -507,24 +480,10 @@ export const reducer = (state = initialState, action) => {
             didInvalidatePromotionCodes: true,
           });
     }
-
-    case types.GET_TIME_FRAME_PENDDING:
-      return {
-        ...state,
-        isFetchingTimeFrame: true,
-      };
-    case types.GET_TIME_FRAME_SUCCESS:
-      return {
-        ...state,
-        arrayTimeFrame: action.timeFrame,
-        isFetchingTimeFrame: false,
-      };
-    case types.GET_TIME_FRAME_FAILURE:
-      return {
-        ...state,
-        isFetchingTimeFrame: false,
-      };
-
+    case types.EMPTY_CART:
+      return Object.assign({}, state, initialState, {
+        type: types.EMPTY_CART,
+      });
     case types.CHECKOUT_SUCCESS:
       return Object.assign({}, state, initialState, {
         type: types.CHECKOUT_SUCCESS,
@@ -533,15 +492,28 @@ export const reducer = (state = initialState, action) => {
       return Object.assign({}, state, {
         type: types.CHECKOUT_ERROR,
         message: action.message,
-        isFetchingCheckout: false,
+        isFetching: false,
       });
-    case types.CHECKOUT_PENDING: {
+    case types.CHECKOUT_PENDING:
+    case types.CREATE_CART_FROM_ITEMS_PENDING:
+    case types.UPDATE_CART_PENDING: {
       return {
         ...state,
-        isFetchingCheckout: true,
+        isFetching: true,
       };
     }
-    case types.CREATE_CART_FROM_ITEMS_PENDING:
+    case types.UPDATE_CART_SUCCESS: {
+      return {
+        ...state,
+        isFetching: false,
+      };
+    }
+    case types.UPDATE_CART_FAILURE: {
+      return {
+        ...state,
+        isFetching: false,
+      };
+    }
     case types.FETCH_CART_PENDING: {
       return {
         ...state,
@@ -562,20 +534,12 @@ export const reducer = (state = initialState, action) => {
     case types.SILENCE_UPDATE_CART_ITEMS_SUCCESS:
     case types.SILENCE_REMOVE_CART_ITEMS_SUCCESS:
     case types.FETCH_CART_SUCCESS: {
-      if (!action.json || !action.json.token) {
-        return {
-          ...state,
-          isFetching: false,
-        };
-      }
-
       const { json } = action;
-      const { order, token } = json;
+      console.log('aaaaaaaa', json)
       return {
         ...state,
-        ...order,
-        orderItems: order.orderItems || [],
-        token,
+        orderItems: json.items,
+        infoCart: json,
         isFetching: false,
         didInvalidatePromotionCodes: true,
         error: null,
@@ -622,15 +586,6 @@ export const reducer = (state = initialState, action) => {
         awaredPromotion: { products: action.json },
       };
     }
-    // case types.SET_SELECTED_ADDRESS: {
-    //   const { addressId, addressText } = action;
-
-    //   return {
-    //     ...state,
-    //     selectedAddressId: addressId,
-    //     selectedAddressText: addressText,
-    //   };
-    // }
     case types.SET_DONOT_DISPLAY_PROMOTION_MODAL: {
       return {
         ...state,
@@ -638,10 +593,7 @@ export const reducer = (state = initialState, action) => {
       };
     }
     case types.CLEAR_CART: {
-      return {
-        ...initialState,
-        arrayTimeFrame: state.arrayTimeFrame,
-      };
+      return initialState;
     }
     case types.CLEAR_CART_TOKEN: {
       return {
@@ -660,6 +612,35 @@ export const reducer = (state = initialState, action) => {
         didInvalidatePromotionCodes: true,
       };
     }
+
+    case types.GET_DETAIL_COUPON_SUCCESS: {
+      return {
+        ...state,
+        couponDetail: action.json,
+      }
+    }
+
+    case types.CREATE_ORDER_SUCCESS: {
+      return {
+        ...state,
+        couponDetail: {},
+      }
+    }
+
+    case types.CLEAR_COUPON: {
+      return {
+        ...state,
+        couponDetail: {},
+      }
+    }
+
+    case types.CREATE_ORDER_FAILURE: {
+      return {
+        ...state,
+        couponDetail: {},
+      }
+    }
+
     default: {
       return state;
     }

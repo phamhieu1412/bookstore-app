@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 // import { isObject } from 'lodash';
 
 import { toast } from '../../Omni';
-import { logEventInitiatedCheckout } from '../../api/eventLogger';
+// import { logEventInitiatedCheckout } from '../../api/eventLogger';
 import { convertCartItemToProduct } from '../../ultils/Product';
 
 import MyCart from './MyCart';
@@ -40,6 +40,7 @@ class Cart extends PureComponent {
   componentDidMount() {
     this._navListener = this.props.navigation.addListener('focus', () => {
       const { user, loadUserProfile, fetchCart, clearCoupon } = this.props;
+      
       if (user.token) {
         fetchCart(user.token);
         clearCoupon();
@@ -81,7 +82,7 @@ class Cart extends PureComponent {
       navigation.navigate('CheckoutScreen');
 
       // eventLogger
-      logEventInitiatedCheckout(carts);
+      // logEventInitiatedCheckout(carts);
   };
 
   onViewProduct = product => {
@@ -121,42 +122,31 @@ class Cart extends PureComponent {
             onNext={loggedIn ? this.goToCheckout : this.doLogin}
           />
         </View>
+        
         {isFetching ? <Spinner mode="overlay" /> : null}
       </View>
     );
   }
 }
 
-const mapStateToProps = ({ carts, user, app, netInfo }) => ({
+const mapStateToProps = ({ carts, user }) => ({
   carts,
   orderItems: carts.orderItems,
   cartToken: carts.token,
-  location: app.location,
-  netInfo,
   user,
-  isFetching: user.isFetching, // || carts.isFetching, // to prevent showing too many loading
+  isFetching: carts.isFetching, // || carts.isFetching, // to prevent showing too many loading
 });
 function mergeProps(stateProps, dispatchProps, ownProps) {
-  const { netInfo, carts, user } = stateProps;
+  // const { netInfo, carts, user } = stateProps;
   const { dispatch } = dispatchProps;
   const { actions: CartActions } = require('../../redux/CartRedux');
   const { actions: UserActions } = require('../../redux/UserRedux');
-  const { actions: NetInfoActions } = require('../../redux/NetInfoRedux');
 
   return {
     ...ownProps,
     ...stateProps,
-    login: code => {
-      if (!netInfo.isConnected) {
-        toast(Languages.noConnection);
-        return false;
-      }
-
-      dispatch(UserActions.login(code));
-      return true;
-    },
     loadUserProfile: () => {
-      if (!netInfo.isConnected) return false; // no toast because we also call fetchCart
+      // if (!netInfo.isConnected) return false; // no toast because we also call fetchCart
       UserActions.loadUserProfile(dispatch);
     },
     fetchCart: (token) => {

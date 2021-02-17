@@ -2,9 +2,10 @@ import React, { PureComponent } from 'react';
 import { TouchableOpacity, Text, View, Image, Dimensions } from 'react-native';
 import { connect } from 'react-redux';
 
-import { UboIcon } from '../../Omni';
+import { IconIO } from '../../Omni';
+import Constants from '../../common/Constants';
 import {
-  // currencyFormatter,
+  currencyFormatter,
   getProductImageSource,
   getProductCartPrice,
   // checkGiftProduct,
@@ -18,10 +19,18 @@ import ProductFreshTag from '../ProductFreshTag';
 
 class ProductCartItem extends PureComponent {
   onChangeQuantity = quantity => {
+    const { carts, product, updateCart, removeCartItem } = this.props;
     if (quantity > 0) {
-      this.props.updateCartItem(this.props.product, quantity);
+      // updateCart(product.id, quantity);
+      updateCart(
+        carts.infoCart.id,
+        {
+          product_id: product.id,
+          quantity,
+        },
+      );
     } else {
-      this.props.removeCartItem(this.props.product);
+      removeCartItem(product.id);
     }
   };
 
@@ -37,20 +46,22 @@ class ProductCartItem extends PureComponent {
       addToCart,
       isBuyOne,
     } = this.props;
-
-    const priceObj = getProductCartPrice(product);
+    const priceObj = {
+      newPrice: product.productPrice - product.productDiscount,
+      oldPrice: product.productPrice ? Math.floor(product.productPrice / 100) * 100 : 0,
+    };
     const isGiftProduct = product.isGiftProduct;
     if (isGiftProduct) priceObj.newPrice = 0;
     // const productPriceSale = priceObj.onSale ? `${currencyFormatter(priceObj.oldPrice)} ` : null;
     return (
       <View style={[styles.container]}>
         <View style={styles.content}>
-          {product.mobiImage ? (
+          {product.thumbnailUrl ? (
             <TouchableOpacity
               style={{ justifyContent: 'center' }}
               onPress={() => onPress({ product })}
               activeOpacity={0.8}>
-              <Image source={getProductImageSource(product.mobiImage)} style={styles.image} />
+              <Image source={getProductImageSource(product.thumbnailUrl)} style={styles.image} />
               <ProductFreshTag
                 product={product}
                 style={{
@@ -67,33 +78,22 @@ class ProductCartItem extends PureComponent {
           <View style={[styles.infoView, { width: Dimensions.get('window').width - 180 }]}>
             <TouchableOpacity onPress={() => onPress({ product })} activeOpacity={0.8}>
               {<ProductTitle product={product} numberOfLines={1} style={styles.title} />}
-              <Text style={[styles.unit]}>{product.productUnit || product.price.unit}</Text>
+              {/* <Text style={[styles.unit]}>quyển</Text> */}
             </TouchableOpacity>
 
-            {isGiftProduct ? (
-              <ProductGiftTag
-                style={{
-                  position: 'relative',
-                  alignSelf: 'flex-start',
-                  marginTop: 10,
-                  bottom: 'auto',
-                  right: 'auto',
-                }}
-              />
-            ) : (
-              <ProductPrice
-                priceObject={priceObj}
-                style={{ marginTop: 10 }}
-                fontStyle={{ fontSize: 14, fontWeight: '600' }}
-              />
-            )}
+            <View style={{ flexDirection: 'row', marginLeft: 10, alignItems: 'center' }}>
+              <Text style={styles.price}>
+                {currencyFormatter(product.productPrice - product.productDiscount)}
+              </Text>
+              <Text style={styles.price}>{Constants.VND}</Text>
+            </View>
           </View>
           {trashIcon && onPressRemove && !isGiftProduct ? (
             <TouchableOpacity
               style={[styles.btnTrash, isBuyOne || !viewQuantity ? { right: 0 } : null]}
               onPress={() => onPressRemove(product)}
               activeOpacity={0.8}>
-              <UboIcon name="trash" size={24} style={styles.trashIcon} />
+              <IconIO name="trash" size={24} style={styles.trashIcon} />
             </TouchableOpacity>
           ) : null}
           {viewQuantity && !isBuyOne && !isGiftProduct ? (
@@ -110,7 +110,7 @@ class ProductCartItem extends PureComponent {
                 onPress={() => addToCart()}
                 style={styles.addToCartButton}
                 activeOpacity={0.9}>
-                <UboIcon name="plus" size={24} style={[styles.addToCartIcon]} />
+                <IconIO name="plus" size={24} style={[styles.addToCartIcon]} />
                 <Text style={styles.addToCartText}>Thêm vào giỏ</Text>
               </TouchableOpacity>
             </View>
@@ -127,9 +127,10 @@ class ProductCartItem extends PureComponent {
   }
 }
 
-const mapStateToProps = ({ products }) => {
+const mapStateToProps = ({ products, carts }) => {
   return {
     buyOne: products.buyOne,
+    carts,
   };
 };
 
@@ -138,15 +139,20 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const { dispatch } = dispatchProps;
   const { product } = ownProps;
   const { actions } = require('../../redux/CartRedux');
+  const ProductRedux = require('../../redux/ProductRedux');
+
   return {
     ...ownProps,
     ...stateProps,
     isBuyOne: product.productCode && buyOne.includes(product.productCode),
-    updateCartItem: (product, quantity) => {
-      actions.updateCartItem(dispatch, product, quantity);
+    updateCart: (id, payload) => {
+      dispatch(actions.updateCart(id, payload));
     },
     removeCartItem: product => {
-      actions.removeCartItem(dispatch, product);
+      dispatch(actions.removeCartItem(product));
+    },
+    getBookDetail: productId => {
+      dispatch(ProductRedux.actions.getBookDetail(productId));
     },
   };
 }

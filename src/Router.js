@@ -115,7 +115,7 @@ class Router extends React.PureComponent {
   fetchCommonData() {
     const {
       // fetchTopCategories,
-      // fetchCategories,
+      fetchCategories,
       // fetchWishList,
       // getTimeFrame,
       // loadAddressList,
@@ -127,11 +127,12 @@ class Router extends React.PureComponent {
       // userInfo,
       // isConnected,
       refetchBooks,
+      getBooksBestSeller,
     } = this.props;
 
     // if (isConnected) {
     //   fetchTopCategories();
-    //   fetchCategories();
+      fetchCategories();
     //   fetchWishList();
     //   getTimeFrame();
     //   loadAddressList();
@@ -147,6 +148,7 @@ class Router extends React.PureComponent {
     //   toast(Languages.noConnection);
     // }
     refetchBooks();
+    getBooksBestSeller();
   }
 
   onViewNotification = item => {
@@ -279,6 +281,7 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
       // ProductActions.clearBooks(dispatch); // phan trang
       ProductActions.fetchAllBooks(dispatch, 1);
     },
+    getBooksBestSeller: () => ProductActions.getBooksBestSeller(dispatch, 1),
   };
 };
 

@@ -51,7 +51,7 @@ class SearchBar extends React.Component {
         {value.length > 0 && (
           <TouchableOpacity onPress={onClear}>
             <Animated.Image
-              source={require('@images/ic_clear_search.png')}
+              source={require('../../../images/ic_clear_search.png')}
               style={[styles.icon, { tintColor: Color.Text }]}
             />
           </TouchableOpacity>
@@ -61,7 +61,7 @@ class SearchBar extends React.Component {
 
         <TouchableOpacity onPress={onFilter}>
           <Animated.Image
-            source={require('@images/ic_filter_search.png')}
+            source={require('../../../images/ic_filter_search.png')}
             style={[styles.icon, { tintColor: haveFilter ? Color.primary : Color.Text }]}
           />
         </TouchableOpacity>

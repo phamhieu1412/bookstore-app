@@ -38,7 +38,6 @@ class Detail extends Component {
     getBookDetail: PropTypes.func,
     productDetail: PropTypes.any,
     onViewCart: PropTypes.func,
-    addCartItem: PropTypes.func,
     carts: PropTypes.any,
     navigation: PropTypes.object,
   };
@@ -114,18 +113,6 @@ class Detail extends Component {
     // Timer.setTimeout(() => this.state.scrollY.setValue(0), 50);
   }
 
-  // addToCart = () => {
-  //   const { addCartItem, updateCartItem, cartItemIndex, productDetail } = this.props;
-  //   const { quantity } = this.state;
-  //   if (cartItemIndex >= 0) {
-  //     updateCartItem(productDetail, quantity);
-  //   } else {
-  //     addCartItem(productDetail, quantity);
-  //   }
-
-  //   // if (go) onViewCart();
-  // };
-
   onClickPlus = () => {
     this.setState({ quantity: this.state.quantity + 1 });
   };
@@ -156,7 +143,6 @@ class Detail extends Component {
    */
   _renderImages = () => {
     const { productDetail } = this.props;
-    const images = productDetail.picture || [{ webDetailUrl: '', mobiDetailUrl: '' }];
     const onSale = productDetail && productDetail.price;
 
     return (
@@ -164,14 +150,18 @@ class Detail extends Component {
           styles.imageWrapper,
           onSale ? { borderWidth: 2, borderColor: Color.product.Discount, borderRadius: 7 } : {},
         ]}>
-        <Image
-          source={getProductImageSource(productDetail.images[0])} // @TODO: change back to mobiDetailUrl
-          style={[
-            styles.imageProduct,
-            // onSale ? { borderWidth: 2, borderColor: Color.product.Discount, borderRadius: 7 } : {},
-          ]}
-          resizeMode="contain"
-        />
+        {
+          productDetail.images && productDetail.images.length > 0 && (
+            <Image
+              source={getProductImageSource(productDetail.images[0])} // @TODO: change back to mobiDetailUrl
+              style={[
+                styles.imageProduct,
+                // onSale ? { borderWidth: 2, borderColor: Color.product.Discount, borderRadius: 7 } : {},
+              ]}
+              resizeMode="contain"
+            />
+          )
+        }
       </View>
     );
   };
@@ -183,7 +173,7 @@ class Detail extends Component {
     const { productDetail } = this.props;
     const { author } = productDetail;
     if (!productDetail) return null;
-
+    console.log('productDetail', productDetail)
     return (
       <View style={[styles.tabView, { backgroundColor: Color.background }]}>
         <View style={[styles.tabButton]}>
@@ -268,13 +258,21 @@ class Detail extends Component {
     navigation.goBack(null);
   };
 
-  _onAddToCart = async () => {
+  _onAddToCart = () => {
     const { user, productDetail, navigation, addToCart } = this.props;
     if (!user.token) {
       navigation.navigate('SignInScreen', { onBack: () => navigation.navigate('DetailScreen') });
     } else {
-      addToCart({ book_id: productDetail.id, quantity: this.state.quantity});
-      navigation.goBack(null);
+      addToCart(
+        { product_id: productDetail.id, quantity: this.state.quantity }, 
+        {
+          onSuccess: () => {
+            navigation.goBack(null);
+          },
+          onFailure: () => {
+          },
+        }
+      );
     }
   };
 
@@ -560,7 +558,7 @@ class Detail extends Component {
 
 const mapStateToProps = state => {
   return {
-    // user: state.user,
+    user: state.user,
     // carts: state?.carts,
     wishListItems: state?.wishList?.wishListItems,
     productDetail: state.products.productDetail,
@@ -593,11 +591,8 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     login: code => {
       dispatch(UserRedux.actions.login(code));
     },
-    addToCart: payload => {
-      dispatch(CartRedux.actions.addToCart(payload));
-    },
-    addCartItem: (product, quantity) => {
-      CartRedux.actions.addCartItem(dispatch, product, quantity, carts);
+    addToCart: (payload, meta) => {
+      dispatch(CartRedux.actions.addToCart(payload, meta));
     },
     updateCartItem: (product, quantity) => {
       CartRedux.actions.updateCartItem(dispatch, product, quantity);

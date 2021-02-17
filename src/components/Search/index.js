@@ -88,6 +88,7 @@ class Search extends PureComponent {
       />
     );
   };
+
   renderResultList = () => {
     const { list, isFetching } = this.props;
     const { isSubmit } = this.state;
@@ -117,6 +118,25 @@ class Search extends PureComponent {
     );
   };
 
+  searchProduct = () => {
+    this.props.saveSearchHistory(this.state.text);
+    this.startNewSearch();
+  };
+
+  onSearch = text => {
+    this.setState({ text }, this.searchProduct);
+  };
+
+  onFilter = async (filter, page = 1) => {
+    const { filterProducts, list } = this.props;
+    this.page = page;
+    this.setState({ loading: true, isSubmit: true, filter });
+    await filterProducts(this.state.text, this.limit, this.page, filter);
+    if (typeof list !== 'undefined') {
+      this.setState({ loading: false });
+    }
+  };
+
   render() {
     const { showFilterBox, list, isFetching } = this.props;
     const { text, filter, focus, scrollY, loading } = this.state;
@@ -139,25 +159,6 @@ class Search extends PureComponent {
       // <InstantSearch />
     );
   }
-
-  searchProduct = () => {
-    this.props.saveSearchHistory(this.state.text);
-    this.startNewSearch();
-  };
-
-  onSearch = text => {
-    this.setState({ text }, this.searchProduct);
-  };
-
-  onFilter = async (filter, page = 1) => {
-    const { filterProducts, list } = this.props;
-    this.page = page;
-    this.setState({ loading: true, isSubmit: true, filter });
-    await filterProducts(this.state.text, this.limit, this.page, filter);
-    if (typeof list !== 'undefined') {
-      this.setState({ loading: false });
-    }
-  };
 }
 
 Search.defaultProps = {
@@ -182,25 +183,26 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
     ...stateProps,
     fetchProductsByName: (name, pageSize, page, filter = {}) => {
       const text = name ? name.trim() : '';
-      if (text.length > 0) {
-        actions.fetchProductsByName(dispatch, text, pageSize, page, filter);
-      }
+      // if (text.length > 0) {
+      //   actions.fetchProductsByName(dispatch, text, pageSize, page, filter);
+      // }
     },
     saveSearchHistory: searchText => {
-      if (searchText.length > 0) {
-        actions.saveSearchHistory(dispatch, searchText);
-      }
+      // if (searchText.length > 0) {
+      //   actions.saveSearchHistory(dispatch, searchText);
+      // }
     },
     clearSearchHistory: () => {
-      actions.clearSearchHistory(dispatch);
+      // actions.clearSearchHistory(dispatch);
     },
     filterProducts: (name, pageSize, page, filter = {}) => {
-      const text = name ? name.trim() : '';
-      actions.fetchProductsByName(dispatch, text, pageSize, page, filter);
+      // const text = name ? name.trim() : '';
+      // actions.fetchProductsByName(dispatch, text, pageSize, page, filter);
     },
   };
 };
-module.exports = connect(
+
+export default connect(
   mapStateToProps,
   null,
   mergeProps
