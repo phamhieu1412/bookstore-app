@@ -6,7 +6,7 @@ import Styles from '../../common/Styles';
 export default StyleSheet.create({
   priceWrapper: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    // alignItems: 'flex-start',
   },
   price: {
     color: Color.primary,

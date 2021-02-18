@@ -1,5 +1,3 @@
-/** @format */
-
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { View, StyleSheet, Text, Image } from 'react-native';

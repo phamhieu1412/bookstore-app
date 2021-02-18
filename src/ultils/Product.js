@@ -67,9 +67,9 @@ export const getProductPrice = product => {
 
   if (!product || !productPrice) {
     priceObj = { newPrice: -1 };
-  } else if (productPrice.price) {
+  } else if (productPrice) {
     priceObj = {
-      newPrice: productPrice.price,
+      newPrice: productPrice,
       oldPrice: productPrice.listedPrice ? Math.floor(productPrice.listedPrice / 100) * 100 : 0,
     };
   } else {

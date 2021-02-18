@@ -46,7 +46,7 @@ class HomeScreen extends Component {
   };
 
   componentDidMount() {
-    const { navigation } = this.props;
+    const { navigation, fetchCart, user } = this.props;
 
     navigation.setOptions({
       headerTitle: null,
@@ -57,6 +57,7 @@ class HomeScreen extends Component {
       setBarStyle(statusBarStyle);
       setTranslucent(true);
       setBackgroundColor('transparent');
+      // fetchCart(user.token);
     });
   }
 
@@ -265,13 +266,11 @@ class HomeScreen extends Component {
       isNewVersionModalOpen,
       hasNewVersion,
     } = this.state;
-
-    const banners =
-      homeBanner && homeBanner.length
-        ? homeBanner.map(({ imageUrl }) => ({
-          uri: imageUrl,
-        }))
-        : [Images.defaultTopBanner];
+    const banners = [
+      require('../images/banners/banner_01.jpg'),
+      require('../images/banners/banner_02.jpg'),
+      require('../images/banners/banner_03.jpg'),
+    ]
 
     return (
       <View style={{ flex: 1 }}>
@@ -315,12 +314,17 @@ const mapStateToProps = ({ }) => ({
 });
 
 const mergeProps = (stateProps, dispatchProps, ownProps) => {
-  const { isConnected } = stateProps;
   const { dispatch } = dispatchProps;
+  const { actions: cartAction } = require('../redux/CartRedux');
 
   return {
     ...ownProps,
     ...stateProps,
+    fetchCart: cartToken => {
+      if (cartToken) {
+        dispatch(cartAction.fetchCart(cartToken));
+      }
+    },
   };
 };
 

@@ -97,21 +97,20 @@ const SignInScreen = ({ navigation, onLoginBookstore }) => {
       toast(Languages.UsernameOrPasswordIsNotEmpty);
       return;
     }
-    navigation.navigate('UserProfile');
     // if (foundUser.length == 0) {
     //   toast(Languages.UsernameOrPasswordIsIncorrect);
     //   return;
     // }
-    // onLoginBookstore({
-    //   username: userName,
-    //   password
-    // }, {
-    //   onSuccess: () => {
-    //     navigation.navigate('UserProfile')
-    //   },
-    //   onError: () => {
-    //   }
-    // });
+    onLoginBookstore({
+      username: userName,
+      password
+    }, {
+      onSuccess: () => {
+        navigation.navigate('UserProfile')
+      },
+      onError: () => {
+      }
+    });
   };
 
   return (
@@ -256,12 +255,13 @@ const mapStateToProps = ({ user, netInfo }) => ({
 function mergeProps(stateProps, dispatchProps, ownProps) {
   // const { netInfo } = stateProps;
   const { dispatch } = dispatchProps;
+  const { actions: UserActions } = require('../redux/UserRedux');
 
   return {
     ...ownProps,
     ...stateProps,
     onLoginBookstore: (payload, meta) => {
-      // dispatch(UserActions.loginBookstore(payload, meta));
+      dispatch(UserActions.loginBookstore(payload, meta));
     },
   };
 }

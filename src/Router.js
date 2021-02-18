@@ -114,37 +114,41 @@ class Router extends React.PureComponent {
 
   fetchCommonData() {
     const {
-      fetchTopCategories,
+      // fetchTopCategories,
       fetchCategories,
-      fetchWishList,
-      getTimeFrame,
-      loadAddressList,
-      createCartFromItems,
-      refetchMyOrders,
-      refetchMyMessages,
-      getFirebaseRegistrationToken,
-      registerFirebaseDevice,
-      userInfo,
-      isConnected,
+      // fetchWishList,
+      // getTimeFrame,
+      // loadAddressList,
+      // createCartFromItems,
+      // refetchMyOrders,
+      // refetchMyMessages,
+      // getFirebaseRegistrationToken,
+      // registerFirebaseDevice,
+      // userInfo,
+      // isConnected,
+      refetchBooks,
+      getBooksBestSeller,
     } = this.props;
 
-    if (isConnected) {
-      fetchTopCategories();
+    // if (isConnected) {
+    //   fetchTopCategories();
       fetchCategories();
-      fetchWishList();
-      getTimeFrame();
-      loadAddressList();
-      createCartFromItems();
-      refetchMyOrders();
-      refetchMyMessages();
-      getFirebaseRegistrationToken();
-      registerFirebaseDevice();
-      if (userInfo && userInfo.name) {
-        logEventSetUser(userInfo);
-      }
-    } else {
-      toast(Languages.noConnection);
-    }
+    //   fetchWishList();
+    //   getTimeFrame();
+    //   loadAddressList();
+    //   createCartFromItems();
+    //   refetchMyOrders();
+    //   refetchMyMessages();
+    //   getFirebaseRegistrationToken();
+    //   registerFirebaseDevice();
+    //   if (userInfo && userInfo.name) {
+    //     logEventSetUser(userInfo);
+    //   }
+    // } else {
+    //   toast(Languages.noConnection);
+    // }
+    refetchBooks();
+    getBooksBestSeller();
   }
 
   onViewNotification = item => {
@@ -272,6 +276,12 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
     getFirebaseRegistrationToken: () => UserActions.getFirebaseRegistrationToken(dispatch),
     registerFirebaseDevice: () => dispatch(UserActions.registerFirebaseDevice()),
     clearViewedProducts: () => dispatch(ProductActions.clearViewedProducts()),
+    
+    refetchBooks: () => {
+      // ProductActions.clearBooks(dispatch); // phan trang
+      ProductActions.fetchAllBooks(dispatch, 1);
+    },
+    getBooksBestSeller: () => ProductActions.getBooksBestSeller(dispatch, 1),
   };
 };
 

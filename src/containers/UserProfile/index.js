@@ -13,6 +13,8 @@ import Color from '../../common/Color';
 import files from '../../../assets/filesBase64';
 import { numberToVnd } from '../../ultils/NumberFormatter';
 // import { UserProfileHeader, UserProfileItem, ShopButton, Spinner } from '@components';
+import UserProfileHeader from '../../components/UserProfileHeader';
+import ShopButton from '../../components/ShopButton';
 
 class UserProfile extends Component {
   constructor(props) {
@@ -46,20 +48,20 @@ class UserProfile extends Component {
   // }
 
   componentDidMount() {
-    // this._navListener = this.props.navigation.addListener('focus', () => {
-    //   const { userProfile, loadUserProfile, fetchPOS, loadAddressList } = this.props;
-    //   if (userProfile.token) {
-    //     loadUserProfile();
-    //   }
-    //   fetchPOS();
-    //   loadAddressList();
-    // });
+    this._navListener = this.props.navigation.addListener('focus', () => {
+      const { loadUserProfile, userProfile } = this.props;
+      // const { userProfile, loadUserProfile, fetchPOS, loadAddressList } = this.props;
+      if (userProfile.token) {
+        loadUserProfile();
+      }
+      // fetchPOS();
+      // loadAddressList();
+    });
   }
 
   goToLoginScreen = () => {
     const { navigation } = this.props;
-    // navigation.navigate('LoginScreen', {});
-    navigation.navigate('LoginScreen', { backRoute: 'Home' });
+    navigation.navigate('SignInScreen', { backRoute: 'Home' });
   };
 
   _handleLogout = () => {
@@ -174,7 +176,36 @@ class UserProfile extends Component {
     return shouldDisabledReferralCode(user, myOrders.orders);
   };
 
+  _goSettings = () => {
+    // this.props.navigation.navigate('Home');
+      toast(Languages.LoginSuccess);
+  }
+
   render() {
+    const { userProfile } = this.props;
+    const user = userProfile.user || {};
+    const token = userProfile.token || '';
+    const name = getName(user);
+
+    if (!user || !token) {
+      return (
+        <View style={styles.container}>
+          <ScrollView ref="scrollView">
+            <UserProfileHeader
+              // onLogout={this._handleLogout}
+              onEditProfile={() => this._showEditScreen(false)}
+              user={{
+                ...user,
+                name,
+              }}
+              token={userProfile.token}
+            />
+          </ScrollView>
+
+          <ShopButton text={Languages.Login} onPress={this.goToLoginScreen} />
+        </View>
+      );
+    }
 
     return (
       <SafeAreaView style={styles.container}>
@@ -192,8 +223,8 @@ class UserProfile extends Component {
                 <Title style={[styles.title, {
                   marginTop: 15,
                   marginBottom: 5,
-                }]}>John Doe</Title>
-                <Caption style={styles.caption}>@j_doe</Caption>
+                }]}>{user.userName}</Title>
+                <Caption style={styles.caption}>@{user.nickname}</Caption>
               </View>
             </View>
           </View>
@@ -205,11 +236,11 @@ class UserProfile extends Component {
             </View>
             <View style={styles.row}>
               <Icon name="phone" color="#777777" size={20} />
-              <Text style={{ color: "#777777", marginLeft: 20 }}>+91-900000009</Text>
+              <Text style={{ color: "#777777", marginLeft: 20 }}>{user.phone}</Text>
             </View>
             <View style={styles.row}>
               <Icon name="email" color="#777777" size={20} />
-              <Text style={{ color: "#777777", marginLeft: 20 }}>john_doe@email.com</Text>
+              <Text style={{ color: "#777777", marginLeft: 20 }}>{user.email}</Text>
             </View>
           </View>
 
@@ -231,31 +262,37 @@ class UserProfile extends Component {
             <TouchableRipple onPress={() => { }}>
               <View style={styles.menuItem}>
                 <Icon name="heart-outline" color="#FF6347" size={25} />
-                <Text style={styles.menuItemText}>Your Favorites</Text>
+                <Text style={styles.menuItemText}>{Languages.WishList}</Text>
               </View>
             </TouchableRipple>
             <TouchableRipple onPress={() => { }}>
               <View style={styles.menuItem}>
                 <Icon name="credit-card" color="#FF6347" size={25} />
-                <Text style={styles.menuItemText}>Payment</Text>
+                <Text style={styles.menuItemText}>Thanh Toán</Text>
               </View>
             </TouchableRipple>
             <TouchableRipple onPress={this.myCustomShare}>
               <View style={styles.menuItem}>
                 <Icon name="share-outline" color="#FF6347" size={25} />
-                <Text style={styles.menuItemText}>Tell Your Friends</Text>
+                <Text style={styles.menuItemText}>Chia sẻ</Text>
               </View>
             </TouchableRipple>
             <TouchableRipple onPress={() => { }}>
               <View style={styles.menuItem}>
                 <Icon name="account-check-outline" color="#FF6347" size={25} />
-                <Text style={styles.menuItemText}>Support</Text>
+                <Text style={styles.menuItemText}>Hỗ trợ</Text>
               </View>
             </TouchableRipple>
-            <TouchableRipple onPress={() => { }}>
+            <TouchableRipple onPress={() => this._goSettings()}>
               <View style={styles.menuItem}>
                 <IconSLI name="settings" color="#FF6347" size={25} />
-                <Text style={styles.menuItemText}>Settings</Text>
+                <Text style={styles.menuItemText}>Cài đặt</Text>
+              </View>
+            </TouchableRipple>
+            <TouchableRipple onPress={() => this._handleLogout()}>
+              <View style={styles.menuItem}>
+                <IconSLI name="logout" color="#FF6347" size={23} />
+                <Text style={styles.menuItemText}>{Languages.Logout}</Text>
               </View>
             </TouchableRipple>
           </View>
@@ -266,15 +303,25 @@ class UserProfile extends Component {
   }
 }
 
-const mapStateToProps = ({ }) => ({
+const mapStateToProps = ({ user }) => ({
+  userProfile: user,
 });
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
-  const { netInfo } = stateProps;
   const { dispatch } = dispatchProps;
+  const { actions: UserActions } = require('../../redux/UserRedux');
+  const { actions: CartActions } = require('../../redux/CartRedux');
+
   return {
     ...ownProps,
     ...stateProps,
+    logout: () => {
+      UserActions.logout(dispatch);
+      dispatch(CartActions.clearCartToken());
+    },
+    loadUserProfile: () => {
+      dispatch(UserActions.loadUserProfile());
+    },
   };
 }
 

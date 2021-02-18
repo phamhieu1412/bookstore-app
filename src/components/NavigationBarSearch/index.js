@@ -30,7 +30,7 @@ class NavigationBarSearch extends Component {
         onPress={onPress}
         style={[styles.iconWrap, Styles.Common.Row, { backgroundColor: background }]}>
         <UboIcon
-          name="search"
+          name="search1"
           style={[
             styles.icon,
             // { tintColor: iconColor },

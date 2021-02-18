@@ -108,7 +108,7 @@ export default new LocalizedStrings({
     NoResultError: 'Your search keyword did not match any products.',
 
     // filter panel
-    Categories: 'Nhóm hàng',
+    Categories: 'Thể loại',
 
     // filter panel
     Loading: 'LOADING...',
@@ -120,7 +120,7 @@ export default new LocalizedStrings({
 
     // Place holder
     TypeNotSelectedError: 'Please choose one',
-    TypeEmail: 'ubofood@gmail.com',
+    TypeEmail: 'phamhieu@gmail.com',
     TypeShippingAddress: 'Shipping address',
     close: 'CLOSE',
     noConnection: 'NO INTERNET ACCESS',
@@ -186,9 +186,9 @@ export default new LocalizedStrings({
     // search
     Search: 'Tìm kiếm',
     Filters: 'Lọc kết quả',
-    SearchPlaceHolder: 'Tên mặt hàng',
-    NoResultError: 'Không tìm thấy sản phảm.',
-    ProductCatalog: 'Nhóm hàng',
+    SearchPlaceHolder: 'Tên sách',
+    NoResultError: 'Không tìm thấy sách.',
+    ProductCatalog: 'Thể loại',
     Pricing: 'Giá tiền',
     Filter: 'Chọn',
     Select: 'Chọn',
@@ -197,15 +197,15 @@ export default new LocalizedStrings({
     Result: 'Kết quả',
 
     // filter panel
-    Categories: 'Nhóm hàng',
-    Category: 'Nhóm hàng',
+    Categories: 'Thể loại',
+    Category: 'Thể loại',
 
     // Product
     AddtoCart: 'Thêm vào giỏ hàng',
     AddtoWishlist: 'Yêu thích',
     AdditionalInformation: 'Thông tin chi tiết',
     FrequentlyBoughtTogether: 'Mặt hàng hay mua cùng',
-    ProductRelated: 'Mặt hàng liên quan',
+    ProductRelated: 'Sách cùng thể loại',
     BUYNOW: 'THÊM VÀO GIỎ',
     ProductSupplier: 'Chứng nhận chất lượng',
 
@@ -322,6 +322,7 @@ export default new LocalizedStrings({
 
     // mymessage
     NoMessage: 'Không có thông báo',
+    TypePhone: 'Số điện thoại',
 
     // form
     NotSelected: 'Chưa chọn',
@@ -336,7 +337,7 @@ export default new LocalizedStrings({
     TypePhone: 'Điền Số điện thoại',
     TypeNotSelectedError: 'Chưa chọn',
     TypeGender: 'Nam/Nữ',
-    TypeEmail: 'ubofood@gmail.com',
+    TypeEmail: 'phamhieu@gmail.com',
     TypeShippingAddress: 'Địa chỉ để ship',
     TypeSupportGroup: 'Mã nhóm tư vấn',
     TypeReferralCode: 'Số ĐT người giới thiệu',
@@ -363,7 +364,19 @@ export default new LocalizedStrings({
     Logout: 'Đăng xuất',
     LoggedOut: 'Bạn đã đăng xuất',
     Guest: 'Chưa đăng nhập',
+    LoginSuccess: 'Đăng nhập thành công!',
     LoginFailed: 'Có lỗi khi đăng nhập...',
     SaveProfileFailed: 'Có lỗi khi lưu thông tin đăng nhập...',
+
+    // user login
+    Username: 'Tên đăng nhập',
+    Password: 'Mật khẩu',
+    YourUsername: 'Hãy nhập tên đăng nhập',
+    YourPassword: 'Hãy nhập mật khẩu',
+    // WrongInput: '',
+    UsernameOrPasswordIsNotEmpty: 'Tên đăng nhập hoặc mật khẩu không được để trống',
+    // InvalidUser: '',
+    UsernameOrPasswordIsIncorrect: 'Tên đăng nhập hoặc mật khẩu không chính xác',
+    PasswordNotMatch: 'Nhập lại mật khẩu không khớp mật khẩu',
   },
 });

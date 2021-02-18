@@ -3,7 +3,7 @@ import { Dimensions } from 'react-native';
 const { width, height } = Dimensions.get('window');
 
 const Constants = {
-  appStoreId: '1459204311',
+  appStoreId: '',
   bundleId: '',
   appsflyerKey: '',
   useReactotron: true,

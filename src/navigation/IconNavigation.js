@@ -12,7 +12,8 @@ const BackWithTitle = (navigation, title, background, onPress) => (
     navigation={navigation}
     title={title}
     background={background}
-    onPress={onPress}
+    // onPress={onPress}
+    onPress={onPress ? onPress : () => navigation.goBack(null)}
   />
 );
 

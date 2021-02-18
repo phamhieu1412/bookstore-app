@@ -1,6 +1,7 @@
 {
   "api": {
-    "url": "https://dev.ubofood.com/api"
+    "url": "https://vlhb-store-api.herokuapp.com",
+    // "url": "https://dev.ubofood.com/api",
   },
 
   "HorizonLayout": [

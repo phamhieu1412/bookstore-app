@@ -104,7 +104,7 @@ const mapStateToProps = ({ layouts }, ownProp) => {
 
 const mergeProps = (stateProps, dispatchProps, ownProps) => {
   const { dispatch } = dispatchProps;
-  const { actions: LayoutActions } = require('@redux/LayoutRedux');
+  const { actions: LayoutActions } = require('../../redux/LayoutRedux');
   return {
     ...ownProps,
     ...stateProps,

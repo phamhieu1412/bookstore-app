@@ -23,7 +23,7 @@ class ProductListItem extends PureComponent {
   render() {
     const { product, onViewProduct, itemWidth } = this.props;
 
-    const imageSource = getProductImageSource(product.webImage); // @TODO: change back to mobiImage
+    const imageSource = getProductImageSource(product.images && product.images.length && product.images[0]); // @TODO: change back to mobiImage
     const isGiftProduct = checkGiftProduct(product);
     const onSale = product && product.price && product.price.discountText;
 
@@ -49,13 +49,13 @@ class ProductListItem extends PureComponent {
           {isGiftProduct ? <ProductGiftTag /> : onSale ? <ProductMeta product={product} /> : null}
         </View>
         <View style={Styles.Common.itemBriefInfo}>
-          <Text style={[css.itemInfo]}>{getPricePerMeasurementUnit(product)}</Text>
+          <Text style={[css.itemInfo]}>{product.category && product.category.name}</Text>
           <ProductTitle product={product} numberOfLines={2} style={css.itemTitle} />
-          {product.price && product.price.unit ? (
-            <Text style={[css.itemInfo]}>{product.price.unit}</Text>
-          ) : null}
+          {/* {product.quantity ? (
+            <Text style={[css.itemInfo]}>{product.quantity}</Text>
+          ) : null} */}
           <ProductPrice product={product} />
-          <WishListIcon product={product} />
+          {/* <WishListIcon product={product} /> */}
         </View>
       </TouchableOpacity>
     );

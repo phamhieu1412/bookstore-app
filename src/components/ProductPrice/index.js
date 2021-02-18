@@ -30,7 +30,8 @@ class ProductPrice extends PureComponent {
 
     const priceObj = priceObject || getProductPrice(product);
     const isGiftProduct = checkGiftProduct(product);
-    const newPrice = isGiftProduct ? 0 : priceObj.newPrice;
+    const newPrice = priceObj.newPrice;
+    // const newPrice = isGiftProduct ? 0 : priceObj.newPrice;
     const onSale = priceObj.onSale;
     return (
       <View style={[styles.priceWrapper, style && style]}>
@@ -38,11 +39,15 @@ class ProductPrice extends PureComponent {
           {`${newPrice >= 0 ? currencyFormatter(newPrice) : Languages.OutOfStock}`}
         </Text>
         {newPrice >= 0 ? <Text style={styles.priceSymbol}>{Constants.VND}</Text> : <View />}
-        {onSale && (
+        <View style={{ flexDirection: 'row', marginLeft: 10, alignItems: 'center' }}>
+          <Text style={{ textDecorationLine: 'line-through', fontSize: 13 }}>{currencyFormatter(newPrice - product.discount)}</Text>
+          <Text style={{ textDecorationLine: 'line-through', fontSize: 13 }}>{Constants.VND}</Text>
+        </View>
+        {/* {onSale && (
           <Text style={[styles.salePrice]}>
             {onSale ? currencyFormatter(priceObj.oldPrice, true) : ''}
           </Text>
-        )}
+        )} */}
       </View>
     );
   }

@@ -32,6 +32,10 @@ const types = {
   LOAD_WALLET_SUCCESS: 'LOAD_WALLET_SUCCESS',
   LOAD_WALLET_FAILURE: 'LOAD_WALLET_FAILURE',
 
+  REGISTER_PENDING: 'REGISTER_PENDING',
+  REGISTER_FAILURE: 'REGISTER_FAILURE',
+  REGISTER_SUCCESS: 'REGISTER_SUCCESS',
+
   LOAD_ADDRESS_PENDING: 'LOAD_ADDRESS_PENDING',
   LOAD_ADDRESS_SUCCESS: 'LOAD_ADDRESS_SUCCESS',
   LOAD_ADDRESS_FAILURE: 'LOAD_ADDRESS_FAILURE',
@@ -62,12 +66,53 @@ const types = {
   REMOVE_FIREBASE_DEVICE_SUCCESS: 'REMOVE_FIREBASE_DEVICE_SUCCESS',
   REMOVE_FIREBASE_DEVICE_FAILURE: 'REMOVE_FIREBASE_DEVICE_FAILURE',
 
+  GET_PROVINCE_PENDING: 'GET_PROVINCE_PENDING',
+  GET_PROVINCE_SUCCESS: 'GET_PROVINCE_SUCCESS',
+  GET_PROVINCE_FAILURE: 'GET_PROVINCE_FAILURE',
+
   SAVE_USER_PHONE_NUMBER: 'SAVE_USER_PHONE_NUMBER',
   FINISH_INTRO: 'FINISH_INTRO',
   SET_API_TOKEN: 'SET_API_TOKEN',
 };
 
 export const actions = {
+  loginBookstore: (payload, meta) => async (dispatch, getState) => {
+    dispatch({ type: types.LOGIN_PENDING });
+
+    const json = await antradeWorker.loginBookstore(payload);
+
+    if (json.code === 200 && json.data) {
+      dispatch(actions.loginSuccessActions(json.data));
+      dispatch(actions.loadUserProfile());
+      toast(Languages.LoginSuccess);
+      meta.onSuccess();
+    } else {
+      dispatch(actions.loginFailure(Languages.ErrorMessageRequest));
+      meta.onError();
+    }
+  },
+  registerBookstore: (payload, meta) => async (dispatch, getState) => {
+    dispatch({ type: types.REGISTER_PENDING });
+    const json = await antradeWorker.registerBookstore(payload);
+    console.log('register', json)
+    if (json.code === 200 && json.data) {
+      dispatch({ type: types.REGISTER_SUCCESS });
+      meta.onSuccess();
+    } else {
+      dispatch({ type: types.REGISTER_FAILURE });
+      meta.onError();
+    }
+  },
+  changePassword: (id, payload, meta) => async (dispatch, getState) => {
+    const json = await antradeWorker.changePassword(id, payload);
+
+    if (json.id) {
+      meta.onSuccess();
+    } else {
+      meta.onError();
+    }
+  },
+  ///////////////////////////////////////////////////////////////////
   login: code => async (dispatch, getState) => {
     dispatch({ type: types.LOGIN_PENDING });
     const { user } = getState();
@@ -82,56 +127,44 @@ export const actions = {
     }
   },
   loginSuccessActions: json => dispatch => {
-    antradeWorker.setToken(json.token);
+    antradeWorker.setToken(json.accessToken);
     dispatch(actions.loginSuccess(json));
-    if (json.customer.name) {
-      dispatch(CartActions.createCartFromItems());
-      dispatch(AppActions.fetchUserPopup());
-    } else {
-      // eventLogger
+    // if (json.customer.defaultPosCode) {
+    //   dispatch(CartActions.createCartFromItems());
+    //   dispatch(AppActions.fetchUserPopup());
+    // } else {
+    //   // eventLogger
     //   logEventSetUser(json.customer);
-    }
+    // }
 
-    dispatch(CartActions.getTimeFrame());
     WishListActions.fetchWishList(dispatch);
     MessageActions.fetchMyMessages(dispatch);
     dispatch(OrderActions.clearMyOrders());
     dispatch(actions.loadWalletIfNeeded());
-    dispatch(actions.loadAddressList());
     dispatch(actions.registerFirebaseDevice());
   },
-  loadUserProfile: async dispatch => {
+  loadUserProfile: () => async dispatch => {
     dispatch({ type: types.LOAD_PROFILE_PENDING });
     const json = await antradeWorker.getUserProfile();
 
-    if (json === undefined || json.error) {
+    if (json.code === 200 && json.data) {
+      dispatch(actions.loadProfileSuccess(json.data));
+      // dispatch(actions.loadWalletIfNeeded());
+    } else {
       dispatch(actions.loadProfileFailure(Languages.ErrorMessageRequest));
       if (json && json.error && json.error.status === 401) {
         actions.logout(dispatch);
       }
-    } else {
-      dispatch(actions.loadProfileSuccess(json));
-      dispatch(actions.loadWalletIfNeeded());
     }
   },
-  saveUserProfile: async (dispatch, user, isNewUser = false) => {
+  saveUserProfile: (userId, payload, meta) => async dispatch => {
     dispatch({ type: types.SAVE_PROFILE_PENDING });
-    const json = await antradeWorker.setUserProfile(user);
+    const json = await antradeWorker.setUserProfile(userId, payload);
 
-    if (json === undefined || json.error || !json.token) {
-      dispatch(actions.saveProfileFailure(Languages.ErrorMessageRequest));
-    } else {
+    if (json.id) {
       dispatch(actions.saveProfileSuccess(json));
-
-      if (isNewUser && json && json.customer && json.customer.defaultPosCode) {
-        dispatch(CartActions.createCartFromItems());
-        dispatch(AppActions.fetchUserPopup());
-        // eventLogger
-        // logEventCompleteRegistration(json.customer);
-        // logEventSetUser(json.customer);
-        // find referrer & update data
-        dispatch(actions.setAutoReferralCode(user, json.customer.code));
-      }
+    } else {
+      dispatch(actions.saveProfileFailure(Languages.ErrorMessageRequest));
     }
   },
   updateDefaultShippingAddress: async (dispatch, address) => {
@@ -162,6 +195,20 @@ export const actions = {
       actions.loadWallet(dispatch);
     }
   },
+  getProvinces: () => async (dispatch, getState) => {
+    const json = await antradeWorker.getProvinces();
+
+    if (json.provinces) {
+      dispatch({
+        type: types.GET_PROVINCE_SUCCESS,
+        json
+      })
+    } else {
+      dispatch({
+        type: types.GET_PROVINCE_FAILURE
+      })
+    }
+  },
   loadAddressList: () => async (dispatch, getState) => {
     const { carts } = getState();
     dispatch({ type: types.LOAD_ADDRESS_PENDING });
@@ -182,11 +229,24 @@ export const actions = {
     dispatch({ type: types.ADD_ADDRESS_PENDING });
     const json = await antradeWorker.addAddress(payload);
 
-    if (json === undefined || json.error) {
-      dispatch(actions.addAddressFailure(Languages.ErrorMessageRequest));
+    // if (json === undefined || json.error) {
+    //   dispatch(actions.addAddressFailure(Languages.ErrorMessageRequest));
+    // } else {
+    //   dispatch(actions.addAddressSuccess(json));
+    //   dispatch(actions.loadAddressList());
+    // }
+  },
+  updateAddressUser: (userId, payload, meta) => async dispatch => {
+    // const { carts } = getState();
+    dispatch({ type: types.SAVE_PROFILE_FAILURE });
+    const json = await antradeWorker.updateAddressUser(userId, payload);
+
+    if (json.id) {
+      dispatch(actions.saveProfileSuccess(json));
+      meta.onSuccess();
     } else {
-      dispatch(actions.addAddressSuccess(json));
-      dispatch(actions.loadAddressList());
+      dispatch(actions.saveProfileFailure(Languages.ErrorMessageRequest));
+      meta.onError();
     }
   },
   updateAddress: (addressId, payload) => async dispatch => {
@@ -194,16 +254,16 @@ export const actions = {
     dispatch({ type: types.UPDATE_ADDRESS_PENDING });
     const json = await antradeWorker.updateAddress(addressId, payload);
 
-    if (json === undefined || json.error) {
-      dispatch(actions.updateAddressFailure(Languages.ErrorMessageRequest));
-    } else {
-      dispatch(actions.updateAddressSuccess(json));
-      dispatch(actions.loadAddressList());
-      // // set shippingAddress if we're using this address for cart
-      // if (carts.selectedAddressId === addressId) {
-      //   dispatch(CartActions.setSelectedAddress(addressId, toCamelCase(payload)));
-      // }
-    }
+    // if (json === undefined || json.error) {
+    //   dispatch(actions.updateAddressFailure(Languages.ErrorMessageRequest));
+    // } else {
+    //   dispatch(actions.updateAddressSuccess(json));
+    //   dispatch(actions.loadAddressList());
+    //   // // set shippingAddress if we're using this address for cart
+    //   // if (carts.selectedAddressId === addressId) {
+    //   //   dispatch(CartActions.setSelectedAddress(addressId, toCamelCase(payload)));
+    //   // }
+    // }
   },
   registerFirebaseDevice: () => async (dispatch, getState) => {
     const { user } = getState();
@@ -219,11 +279,8 @@ export const actions = {
             dispatch(actions.registerFirebaseDeviceSuccess(json, fcmToken));
           }
         });
-        if (user.user && user.user.defaultPosCode) {
-        //   messaging()
-        //     .subscribeToTopic(`topic.pos.${user.user.defaultPosCode}`)
-        //     .catch(() => {});
-        }
+        if (user.user && user.user.defaultPosCode)
+          messaging().subscribeToTopic(`topic.pos.${user.user.defaultPosCode}`);
       } else {
         dispatch(actions.registerFirebaseDeviceFailure('No device token'));
       }
@@ -238,14 +295,11 @@ export const actions = {
   removeFirebaseDevice: () => async (dispatch, getState) => {
     const { user } = getState();
     const { token, firebaseToken } = user;
-    const defaultPosCode = user && user.user ? user.user.defaultPosCode : '';
+    const defaultPosCode = user.user.defaultPosCode;
     if (token && firebaseToken) {
       dispatch({ type: types.REMOVE_FIREBASE_DEVICE_PENDING });
 
-      defaultPosCode &&
-        // messaging()
-        //   .unsubscribeFromTopic(`topic.pos.${defaultPosCode}`)
-        //   .catch(() => {});
+      defaultPosCode && messaging().unsubscribeFromTopic(`topic.pos.${defaultPosCode}`);
       antradeWorker.removeFirebaseDevice(firebaseToken, token).then(json => {
         if (json === undefined || json.error) {
           dispatch(actions.removeFirebaseDeviceFailure(Languages.ErrorMessageRequest));
@@ -272,6 +326,7 @@ export const actions = {
     return { type: types.LOAD_PROFILE_FAILURE, error };
   },
   saveProfileSuccess: user => {
+    toast('Lưu thành công');
     return { type: types.SAVE_PROFILE_SUCCESS, user };
   },
   saveProfileFailure: error => {
@@ -302,18 +357,17 @@ export const actions = {
   updateAddressFailure: error => {
     return { type: types.UPDATE_ADDRESS_FAILURE, error };
   },
+
   logout: dispatch => {
-    dispatch(actions.removeFirebaseDevice());
+    antradeWorker.clearToken();
     dispatch(CartActions.clearCart());
-    dispatch(CartActions.clearCartToken());
     WishListActions.emptyWishList(dispatch);
     MessageActions.clearMyMessages(dispatch);
     dispatch(OrderActions.clearMyOrders());
+    dispatch(actions.removeFirebaseDevice());
     dispatch({ type: types.LOGOUT });
     // logEventClearUser();
     toast(Languages.LoggedOut);
-
-    antradeWorker.clearToken();
   },
   setReferralCode: (referralCode, referralId) => {
     return { type: types.SET_REFERRAL_CODE, referralCode, referralId };
@@ -401,6 +455,7 @@ const initialState = {
   addressList: [],
   defaultAddress: null,
   isFetchingAddress: false,
+  provincesObject: {}
 };
 
 export const reducer = (state = initialState, action) => {
@@ -437,33 +492,19 @@ export const reducer = (state = initialState, action) => {
     case types.LOGIN_SUCCESS:
       return {
         ...state,
-        user: user.customer,
-        token: user.token,
+        token: user.accessToken,
         isFetching: false,
         didInvalidateWallet: true,
       };
     case types.SAVE_PROFILE_SUCCESS:
-      if (!state.user || state.user?.defaultPosCode !== user.customer?.defaultPosCode) {
-        if (state.user && state.user.defaultPosCode) {
-        //   messaging()
-        //     .unsubscribeFromTopic(`topic.pos.${state.user.defaultPosCode}`)
-        //     .catch(() => {});
-        }
-        if (user.customer && user.customer.defaultPosCode) {
-        //   messaging()
-        //     .subscribeToTopic(`topic.pos.${user.defaultPosCode}`)
-        //     .catch(() => {});
-        }
-      }
       return {
         ...state,
-        user: user.customer,
-        token: user.token,
+        user: user,
         isFetching: false,
         didInvalidateWallet: true,
       };
     case types.LOAD_PROFILE_SUCCESS:
-      return { ...state, user, isFetching: false, didInvalidateWallet: true };
+      return { ...state, user: user.data, isFetching: false, didInvalidateWallet: true };
     case types.LOAD_WALLET_SUCCESS:
       return {
         ...state,
@@ -471,6 +512,17 @@ export const reducer = (state = initialState, action) => {
         isFetchingWallet: false,
         didInvalidateWallet: false,
       };
+    case types.GET_PROVINCE_SUCCESS:
+      return {
+        ...state,
+        provincesObject: action.json.provinces
+      };
+    case types.GET_PROVINCE_FAILURE:
+      return {
+        ...state,
+        provincesObject: {},
+      };
+
     case types.LOAD_ADDRESS_SUCCESS:
       const { addressList } = action;
       const defaultAddress = addressList.length
@@ -505,6 +557,13 @@ export const reducer = (state = initialState, action) => {
     case types.LOAD_PROFILE_FAILURE:
     case types.LOGIN_FAILURE:
     case types.SAVE_PROFILE_FAILURE:
+      return { ...state, isFetching: false };
+
+    case types.REGISTER_PENDING:
+      return { ...state, isFetching: true };
+    case types.REGISTER_SUCCESS:
+      return { ...state, isFetching: false };
+    case types.REGISTER_FAILURE:
       return { ...state, isFetching: false };
 
     case types.UPDATE_DEFAULT_ADDRESS_PENDING:

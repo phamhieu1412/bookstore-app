@@ -19,7 +19,7 @@ class Recents extends React.PureComponent {
           <Text style={styles.text}>{Languages.Result}</Text>
 
           <TouchableOpacity onPress={onClear}>
-            <Image source={require('@images/ic_trash.png')} style={styles.icon} />
+            <Image source={require('../../../images/ic_trash.png')} style={styles.icon} />
           </TouchableOpacity>
         </View>
         <Chips items={histories} selectedItem={searchText} onPress={onSearch} />

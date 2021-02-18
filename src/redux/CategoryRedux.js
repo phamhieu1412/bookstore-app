@@ -29,16 +29,16 @@ export const DisplayMode = {
 export const actions = {
   fetchCategories: async dispatch => {
     dispatch({ type: types.FETCH_CATEGORIES_PENDING });
-    const json = await antradeWorker.getCategories({ level: 1 });
+    const json = await antradeWorker.getCategoriesBookstore();
 
-    if (json === undefined || json.error) {
+    if (json.data && json.code === 200) {
+      dispatch(actions.fetchCategoriesSuccess(json.data));
+    } else {
       toast(Languages.ErrorMessageRequest);
-      if (json.error && json.error.status === 0) {
+      if (json.error && json.status === false) {
         NetInfoActions.renewConnectionStatus(dispatch);
       }
       dispatch(actions.fetchCategoriesFailure(Languages.GetDataError));
-    } else {
-      dispatch(actions.fetchCategoriesSuccess(json));
     }
   },
   fetchCategoriesSuccess: items => {
@@ -104,8 +104,8 @@ export const reducer = (state = initialState, action) => {
       return {
         ...state,
         isFetching: false,
-        list: items || [],
-        flattenList: items ? flattenCategories(items) : [],
+        list: items.data || [],
+        // flattenList: items ? flattenCategories(items) : [],
         error: null,
       };
     }

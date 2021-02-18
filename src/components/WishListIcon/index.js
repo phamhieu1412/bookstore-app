@@ -25,7 +25,7 @@ class WishListIcon extends Component {
   }
   render() {
     const { wishList, listBuyOne, product, iconStyle } = this.props;
-    const isBuyOne = listBuyOne.includes(product.code);
+    const isBuyOne = listBuyOne && listBuyOne.includes(product.code);
     if (isBuyOne) {
       return <View />;
     }

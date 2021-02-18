@@ -287,12 +287,13 @@ const mapStateToProps = ({ user, netInfo }) => ({
 function mergeProps(stateProps, dispatchProps, ownProps) {
   // const { netInfo } = stateProps;
   const { dispatch } = dispatchProps;
+  const { actions: UserActions } = require('../redux/UserRedux');
 
   return {
     ...ownProps,
     ...stateProps,
     onRegisterBookstore: (payload, meta) => {
-    //   dispatch(UserActions.registerBookstore(payload, meta));
+      dispatch(UserActions.registerBookstore(payload, meta));
     },
   };
 }

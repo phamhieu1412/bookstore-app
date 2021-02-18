@@ -95,7 +95,7 @@ class AppIntro extends PureComponent {
 }
 
 const mapDispatchToProps = dispatch => {
-  const { actions } = require('@redux/UserRedux');
+  const { actions } = require('../../redux/UserRedux');
   return {
     finishIntro: () => dispatch(actions.finishIntro()),
   };
