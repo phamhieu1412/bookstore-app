@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { FlatList, Text, View, RefreshControl } from 'react-native';
 import { connect } from 'react-redux';
+import LinearGradient from 'react-native-linear-gradient';
 
 import styles from './styles';
 import ProductListItem from '../ProductListItem';
@@ -77,27 +78,59 @@ class HomeProductList extends Component {
 
   render() {
     const { list, isFetching, booksBestSeller } = this.props;
-    console.log('booksBestSeller', booksBestSeller)
+    let arrayBooksBestSeller = [];
+    for (let i = 0; i < 4; i++) {
+      const element = booksBestSeller[i];
+      arrayBooksBestSeller.push(element);
+    }
+
     return (
-      <FlatList
-        // listKey="home-vertical"
-        // overScrollMode="never"
-        contentContainerStyle={Styles.Common.listContainer}
-        style={[Styles.Common.columnFlatlist]}
-        data={list}
-        keyExtractor={(item, index) => `post_${item.id}_${index}`}
-        renderItem={this.renderItem}
-        scrollEventThrottle={16}
-        numColumns={2}
-        // refreshing={isFetching}
-        refreshControl={
-          <RefreshControl refreshing={isFetching} onRefresh={this.refreshBooks} />
-        }
-        // ListHeaderComponent={this.headerComponent}
-        onEndReachedThreshold={0.3}
-        onEndReached={this.fetchProducts}
-        // onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: this.state.scrollY } } }])}
-      />
+      <>
+        <LinearGradient
+          start={{x: 0, y: 0}}
+          end={{x: 1.5, y: 1.5}}
+          colors={['#982649', '#FE5F00']}
+          style={styles.titleCategory}>
+          <Text style={{ color: 'white', fontWeight: '700' }}>MUA NHIỀU</Text>
+        </LinearGradient>
+        <FlatList
+          contentContainerStyle={Styles.Common.listContainer}
+          style={[Styles.Common.columnFlatlist]}
+          data={arrayBooksBestSeller}
+          keyExtractor={(item, index) => `post_${item.id}_${index}`}
+          renderItem={this.renderItem}
+          scrollEventThrottle={16}
+          numColumns={2}
+        />
+
+        
+        <LinearGradient
+          start={{x: 0, y: 0}}
+          end={{x: 1.5, y: 1.5}}
+          colors={['#552649', '#C4EF00']}
+          style={styles.titleCategory}>
+          <Text style={{ color: 'white', fontWeight: '700' }}>LOẠI SÁCH KHÁC</Text>
+        </LinearGradient>
+        <FlatList
+          // listKey="home-vertical"
+          // overScrollMode="never"
+          contentContainerStyle={Styles.Common.listContainer}
+          style={[Styles.Common.columnFlatlist]}
+          data={list}
+          keyExtractor={(item, index) => `post_${item.id}_${index}`}
+          renderItem={this.renderItem}
+          scrollEventThrottle={16}
+          numColumns={2}
+          // refreshing={isFetching}
+          refreshControl={
+            <RefreshControl refreshing={isFetching} onRefresh={this.refreshBooks} />
+          }
+          // ListHeaderComponent={this.headerComponent}
+          onEndReachedThreshold={0.3}
+          onEndReached={this.fetchProducts}
+          // onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: this.state.scrollY } } }])}
+        />
+      </>
     );
   }
 }

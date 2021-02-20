@@ -318,7 +318,7 @@ class APIWorker {
 
   getCouponDetail = async id => {
     if (this.authzToken) {
-      const res = await this.get(`/api/v1/coupons/${id}`);
+      const res = await this.get(`/api/v1/coupons/get/${id}`);
 
       return res;
     }

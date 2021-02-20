@@ -84,9 +84,9 @@ export const actions = {
   getCouponDetail: (id, meta) => async dispatch => {
     const json = await antradeWorker.getCouponDetail(id);
 
-    if (json.id) {
-      dispatch({ type: types.GET_DETAIL_COUPON_SUCCESS,json });
-      meta.onSuccess();
+    if (json.data && json.code === 200) {
+      dispatch({ type: types.GET_DETAIL_COUPON_SUCCESS, json: json.data });
+      meta.onSuccess(json.data.data);
     } else {
       dispatch({ type: types.GET_DETAIL_COUPON_FAILURE });
       meta.onFailure();
@@ -535,7 +535,6 @@ export const reducer = (state = initialState, action) => {
     case types.SILENCE_REMOVE_CART_ITEMS_SUCCESS:
     case types.FETCH_CART_SUCCESS: {
       const { json } = action;
-      console.log('aaaaaaaa', json)
       return {
         ...state,
         orderItems: json.items,
@@ -616,7 +615,7 @@ export const reducer = (state = initialState, action) => {
     case types.GET_DETAIL_COUPON_SUCCESS: {
       return {
         ...state,
-        couponDetail: action.json,
+        couponDetail: action.json.data,
       }
     }
 

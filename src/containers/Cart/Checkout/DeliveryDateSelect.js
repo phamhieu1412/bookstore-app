@@ -4,7 +4,7 @@ import { Text, View } from 'react-native';
 import moment from 'moment';
 import RNPickerSelect from 'react-native-picker-select';
 
-import { UboIcon } from '../../../Omni';
+import { Icon } from '../../../Omni';
 import cartStyles from '../styles';
 import Constants from '../../../common/Constants';
 
@@ -72,7 +72,7 @@ class DateCalendarPicker extends React.Component {
           <View style={[cartStyles.fieldContainer, { minHeight: 65, flexDirection: 'row' }]}>
             <View style={cartStyles.fieldIconWrapper}>
               <View style={cartStyles.fieldIconWithText}>
-                <UboIcon name="clock" size={27} style={cartStyles.fieldIcon} />
+                <Icon name="clock-end" size={27} style={cartStyles.fieldIcon} />
                 <Text style={cartStyles.editableText}>Thay đổi</Text>
               </View>
               <View style={[cartStyles.fieldSeparator, { height: 55 }]} />

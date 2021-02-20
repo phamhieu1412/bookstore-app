@@ -13,8 +13,8 @@ export default class CheckoutScreen extends PureComponent {
     const {navigation} = this.props;
 
     navigation.setOptions({
-      // headerLeft: () => Back(navigation, Color.white, null, () => navigation.navigate('CartScreen')),
-      // headerRight: () => WishlistSearchIcons(navigation, Color.white, Color.white),
+      headerLeft: () => Back(navigation, Color.white, null, () => navigation.navigate('CartScreen')),
+      headerRight: () => WishlistSearchIcons(navigation, Color.white, Color.white),
       headerTitle: Languages.Cart,
 
       headerStyle: [Styles.Common.toolbar(), { backgroundColor: Color.primary }],

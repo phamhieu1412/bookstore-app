@@ -148,8 +148,10 @@ class HomeScreen extends Component {
 
   viewProductScreen = params => {
     const {
-      navigation: { navigate },
+      navigation: { navigate }, getBookDetail,
     } = this.props;
+    
+    getBookDetail(params.product.id);
     navigate('DetailScreen', params);
   };
 
@@ -316,6 +318,7 @@ const mapStateToProps = ({ }) => ({
 const mergeProps = (stateProps, dispatchProps, ownProps) => {
   const { dispatch } = dispatchProps;
   const { actions: cartAction } = require('../redux/CartRedux');
+  const ProductRedux = require('../redux/ProductRedux');
 
   return {
     ...ownProps,
@@ -324,6 +327,9 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
       if (cartToken) {
         dispatch(cartAction.fetchCart(cartToken));
       }
+    },
+    getBookDetail: productId => {
+      dispatch(ProductRedux.actions.getBookDetail(productId));
     },
   };
 };

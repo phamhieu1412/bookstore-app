@@ -182,7 +182,7 @@ class UserProfile extends Component {
   }
 
   render() {
-    const { userProfile } = this.props;
+    const { userProfile, navigation } = this.props;
     const user = userProfile.user || {};
     const token = userProfile.token || '';
     const name = getName(user);
@@ -259,10 +259,16 @@ class UserProfile extends Component {
           </View>
 
           <View style={styles.menuWrapper}>
+            <TouchableRipple onPress={() => navigation.navigate('ShippingAddressScreen')}>
+              <View style={styles.menuItem}>
+                <Icon name="map-marker-radius" color="#FF6347" size={25} />
+                <Text style={styles.menuItemText}>{Languages.ShippingAddress}</Text>
+              </View>
+            </TouchableRipple>
             <TouchableRipple onPress={() => { }}>
               <View style={styles.menuItem}>
-                <Icon name="heart-outline" color="#FF6347" size={25} />
-                <Text style={styles.menuItemText}>{Languages.WishList}</Text>
+                <Icon name="order-bool-descending-variant" color="#FF6347" size={25} />
+                <Text style={styles.menuItemText}>Đơn hàng</Text>
               </View>
             </TouchableRipple>
             <TouchableRipple onPress={() => { }}>
