@@ -49,6 +49,7 @@ class Checkout extends Component {
       },
       showScrollIndicator: promotionId && checkPromotionGiftProducts(carts),
       valueCouponCode: '',
+      coupon: {},
       valuePercentCoupon: 0,
       valueComment: '',
     };
@@ -193,41 +194,50 @@ class Checkout extends Component {
       valueComment,
     } = this.state;
     const { carts, createNewOrder, navigation } = this.props;
-    const orderDetails = [];
-    for (let i = 0; i < carts.orderItems.length; i++) {
-      const e = carts.orderItems[i];
-      orderDetails.push({
-        book_id: `${e.book_id}`,
-        quantity: e.quantity,
-      });
-    }
-    if (!deliveryTime) {
-      toast('Bạn chưa chọn thời gian nhận hàng');
-      return;
-    }
-    createNewOrder(
+    // const orderDetails = [];
+    // for (let i = 0; i < carts.orderItems.length; i++) {
+    //   const e = carts.orderItems[i];
+    //   orderDetails.push({
+    //     book_id: `${e.book_id}`,
+    //     quantity: e.quantity,
+    //   });
+    // }
+    // if (!deliveryTime) {
+    //   toast('Bạn chưa chọn thời gian nhận hàng');
+    //   return;
+    // }
+    // createNewOrder(
+    //   {
+    //     required_date: `${new Date(deliveryTime).getTime() / 1000}`,
+    //     comment: `${valueComment}`,
+    //     coupon_code: valueCouponCode,
+    //     order_details: orderDetails,
+    //   },
+    //   {
+    //     onSuccess: () => {
+    //       toast('Thêm đơn hàng thành công');
+    //       navigation.navigate('Home');
+    //     },
+    //     onFailure: () => {
+    //       toast('Thêm đơn hàng thất bại');
+    //     },
+    //   },
+    // );
+    console.log('payload', 
       {
-        required_date: `${new Date(deliveryTime).getTime() / 1000}`,
-        comment: `${valueComment}`,
+        content: `${valueComment}`,
         coupon_code: valueCouponCode,
-        order_details: orderDetails,
-      },
-      {
-        onSuccess: () => {
-          toast('Thêm đơn hàng thành công');
-          navigation.navigate('Home');
-        },
-        onFailure: () => {
-          toast('Thêm đơn hàng thất bại');
-        },
-      },
-    );
+        address_id: 'address_id',
+      })
   };
 
   onGetCouponDetail = () => {
-    this.props.getCouponDetail(this.state.valueCouponCode, {
-      onSuccess: () => {
-        // this.setState({valueCouponCode: this.props.carts.couponDetail.code})
+    const { getCouponDetail } = this.props;
+    
+    getCouponDetail(this.state.valueCouponCode, {
+      onSuccess: (coupon) => {
+        console.log(coupon)
+        this.setState({ valueCouponCode: coupon.code, coupon })
       },
       onFailure: () => {
         toast('Mã khuyến mại không đúng.');
@@ -254,7 +264,7 @@ class Checkout extends Component {
 
   render() {
     const { carts, cartToken, user, wallet, updateCart, updateDefaultShippingAddress } = this.props;
-    const { showScrollIndicator, valueComment, valueCouponCode } = this.state;
+    const { showScrollIndicator, valueComment, valueCouponCode, coupon } = this.state;
 
     if (!user || !user.user) {
       return <View />;
@@ -273,7 +283,8 @@ class Checkout extends Component {
           }}
           scrollEventThrottle={400}>
           <View style={styles.formContainer}>
-            <Form
+            {/* bo thoi gian giao hang */}
+            {/* <Form
               ref="form"
               type={this.Customer}
               options={this.options}
@@ -281,7 +292,7 @@ class Checkout extends Component {
               onChange={this.onChange}
             />
 
-            <View style={styles.divider} />
+            <View style={styles.divider} /> */}
 
             <View style={{ marginVertical: 10 }}>
               <Text style={{ fontSize: 18, marginBottom: 5 }}>Mã giảm giá</Text>
@@ -291,9 +302,9 @@ class Checkout extends Component {
                 value={valueCouponCode}
                 onEndEditing={this.onGetCouponDetail}
               />
-              {carts.couponDetail && carts.couponDetail.description && (
+              {coupon && coupon.description && (
                 <Text style={{ fontSize: 13, opacity: 0.6 }}>
-                  {`Chi tiết: ${carts.couponDetail.description}`}
+                  {`Chi tiết: ${coupon.description}`}
                 </Text>
               )}
             </View>
@@ -312,14 +323,15 @@ class Checkout extends Component {
             </View>
           </View>
 
-          <BottomActions
-            carts={carts}
-            wallet={wallet}
-            nextText={Languages.Checkout}
-            updateCart={updateCart}
-            onNext={this.checkout}
-          />
         </KeyboardAwareScrollView>
+
+        <BottomActions
+          carts={carts}
+          wallet={wallet}
+          nextText={Languages.Checkout}
+          updateCart={updateCart}
+          onNext={this.checkout}
+        />
       </View>
     );
   }

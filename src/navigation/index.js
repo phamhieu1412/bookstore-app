@@ -14,7 +14,7 @@ import CategoryScreen from './CategoryScreen';
 import DetailScreen from './DetailScreen';
 import CartScreen from './CartScreen';
 import CheckoutScreen from './CheckoutScreen';
-// import MyOrdersScreen from './MyOrdersScreen';
+import MyOrdersScreen from './MyOrdersScreen';
 // import OrderDetailScreen from './OrderDetailScreen';
 // import MyMessagesScreen from './MyMessagesScreen';
 // import WishListScreen from './WishListScreen';
@@ -27,6 +27,8 @@ import EditProfileScreen from './EditProfileScreen';
 import FiltersScreen from './FiltersScreen';
 // import InformationScreen from './InformationScreen';
 // import LoginScreen from './LoginScreen';
+import ShippingAddressScreen from './ShippingAddressScreen';
+import EditAddressScreen from './EditAddressScreen';
 
 import { TabBarIcon } from '../components/index';
 import Color from '../common/Color';
@@ -251,17 +253,20 @@ class AppNavigator extends React.Component {
               headerTitleAlign: 'left',
             })}
           />
-          {/* <Stack.Screen name="ListAllScreen" component={ListAllScreen} />
+          <Stack.Screen name="SelectShippingAddressScreen" component={ShippingAddressScreen} />
+          <Stack.Screen name="ShippingAddressScreen" component={ShippingAddressScreen} />
+          <Stack.Screen name="EditAddressScreen" component={EditAddressScreen} />
           <Stack.Screen
-            name="WishListScreen"
-            component={WishListScreen}
+            name="MyOrdersScreen"
+            component={MyOrdersScreen}
             options={() => ({
               headerTitleAlign: 'left',
             })}
           />
+          {/* <Stack.Screen name="ListAllScreen" component={ListAllScreen} />
           <Stack.Screen
-            name="MyOrdersScreen"
-            component={MyOrdersScreen}
+            name="WishListScreen"
+            component={WishListScreen}
             options={() => ({
               headerTitleAlign: 'left',
             })}

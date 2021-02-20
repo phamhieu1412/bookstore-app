@@ -67,26 +67,13 @@ class Detail extends Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    // if (nextProps.product.slug !== prevState.currentProductSlug) {
-    //   nextProps.getBookDetail(nextProps.product.id);
-    //   // eventLogger
-    //   // logEventViewProduct(nextProps.product);
-
-    //   const {
-    //     carts: { orderItems },
-    //     cartItemIndex,
-    //   } = nextProps;
-    //   const cartItem = cartItemIndex >= 0 ? orderItems[cartItemIndex] : false;
-
-    //   return { currentProductSlug: nextProps.product.slug };
-    // }
 
     return null;
   }
 
   componentDidMount() {
     this._navListener = this.props.navigation.addListener('focus', () => {
-      const { getBookDetail, product, getPublisherById, getAuthorById, fetchBooksByCategory } = this.props;
+      const { getBookDetail, product, params, getPublisherById, getAuthorById, fetchBooksByCategory } = this.props;
       getBookDetail(product.id);
       // getPublisherById(product.publisher_id ? product.publisher_id : product.publisherId);
       // getAuthorById(product.author_id ? product.author_id : product.authorId );
@@ -151,7 +138,7 @@ class Detail extends Component {
           onSale ? { borderWidth: 2, borderColor: Color.product.Discount, borderRadius: 7 } : {},
         ]}>
         {
-          productDetail.images && productDetail.images.length > 0 && (
+          productDetail && productDetail.images && productDetail.images.length > 0 && (
             <Image
               source={getProductImageSource(productDetail.images[0])} // @TODO: change back to mobiDetailUrl
               style={[
@@ -171,7 +158,6 @@ class Detail extends Component {
    */
   _renderTabView = () => {
     const { productDetail } = this.props;
-    const { author } = productDetail;
     if (!productDetail) return null;
     console.log('productDetail', productDetail)
     return (
@@ -212,12 +198,12 @@ class Detail extends Component {
           this.state.tabIndex === 1 && (
             <View>
               <ReadMoreDescription
-                shortText={author && author.id && author.name}
+                shortText={productDetail && productDetail.author && productDetail.author.id && productDetail.author.name}
                 textStyle={{padding: 10, fontSize: 12, alignItems: 'flex-start'}}
               >
               </ReadMoreDescription>
               <Text style={styles.description}>
-                {author.info}
+                {productDetail && productDetail.author && productDetail.author.info}
               </Text>
             </View>
           )
@@ -442,13 +428,13 @@ class Detail extends Component {
           <ProductTitle product={productDetail} />
           {productDetail && (
             <Text style={styles.productSubtext}>
-              Còn {productDetail.author && productDetail.quantity ? productDetail.quantity : 0 } quyển
+              Còn {productDetail && productDetail.quantity ? productDetail.quantity : 0 } quyển
             </Text>
           )}
         </View>
         <View style={styles.infoRight}>
           <View style={styles.infoRightRow}>
-            {productDetail.publisher && productDetail.publisher.id ? (
+            {productDetail && productDetail.publisher && productDetail.publisher.id ? (
               <Text style={styles.infoText} numberOfLines={1}>
                 {productDetail.publisher.name}
               </Text>
@@ -477,10 +463,10 @@ class Detail extends Component {
 
   render() {
     const { product, productDetail, isFetching, publisherDetail, booksRelate } = this.props;
-    const priceObj = getProductPrice(productDetail);
+    // const priceObj = getProductPrice(productDetail);
     const onSale = productDetail && productDetail.price && productDetail.price.discountText;
     const isGiftProduct = checkGiftProduct(productDetail);
-
+    console.log('productDetailproductDetail', productDetail)
     return (
       <View style={[styles.container, { backgroundColor: Color.background }]}>
         <ScrollView
@@ -493,7 +479,7 @@ class Detail extends Component {
           // }}
         >
           <View
-            key={`${productDetail.id}-info-wrapper`}
+            // key={`${productDetail.id}-info-wrapper`}
             style={[styles.productInfo, { backgroundColor: Color.background }]}
             onLayout={event => (this.productInfoHeight = event.nativeEvent.layout.height)}>
             <View style={{ height: Constants.Window.width * 0.75 }}>
@@ -572,8 +558,6 @@ const mapStateToProps = state => {
 };
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
-  const { carts, user, requiredLogin, buyOne } = stateProps;
-  const { product } = ownProps;
   const { dispatch } = dispatchProps;
   const CartRedux = require('../../redux/CartRedux');
   const ProductRedux = require('../../redux/ProductRedux');
@@ -582,12 +566,6 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   return {
     ...ownProps,
     ...stateProps,
-    // cartItemIndex:
-    //   carts.orderItems && carts.orderItems.length
-    //     ? carts.orderItems.findIndex(item => item.productSlug === product.slug)
-    //     : -1,
-    // isRequiredLogin: (!user || !user.token) && product.code && requiredLogin.includes(product.code),
-    // isBuyOne: product.code && buyOne.includes(product.code),
     login: code => {
       dispatch(UserRedux.actions.login(code));
     },

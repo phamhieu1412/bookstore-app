@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 
-import { Back, SearchRight } from './IconNavigation';
+import { Back, WishlistSearchIcons } from './IconNavigation';
 import { setBarStyle, setTranslucent, setBackgroundColor } from '../ultils/StatusBar';
 import Color from '../common/Color';
 import Styles from '../common/Styles';
@@ -13,7 +13,7 @@ export default class CartScreen extends PureComponent {
 
     navigation.setOptions({
       headerLeft: () => Back(navigation, Color.white),
-      // headerRight: () => SearchRight(navigation, Color.white),
+      headerRight: () => WishlistSearchIcons(navigation, Color.white),
       headerTitle: Languages.Cart,
 
       headerStyle: [

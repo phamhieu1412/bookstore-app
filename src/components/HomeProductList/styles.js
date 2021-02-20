@@ -31,4 +31,12 @@ export default StyleSheet.create({
     fontWeight: '900',
     fontFamily: Constants.fontHeader,
   },
+  titleCategory: {
+    marginTop: 15,
+    paddingVertical: 10,
+    paddingLeft: 10,
+    width: 150,
+    borderTopEndRadius: 20,
+    borderBottomEndRadius: 20,
+  },
 });

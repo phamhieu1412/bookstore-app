@@ -29,7 +29,7 @@ class CartIcons extends Component {
       <View style={Styles.Common.Row}>
         {withSearch && (
           <NavigationBarIcon
-            icon="search"
+            icon="book-search"
             onPress={() => navigation.navigate('SearchScreen')}
             color={color}
             css={{ marginRight: 0 }}
@@ -37,7 +37,7 @@ class CartIcons extends Component {
         )}
         {withWishlist && (
           <NavigationBarIcon
-            icon="heart"
+            icon="heart-outline"
             // number={wishListTotal}
             numberColor={numberColor}
             onPress={() => navigation.navigate('WishListScreen')}
@@ -47,16 +47,16 @@ class CartIcons extends Component {
         )}
         {!noCart && (
           <NavigationBarIcon
-            icon="cart"
+            icon="cart-minus"
             number={totalCart}
             numberColor={numberColor}
             onPress={(!user || !token) ? () => navigation.navigate('SignInScreen') : () => navigation.navigate('CartScreen')}
             color={color}
           />
         )}
-        {withUser && (
+        {withUser && userProfile.token && (
           <NavigationBarIcon
-            icon="account-edit"
+            icon="account-edit-outline"
             // number={wishListTotal}
             numberColor={numberColor}
             onPress={() => navigation.navigate('EditProfileScreen')}

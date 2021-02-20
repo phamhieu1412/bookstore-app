@@ -11,6 +11,7 @@ export default StyleSheet.create({
   },
   formContainer: {
     paddingHorizontal: 10,
+    marginTop: 15,
   },
 
   // coupon

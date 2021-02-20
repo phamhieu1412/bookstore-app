@@ -40,7 +40,7 @@ class Search extends PureComponent {
     this.props.onBack();
   };
 
-  startNewSearch = async () => {
+  startNewSearch = () => {
     const { list, fetchProductsByName } = this.props;
     const { text } = this.state;
     this.page = 1;
@@ -48,10 +48,7 @@ class Search extends PureComponent {
     // eventLogger
     // logEventSearched(text);
 
-    await fetchProductsByName(text, this.limit, this.page);
-    if (typeof list !== 'undefined') {
-      this.setState({ loading: false, filter: {} });
-    }
+    fetchProductsByName({ q: text });
   };
 
   onRowClickHandle = product => {
@@ -67,15 +64,15 @@ class Search extends PureComponent {
   };
 
   nextPosts = () => {
-    const { isSearchMore } = this.props;
-    if (isSearchMore) {
-      this.page += 1;
-      if (Object.keys(this.state.filter).length > 0) {
-        this.props.filterProducts(this.state.text, this.limit, this.page, this.state.filter);
-      } else {
-        this.props.fetchProductsByName(this.state.text, this.limit, this.page);
-      }
-    }
+    // const { isSearchMore } = this.props;
+    // if (isSearchMore) {
+    //   this.page += 1;
+    //   if (Object.keys(this.state.filter).length > 0) {
+    //     this.props.filterProducts(this.state.text, this.limit, this.page, this.state.filter);
+    //   } else {
+    //     this.props.fetchProductsByName(this.state.text, this.limit, this.page);
+    //   }
+    // }
   };
 
   renderHeader = () => {
@@ -154,7 +151,7 @@ class Search extends PureComponent {
           haveFilter={Object.keys(filter).length > 0}
         />
 
-        {isFetching && loading ? <Spinkit /> : this.renderResultList()}
+        {isFetching ? <Spinkit /> : this.renderResultList()}
       </View>
       // <InstantSearch />
     );
@@ -168,8 +165,8 @@ Search.defaultProps = {
 };
 
 const mapStateToProps = ({ products }) => ({
-  list: products.productsByName,
-  isFetching: products.isFetchingByName,
+  list: products.booksByPrice,
+  isFetching: products.isFetching,
   histories: products.histories,
   isSearchMore: products.isSearchMore,
   currentSearchPage: products.currentSearchPage,
@@ -181,21 +178,19 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
   return {
     ...ownProps,
     ...stateProps,
-    fetchProductsByName: (name, pageSize, page, filter = {}) => {
-      const text = name ? name.trim() : '';
-      // if (text.length > 0) {
-      //   actions.fetchProductsByName(dispatch, text, pageSize, page, filter);
-      // }
+    fetchProductsByName: (payload) => {
+      dispatch(actions.searchBooksByName(payload));
     },
     saveSearchHistory: searchText => {
-      // if (searchText.length > 0) {
-      //   actions.saveSearchHistory(dispatch, searchText);
-      // }
+      if (searchText.length > 0) {
+        actions.saveSearchHistory(dispatch, searchText);
+      }
     },
     clearSearchHistory: () => {
-      // actions.clearSearchHistory(dispatch);
+      actions.clearSearchHistory(dispatch);
     },
     filterProducts: (name, pageSize, page, filter = {}) => {
+      console.log('filterProducts', name)
       // const text = name ? name.trim() : '';
       // actions.fetchProductsByName(dispatch, text, pageSize, page, filter);
     },
