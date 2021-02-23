@@ -21,16 +21,16 @@ class AddressItem extends PureComponent {
         </View>
         <View style={styles.addressItem}>
           <View style={styles.addressContent}>
-            <Text style={styles.addressInfo}>{address.phoneNumber || phone}</Text>
-            {address.text ? <Text style={styles.addressInfo}>{address.text}</Text> : null}
-            {address?.ward?.name ? (
-              <Text style={styles.addressInfo}>{address.ward.name}</Text>
+            <Text style={styles.addressInfo}>{address.phone}</Text>
+            {address.address ? <Text style={styles.addressInfo}>{address.address}</Text> : null}
+            {address?.state? (
+              <Text style={styles.addressInfo}>{address.state}</Text>
             ) : null}
-            {address?.district?.name ? (
-              <Text style={styles.addressInfo}>{address.district.name}</Text>
+            {address?.district? (
+              <Text style={styles.addressInfo}>{address.district}</Text>
             ) : null}
-            {address?.city?.name ? (
-              <Text style={styles.addressInfo}>{address.city.name}</Text>
+            {address?.city ? (
+              <Text style={styles.addressInfo}>{address.city}</Text>
             ) : null}
           </View>
           {enableSelection ? (

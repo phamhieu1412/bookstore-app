@@ -22,6 +22,10 @@ class ShippingAddress extends Component {
   //   };
   // }
 
+  componentDidMount() {
+    this.props.getAddressList();
+  }
+
   viewEditAddress = item => {
     const { navigation } = this.props;
 
@@ -48,11 +52,10 @@ class ShippingAddress extends Component {
       route,
     } = this.props;
     const name = getName(user);
-
     const enableSelection =
       route.params && route.params.enableSelection ? route.params.enableSelection : false;
     const selectedId = route.params && route.params.selectedId ? route.params.selectedId : '';
-
+    console.log('addressList', addressList)
     return (
       <View style={styles.container}>
         <ScrollView ref="scrollView">
@@ -106,7 +109,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     ...ownProps,
     ...stateProps,
     getAddressList: () => {
-      // dispatch(UserActions.getAddressList());
+      dispatch(UserActions.loadAddressList());
     },
     setSelectedAddress: (addressId, address) => {
       // dispatch(CartActions.setSelectedAddress(addressId, address));

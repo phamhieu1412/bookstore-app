@@ -66,20 +66,14 @@ class ShippingAddress extends Component {
     this.state = {
       value: {
         name: address.name || userProfile.name,
-        phoneNumber: address.phoneNumber || userProfile.phone,
-        area: address?.area?.code || '1',
+        phoneNumber: address.phone || userProfile.phone,
         city: address?.city?.code || '01',
         district: address?.district?.code || '',
         ward: address?.ward?.code || '',
-        text: address.text || '',
+        text: address.address || '',
       },
       defaultAddress: address.default || false,
       addressId: address.id || '',
-      areas: [
-        { value: '1', text: 'Miền Bắc' },
-        { value: '2', text: 'Miền Trung' },
-        { value: '3', text: 'Miền Nam' },
-      ],
       cities: [],
       districts: [],
       wards: [],
@@ -99,21 +93,6 @@ class ShippingAddress extends Component {
     const newValue = {
       ...value,
     };
-    if (oldValue.area !== value.area) {
-      newValue.city = '';
-      newValue.district = '';
-      newValue.ward = '';
-      this.setState(
-        {
-          cities: [],
-          districts: [],
-          wards: [],
-          value: newValue,
-        },
-        this.getCities
-      );
-      return;
-    }
 
     if (oldValue.city !== value.city) {
       newValue.district = '';
@@ -151,116 +130,117 @@ class ShippingAddress extends Component {
   };
 
   onChangeDefaultValue = value => {
-    this.setState({
-      defaultAddress: value,
-    });
+    const { route, setDefaultAddress } = this.props;
+    const address = route.params && route.params.address ? route.params.address : {};
+
+    if (address.id) {
+      this.setState({
+        defaultAddress: value,
+      });
+      setDefaultAddress(address.id);
+    }
   };
 
   onSubmit = () => {
-    const { value, areas, cities, districts, wards, addressId, defaultAddress } = this.state;
-    if (!value.area || !value.city || !value.district || !value.ward) {
+    const { value, cities, districts, wards, addressId, defaultAddress } = this.state;
+    const { addAddress, userProfile, navigation } = this.props;
+    const vnf_regex = /((09|03|07|08|05)+([0-9]{8})\b)/g;
+
+    if (!value.city || !value.district || !value.ward || !value.phoneNumber || !value.name) {
       toast('Bạn cần nhập đầy đủ thông tin bắt buộc');
       return;
     }
-    const selectedArea = areas.find(item => item.value === value.area);
+    if (vnf_regex.test(value.phoneNumber) == false) {
+      toast('Số điện thoại của bạn không đúng định dạng!');
+      return;
+    }
+
     const selectedCity = cities.find(item => item.value === value.city);
     const selectedDistrict = districts.find(item => item.value === value.district);
     const selectedWard = wards.find(item => item.value === value.ward);
     const payload = {
-      Name: value.name,
-      PhoneNumber: value.phoneNumber,
-      Text: value.text,
-      Area: { Code: selectedArea.value, Name: selectedArea.text },
-      City: { Code: selectedCity.value, Name: selectedCity.text },
-      District: { Code: selectedDistrict.value, Name: selectedDistrict.text },
-      Ward: { Code: selectedWard.value, Name: selectedWard.text },
-      Coordinate: {
-        Lat: selectedWard.latitude ? Number.parseFloat(selectedWard.latitude) : 0,
-        Lng: selectedWard.longitude ? Number.parseFloat(selectedWard.longitude) : 0,
-      },
-      Default: !!defaultAddress,
+      name: `${value.name}`,
+      email: `${userProfile.email}`,
+      phone: +`84${value.phoneNumber}`,
+      address: `${value.text}`,
+      city: `${selectedCity.text}`,
+      state: `${selectedWard.text}`,
+      district: `${selectedDistrict.text}`,
+      // Default: !!defaultAddress,
     };
 
-    if (addressId) {
-      this.props.updateAddress(addressId, payload);
-    } else {
-      this.props.addAddress(payload);
+    if (userProfile && userProfile.id) {
+      addAddress(payload, {
+        onSuccess: () => {
+          navigation.goBack();
+        },
+        onFailure: () => {}
+      });
     }
-
-    this.props.navigation.goBack();
+    // if (addressId) {
+    //   this.props.updateAddress(addressId, payload);
+    // } else {
+    //   this.props.addAddress(payload);
+    // }
   };
 
-  getCities = () => {
-    const { value } = this.state;
-    if (!value.area) {
-      return;
+  getCities = async () => {
+    let json = await fetch(`https://bookstore-api-v1.herokuapp.com/api/v1/address/`) 
+      .then(res => res.json())
+      .catch(error => console.log(error));
+    
+    if (json && json.message === 'success' && json.provinces) {
+      const cities = json.provinces.map(item => ({
+        value: item.province_code,
+        text: item.province_name,
+      }));
+      this.setState({ cities });
     }
-    antradeWorker
-      .getCities(value.area)
-      .then(json => {
-        if (json && !json.error) {
-          const cities = json.map(item => ({
-            value: item.provinceCode,
-            text: item.provinceName,
-          }));
-          this.setState({ cities });
-        }
-      })
-      .catch(() => {});
   };
 
-  getDistricts = () => {
+  getDistricts = async () => {
     const { value } = this.state;
-    if (!value.area || !value.city) {
+    if (!value.city) {
       return;
     }
-    antradeWorker
-      .getDistricts(value.area, value.city)
-      .then(json => {
-        if (json && !json.error) {
-          const districts = json.map(item => ({
-            value: item.districtCode,
-            text: item.districtName,
-          }));
-          this.setState({ districts });
-        }
-      })
-      .catch(() => {});
+
+    let json = await fetch(`https://bookstore-api-v1.herokuapp.com/api/v1/address/province/${value.city}`) 
+      .then(res => res.json())
+      .catch(error => console.log(error));
+    
+    if (json && json.message === 'success' && json.districts) {
+      const districts = json.districts.map(item => ({
+        value: item.district_code,
+        text: item.district_name,
+      }));
+      this.setState({ districts });
+    }
   };
 
-  getWards = () => {
+  getWards = async () => {
     const { value } = this.state;
-    if (!value.area || !value.city || !value.district) {
+    if (!value.city || !value.district) {
       return;
     }
-    antradeWorker
-      .getWards(value.area, value.city, value.district)
-      .then(json => {
-        if (json && !json.error) {
-          const wards = json.map(item => ({
-            value: item.townCode,
-            text: item.townName,
-            latitude: item.latitude,
-            longitude: item.longitude,
-          }));
-          this.setState({ wards });
-        }
-      })
-      .catch(() => {});
+
+    let json = await fetch(`https://bookstore-api-v1.herokuapp.com/api/v1/address/district/${value.district}`) 
+      .then(res => res.json())
+      .catch(error => console.log(error));
+    
+    if (json && json.message === 'success' && json.wards) {
+      const wards = json.wards.map(item => ({
+        value: item.ward_code,
+        text: item.ward_name,
+      }));
+      this.setState({ wards });
+    }
   };
 
   initFormValues = () => {
-    const Area = Tcomb.enums({
-      1: 'Miền Bắc',
-      2: 'Miền Trung',
-      3: 'Miền Nam',
-    });
-
     // define profile form
     const formFields = {
       name: Tcomb.String,
       phoneNumber: Tcomb.String,
-      area: Area,
       city: Tcomb.String,
       district: Tcomb.String,
       ward: Tcomb.String,
@@ -289,22 +269,11 @@ class ShippingAddress extends Component {
         phoneNumber: {
           label: Languages.Phone,
           placeholder: Languages.TypePhone,
+          error: Languages.EmptyError, // for simple empty error warning.
           underlineColorAndroid: 'transparent',
           // placeholderTextColor: Color.blackTextSecondary,
           autoCorrect: false,
           template: TcomInlineInput,
-        },
-        area: {
-          label: Languages.Area,
-          error: Languages.NotSelected,
-          underlineColorAndroid: 'transparent',
-          // placeholderTextColor: Color.blackTextSecondary,
-          nullOption: false,
-          config: {
-            placeholder: Languages.TypeArea,
-            options: this.state.areas,
-          },
-          template: TcomInlineSelect,
         },
         city: {
           label: Languages.City,
@@ -428,11 +397,14 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     getAddressList: () => {
       dispatch(UserActions.getAddressList());
     },
-    addAddress: payload => {
-      dispatch(UserActions.addAddress(payload));
+    addAddress: (payload, meta) => {
+      dispatch(UserActions.addAddress(payload, meta));
     },
     updateAddress: (addressId, payload) => {
       dispatch(UserActions.updateAddress(addressId, payload));
+    },
+    setDefaultAddress: (addressId) => {
+      dispatch(UserActions.setDefaultAddress(addressId));
     },
   };
 }

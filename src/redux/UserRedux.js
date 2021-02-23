@@ -212,29 +212,30 @@ export const actions = {
   loadAddressList: () => async (dispatch, getState) => {
     const { carts } = getState();
     dispatch({ type: types.LOAD_ADDRESS_PENDING });
-    const json = await antradeWorker.getAddressList();
+    const json = await antradeWorker.getAddressShip();
 
-    if (json === undefined || json.error || !json.data) {
-      dispatch(actions.loadAddressFailure(Languages.ErrorMessageRequest));
-    } else {
-      dispatch(actions.loadAddressSuccess(json.data));
+    if (json.data && json.code === 200) {
       if (json.data.length && (!carts.shipping || !carts.shipping.shippingAddressId)) {
         // set shippingAddressId if it's blank
         const defaultAddress = json.data.find(item => item.default) || json.data[0];
         dispatch(CartActions.updateCart({ ShippingAddressId: defaultAddress.id }));
       }
+      dispatch(actions.loadAddressSuccess(json.data.data));
+    } else {
+      dispatch(actions.loadAddressFailure(Languages.ErrorMessageRequest));
     }
   },
-  addAddress: payload => async dispatch => {
-    dispatch({ type: types.ADD_ADDRESS_PENDING });
-    const json = await antradeWorker.addAddress(payload);
+  addAddress: (payload, meta) => async dispatch => {
+    const json = await antradeWorker.addAddressShip(payload);
 
-    // if (json === undefined || json.error) {
-    //   dispatch(actions.addAddressFailure(Languages.ErrorMessageRequest));
-    // } else {
-    //   dispatch(actions.addAddressSuccess(json));
-    //   dispatch(actions.loadAddressList());
-    // }
+    if (json.data && json.code === 200) {
+      dispatch(actions.addAddressFailure(Languages.ErrorMessageRequest));
+      meta.onSuccess();
+    } else {
+      dispatch(actions.addAddressSuccess(json));
+      dispatch(actions.loadAddressList());
+      meta.onFailure();
+    }
   },
   updateAddressUser: (userId, payload, meta) => async dispatch => {
     // const { carts } = getState();
@@ -248,6 +249,16 @@ export const actions = {
       dispatch(actions.saveProfileFailure(Languages.ErrorMessageRequest));
       meta.onError();
     }
+  },
+  setDefaultAddress: (addressId) => async dispatch => {
+    const json = await antradeWorker.setDefaultAddress(addressId);
+    console.log('setDefaultAddress', json)
+    if (json.data && json.code === 200) {
+      toast('Đặt địa chỉ mặc định thành công');
+    } else {
+      dispatch(actions.saveProfileFailure(Languages.ErrorMessageRequest));
+    }
+    dispatch(actions.loadAddressList());
   },
   updateAddress: (addressId, payload) => async dispatch => {
     // const { carts } = getState();

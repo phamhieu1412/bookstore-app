@@ -146,16 +146,18 @@ export const actions = {
   },
 
   updateCart: (id, payload) => async (dispatch, getState) => {
+    const { user } = getState();
     dispatch({ type: types.UPDATE_CART_PENDING });
     const json = await antradeWorker.updateQuantity(id, payload);
-console.log('updateCart', json)
-    if (json.id) {
+
+    if (json.data && json.code === 200) {
       dispatch({ type: types.UPDATE_CART_SUCCESS });
       toast('Đã cập nhật giỏ hàng');
     } else {
       dispatch({ type: types.UPDATE_CART_FAILURE });
       toast('Cập nhật giỏ hàng lỗi');
     }
+    dispatch(actions.fetchCart(user.token));
   },
 
   checkout: (payload, onFinishOrder) => async (dispatch, getState) => {
