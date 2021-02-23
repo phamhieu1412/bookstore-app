@@ -129,19 +129,22 @@ class APIWorker {
 
     return undefined;
   };
-  getAddressList = () => {
-    // return this.get('/supplier/v1/address/all').then(res => res.data);
+  getAddressShip = () => {
+    return this.get('/api/v1/addresses');
   };
-  addAddress = payload => {
-    // return this.post('/supplier/v1/address/', {
-    //   params: payload,
-    // }).then(res => res.data);
+  addAddressShip = payload => {
+    return this.post('/api/v1/addresses/', {
+      params: payload,
+    }).then(res => res.data);
   };
-  updateAddress = (addressId, payload) => {
+  updateAddressShip = (addressId, payload) => {
     // return this.put(`/supplier/v1/address/${addressId}`, {
     //   params: payload,
     // }).then(res => res.data);
   };
+  setDefaultAddress = (addressId) => {
+    return this.post(`/api/v1/addresses/${addressId}/set_default`).then(res => res.data);
+  }
   getProvinces = () => {
     return this.get('/api/v1/address/').then(res => res);
   };

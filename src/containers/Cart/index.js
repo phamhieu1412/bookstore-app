@@ -39,10 +39,11 @@ class Cart extends PureComponent {
 
   componentDidMount() {
     this._navListener = this.props.navigation.addListener('focus', () => {
-      const { user, loadUserProfile, fetchCart, clearCoupon } = this.props;
+      const { user, loadUserProfile, fetchCart, clearCoupon, getAddressList } = this.props;
       
       if (user.token) {
         fetchCart(user.token);
+        getAddressList();
         clearCoupon();
         loadUserProfile();
       }
@@ -154,6 +155,9 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     },
     clearCoupon: () => {
       dispatch(CartActions.clearCoupon());
+    },
+    getAddressList: () => {
+      dispatch(UserActions.loadAddressList());
     },
   };
 }

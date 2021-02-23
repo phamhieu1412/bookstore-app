@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, TextInput } from 'react-native';
+import { Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import Tcomb from 'tcomb-form-native';
@@ -15,6 +15,7 @@ import styles from './styles';
 import cartStyles from '../styles';
 import Languages from '../../../common/Languages';
 import Constants from '../../../common/Constants';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 // import { AwaredProducts } from '@components';
 
 const Form = Tcomb.form.Form;
@@ -263,9 +264,9 @@ class Checkout extends Component {
   };
 
   render() {
-    const { carts, cartToken, user, wallet, updateCart, updateDefaultShippingAddress } = this.props;
+    const { carts, cartToken, user, wallet, updateCart, updateDefaultShippingAddress, navigation } = this.props;
     const { showScrollIndicator, valueComment, valueCouponCode, coupon } = this.state;
-
+    console.log('user', user.defaultAddress)
     if (!user || !user.user) {
       return <View />;
     }
@@ -291,8 +292,25 @@ class Checkout extends Component {
               value={this.state.value}
               onChange={this.onChange}
             />
+ */}
+            {
+              user &&  user.defaultAddress && (
+                <TouchableOpacity style={{ marginVertical: 10, flexDirection: 'row' }} onPress={() => navigation.navigate('ShippingAddressScreen')}>
+                  <Icon name="map-marker-radius-outline" size={25} color="#FF0025"/>
+                  <View style={{ flexGrow: 1, paddingLeft: 5 }}>
+                    <Text style={{ fontSize: 18, marginBottom: 10 }}>Địa chỉ nhận hàng</Text>
+                    <Text style={{ fontSize: 14 }}>{user.defaultAddress.name} | (+{user.defaultAddress.phone})</Text>
+                    <Text style={{ fontSize: 14 }}>{user.defaultAddress.address}</Text>
+                    <Text style={{ fontSize: 14 }}>{user.defaultAddress.district}, {user.defaultAddress.city}</Text>
+                  </View>
+                  <View style={{ height: 100,  justifyContent: 'center' }} >
+                    <Icon name="chevron-right" size={25}/>
+                  </View>
+                </TouchableOpacity>
+              )
+            }
 
-            <View style={styles.divider} /> */}
+            <View style={styles.divider} />
 
             <View style={{ marginVertical: 10 }}>
               <Text style={{ fontSize: 18, marginBottom: 5 }}>Mã giảm giá</Text>

@@ -21,11 +21,10 @@ class ProductCartItem extends PureComponent {
   onChangeQuantity = quantity => {
     const { carts, product, updateCart, removeCartItem } = this.props;
     if (quantity > 0) {
-      // updateCart(product.id, quantity);
       updateCart(
-        carts.infoCart.id,
+        product.id,
         {
-          product_id: product.id,
+          product_id: product.productId,
           quantity,
         },
       );
@@ -99,7 +98,7 @@ class ProductCartItem extends PureComponent {
           {viewQuantity && !isBuyOne && !isGiftProduct ? (
             <ChangeQuantity
               style={styles.quantity}
-              quantity={quantity}
+              quantity={product.quantity}
               onChangeQuantity={this.onChangeQuantity}
             />
           ) : null}
