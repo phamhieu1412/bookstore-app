@@ -10,7 +10,7 @@ class ProductTitle extends PureComponent {
     const { product, style, numberOfLines } = this.props;
     return product.productTitle ? (
       <Text style={[styles.productName, style && style]} numberOfLines={numberOfLines || 3}>
-        <Icon name="flash" size={18} color={Color.primary}></Icon>
+        <Icon name="flash" size={18} color="#FF0025"></Icon>
         {product.productTitle}
       </Text>
     ) : (

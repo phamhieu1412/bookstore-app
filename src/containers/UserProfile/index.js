@@ -261,43 +261,43 @@ class UserProfile extends Component {
           <View style={styles.menuWrapper}>
             <TouchableRipple onPress={() => navigation.navigate('ShippingAddressScreen')}>
               <View style={styles.menuItem}>
-                <Icon name="map-marker-radius" color="#FF6347" size={25} />
+                <Icon name="map-marker-radius" color="#009387" size={25} />
                 <Text style={styles.menuItemText}>{Languages.ShippingAddress}</Text>
               </View>
             </TouchableRipple>
-            <TouchableRipple onPress={() => { }}>
+            <TouchableRipple onPress={() => navigation.navigate('MyOrdersScreen')}>
               <View style={styles.menuItem}>
-                <Icon name="order-bool-descending-variant" color="#FF6347" size={25} />
+                <Icon name="order-bool-descending-variant" color="#009387" size={25} />
                 <Text style={styles.menuItemText}>Đơn hàng</Text>
               </View>
             </TouchableRipple>
             <TouchableRipple onPress={() => { }}>
               <View style={styles.menuItem}>
-                <Icon name="credit-card" color="#FF6347" size={25} />
+                <Icon name="credit-card" color="#009387" size={25} />
                 <Text style={styles.menuItemText}>Thanh Toán</Text>
               </View>
             </TouchableRipple>
             <TouchableRipple onPress={this.myCustomShare}>
               <View style={styles.menuItem}>
-                <Icon name="share-outline" color="#FF6347" size={25} />
+                <Icon name="share-outline" color="#009387" size={25} />
                 <Text style={styles.menuItemText}>Chia sẻ</Text>
               </View>
             </TouchableRipple>
             <TouchableRipple onPress={() => { }}>
               <View style={styles.menuItem}>
-                <Icon name="account-check-outline" color="#FF6347" size={25} />
+                <Icon name="account-check-outline" color="#009387" size={25} />
                 <Text style={styles.menuItemText}>Hỗ trợ</Text>
               </View>
             </TouchableRipple>
             <TouchableRipple onPress={() => this._goSettings()}>
               <View style={styles.menuItem}>
-                <IconSLI name="settings" color="#FF6347" size={25} />
+                <IconSLI name="settings" color="#009387" size={25} />
                 <Text style={styles.menuItemText}>Cài đặt</Text>
               </View>
             </TouchableRipple>
             <TouchableRipple onPress={() => this._handleLogout()}>
               <View style={styles.menuItem}>
-                <IconSLI name="logout" color="#FF6347" size={23} />
+                <IconSLI name="logout" color="#009387" size={23} />
                 <Text style={styles.menuItemText}>{Languages.Logout}</Text>
               </View>
             </TouchableRipple>

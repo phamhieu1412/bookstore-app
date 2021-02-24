@@ -61,14 +61,14 @@ class CheckoutBottomActions extends Component {
     }
     if (hasWallet) height += 20;
     if (Device.isIphoneX) height += 15;
-    if (carts.couponDetail.code) {
-      discountMoney = totalMoney * carts.couponDetail.value / 100;
+    // if (carts.couponDetail.code) {
+    //   discountMoney = totalMoney * carts.couponDetail.value / 100;
 
-      if ((discountMoney - carts.couponDetail.maxValue) < 0) {
-        totalPayment = totalMoney - carts.couponDetail.maxValue;
-      }
-      totalPayment = totalMoney - discountMoney;
-    }
+    //   if ((discountMoney - carts.couponDetail.maxValue) < 0) {
+    //     totalPayment = totalMoney - carts.couponDetail.maxValue;
+    //   }
+    //   totalPayment = totalMoney - discountMoney;
+    // }
 
     return (
       <View style={[cartStyles.bottomView, { height }, isAbsolute && cartStyles.floatView]}>
@@ -76,15 +76,19 @@ class CheckoutBottomActions extends Component {
           <View/>
             <View style={{width: '60%', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 5}}>
               <Text style={styles.checkoutBottomInfoLabel}>Tiền hàng</Text>
-              {SimplePrice(totalMoney)}
+              {SimplePrice(carts.infoCart.subtotal)}
+            </View>
+            <View style={{width: '60%', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 5}}>
+              <Text style={styles.checkoutBottomInfoLabel}>Khuyến mại</Text>
+              <Text style={[styles.priceLabel, {color:  Color.organge}]}>{carts.couponDetail && carts.couponDetail.value ? carts.couponDetail.value : 0} %</Text>
             </View>
             <View style={{width: '60%', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 5}}>
-              <Text style={styles.checkoutBottomInfoLabel}>Khuyến mại</Text>
-              <Text style={[styles.priceLabel, {color:  Color.organge}]}>{carts.couponDetail.value ? carts.couponDetail.value : 0} %</Text>
+              <Text style={styles.checkoutBottomInfoLabel}>Phí ship</Text>
+              {SimplePrice(carts.infoCart.shipping)}
             </View>
             <CheckoutButton
               label={nextText.toUpperCase()}
-              amount={totalPayment}
+              amount={carts.infoCart.grandTotal}
               onPress={onNext}
             />
         </View>

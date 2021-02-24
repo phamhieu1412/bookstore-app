@@ -128,7 +128,7 @@ export default {
       text:
         'Nguồn thực phẩm được tuyển chọn phong phú, tươi ngon có nguồn gốc xuất xứ rõ ràng và thông tin đầy đủ',
       icon: 'ios-basket',
-      colors: ['#FB931B', '#FF0025'],
+      colors: ['#FB931B', '#009387'],
     },
     {
       key: 'page2',
@@ -136,7 +136,7 @@ export default {
       text:
         'Công nghệ là nền tảng sức mạnh được áp dụng toàn diện trong các khâu giám sát, xử lý và vận hành',
       icon: 'md-checkbox-outline',
-      colors: ['#FB931B', '#FF0025'],
+      colors: ['#FB931B', '#009387'],
     },
     {
       key: 'page3',
@@ -144,7 +144,7 @@ export default {
       text:
         'Kinh nghiệm, sự am hiểu và tinh thần lắng nghe để phục vụ tạo nên sự gắn kết như tình thân',
       icon: 'ios-card',
-      colors: ['#FB931B', '#FF0025'],
+      colors: ['#FB931B', '#009387'],
     },
   ],
 
