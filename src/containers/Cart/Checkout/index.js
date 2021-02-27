@@ -194,7 +194,7 @@ class Checkout extends Component {
       valueCouponCode,
       valueComment,
     } = this.state;
-    const { carts, createNewOrder, navigation } = this.props;
+    const { carts, createNewOrder, navigation, user } = this.props;
     // const orderDetails = [];
     // for (let i = 0; i < carts.orderItems.length; i++) {
     //   const e = carts.orderItems[i];
@@ -224,12 +224,21 @@ class Checkout extends Component {
     //     },
     //   },
     // );
-    console.log('payload', 
+    createNewOrder(
       {
         content: `${valueComment}`,
-        coupon_code: valueCouponCode,
-        address_id: 'address_id',
-      })
+        address_id: user.defaultAddress.id,
+      },
+      {
+        onSuccess: () => {
+          toast('Thêm đơn hàng thành công');
+          navigation.navigate('Home');
+        },
+        onFailure: () => {
+          toast('Thêm đơn hàng thất bại');
+        },
+      },
+    )
   };
 
   onGetCouponDetail = () => {
@@ -237,7 +246,7 @@ class Checkout extends Component {
     
     getCouponDetail(this.state.valueCouponCode, {
       onSuccess: (coupon) => {
-        console.log(coupon)
+        console.log('coupon',coupon)
         this.setState({ valueCouponCode: coupon.code, coupon })
       },
       onFailure: () => {
@@ -266,7 +275,7 @@ class Checkout extends Component {
   render() {
     const { carts, cartToken, user, wallet, updateCart, updateDefaultShippingAddress, navigation } = this.props;
     const { showScrollIndicator, valueComment, valueCouponCode, coupon } = this.state;
-    console.log('user', user.defaultAddress)
+
     if (!user || !user.user) {
       return <View />;
     }

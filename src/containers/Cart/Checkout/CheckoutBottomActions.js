@@ -11,7 +11,7 @@ import Device from '../../../common/Device';
 const SimplePrice = (price, color, fontSize) => {
   return (
     <View style={styles.priceWrapper}>
-      <Text style={[styles.priceLabel, {color:  Color.organge}, fontSize && { fontSize }]}>
+      <Text style={[styles.priceLabel, { color:  Color.organge }, fontSize && { fontSize }]}>
         {currencyFormatter(price)}
       </Text>
       <Text
@@ -51,7 +51,7 @@ class CheckoutBottomActions extends Component {
     const hasWallet = wallet && wallet.balance > 0;
     const useWallet = !!carts.isPaidFromWallet;
     const walletAmount = useWallet && carts.paymentFromWallet ? 0 - carts.paymentFromWallet : 0;
-    let height = 125;
+    let height = 145;
     let totalMoney = 0;
     let discountMoney = 0;
     let totalPayment = 0;
@@ -61,30 +61,47 @@ class CheckoutBottomActions extends Component {
     }
     if (hasWallet) height += 20;
     if (Device.isIphoneX) height += 15;
-    if (carts.couponDetail.code) {
-      discountMoney = totalMoney * carts.couponDetail.value / 100;
+    // if (carts.couponDetail.code) {
+    //   discountMoney = totalMoney * carts.couponDetail.value / 100;
 
-      if ((discountMoney - carts.couponDetail.maxValue) < 0) {
-        totalPayment = totalMoney - carts.couponDetail.maxValue;
-      }
-      totalPayment = totalMoney - discountMoney;
-    }
-
+    //   if ((discountMoney - carts.couponDetail.maxValue) < 0) {
+    //     totalPayment = totalMoney - carts.couponDetail.maxValue;
+    //   }
+    //   totalPayment = totalMoney - discountMoney;
+    // }
+    console.log('aa', carts.infoCart)
     return (
       <View style={[cartStyles.bottomView, { height }, isAbsolute && cartStyles.floatView]}>
         <View style={cartStyles.buttonContainer}>
           <View/>
-            <View style={{width: '60%', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 5}}>
-              <Text style={styles.checkoutBottomInfoLabel}>Tiền hàng</Text>
-              {SimplePrice(totalMoney)}
+            <View style={[styles.blockPrice, { marginTop: 5 }]}>
+              <Text style={styles.checkoutBottomInfoLabel}>Tiền sách</Text>
+              {SimplePrice(carts.infoCart.subtotal)}
             </View>
-            <View style={{width: '60%', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 5}}>
+            <View style={[styles.blockPrice, { marginTop: 3 }]}>
+              <Text style={styles.checkoutBottomInfoLabel}>Tiền giảm giá từ sách</Text>
+              <View style={[styles.priceLabel, { color: Color.organge }]}>
+                <Text style={{ color: Color.organge }}>-</Text>
+                {SimplePrice(carts.infoCart.itemDiscount)}
+              </View>
+            </View>
+            <View style={[styles.blockPrice, { marginTop: 3 }]}>
               <Text style={styles.checkoutBottomInfoLabel}>Khuyến mại</Text>
-              <Text style={[styles.priceLabel, {color:  Color.organge}]}>{carts.couponDetail.value ? carts.couponDetail.value : 0} %</Text>
+              <View style={[styles.priceLabel, { color: Color.organge }]}>
+                <Text style={{ color: Color.organge }}>-</Text>
+                {carts.infoCart && carts.infoCart.promo ? SimplePrice(carts.infoCart.discount) : 0}
+              </View>
+            </View>
+            <View style={[styles.blockPrice, { marginTop: 3, marginBottom: 5 }]}>
+              <Text style={styles.checkoutBottomInfoLabel}>Phí ship</Text>
+              <View style={[styles.priceLabel, { color: Color.organge }]}>
+                <Text style={{ color: Color.organge }}>+</Text>
+                {SimplePrice(carts.infoCart.shipping)}
+              </View>
             </View>
             <CheckoutButton
               label={nextText.toUpperCase()}
-              amount={totalPayment}
+              amount={carts.infoCart.grandTotal}
               onPress={onNext}
             />
         </View>

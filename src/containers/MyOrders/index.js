@@ -17,7 +17,7 @@ class MyOrders extends PureComponent {
   }
 
   componentDidMount() {
-    // this.props.invalidateMyOrders();
+    this.props.fetchMyOrder();
   }
 
   refreshMyOrder = () => {
@@ -39,19 +39,31 @@ class MyOrders extends PureComponent {
       />
     );
   }
+  goToScreenOrderDetail = (orderId) => {
+    const { navigation, onViewOrderDetail } = this.props;
+    onViewOrderDetail(orderId, {
+      onSuccess: () => {
+        navigation.navigate('OrderDetailScreen', { orderNumber: orderId });
+      },
+      onFailure: () => {
+
+      }
+    })
+  }
 
   renderRow = ({ item, index }) => {
     return (
       <OrderItem
         key={index.toString()}
         order={item}
-        onViewOrderDetail={this.props.onViewOrderDetail}
+        onViewOrderDetail={this.goToScreenOrderDetail}
       />
     );
   };
 
   render() {
     const data = this.props.myOrders.orders;
+    const { myOrders } = this.props;
 
     if (typeof data === 'undefined' || !data.length) {
       return (
@@ -100,9 +112,12 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   return {
     ...ownProps,
     ...stateProps,
-    fetchMyOrder: (payload) => {
-      dispatch(UserActions.loadUserProfile(payload));
+    fetchMyOrder: () => {
+      dispatch(actions.fetchMyOrder());
       // dispatch(actions.fetchMyOrderIfNeeded(page));
+    },
+    onViewOrderDetail: (orderId, meta) => {
+      dispatch(actions.fetchOrderDetail(orderId, meta));
     },
     clearMyOrders: () => {
       dispatch(actions.clearMyOrders());

@@ -18,11 +18,11 @@ export default {
   },
   label: {
     fontSize: 13,
-    color: '#bdc2cc',
+    color: '#FF0025',
   },
   value: {
     fontSize: 16,
-    color: Color.primary,
+    color: '#FF0025',
   },
   slideWrap: {
     marginHorizontal: 20,

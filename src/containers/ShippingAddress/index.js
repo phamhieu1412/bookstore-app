@@ -55,7 +55,7 @@ class ShippingAddress extends Component {
     const enableSelection =
       route.params && route.params.enableSelection ? route.params.enableSelection : false;
     const selectedId = route.params && route.params.selectedId ? route.params.selectedId : '';
-    console.log('addressList', addressList)
+
     return (
       <View style={styles.container}>
         <ScrollView ref="scrollView">

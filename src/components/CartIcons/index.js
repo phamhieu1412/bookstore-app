@@ -40,7 +40,7 @@ class CartIcons extends Component {
             icon="heart-outline"
             // number={wishListTotal}
             numberColor={numberColor}
-            onPress={() => navigation.navigate('WishListScreen')}
+            onPress={() => navigation.navigate('CartScreen')}
             color={color}
             css={!noCart && { marginRight: 0 }}
           />

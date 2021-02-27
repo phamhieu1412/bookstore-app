@@ -21,7 +21,7 @@ export default class OrderItem extends React.PureComponent {
   };
 
   _getDateFormat = date => {
-    return moment(date).format('DD-MM-YYYY HH:mm');
+    return moment(date * 1000).format('DD-MM-YYYY HH:mm');
   };
 
   _getStatus = status => {
@@ -41,21 +41,19 @@ export default class OrderItem extends React.PureComponent {
   };
 
   render() {
-    const { order } = this.props;
-    const status = this._getStatus(order.state);
+    const { order, onViewOrderDetail } = this.props;
+    const status = this._getStatus(order.status);
 
     return (
       <View style={{ margin: cardMargin, marginBottom: 0 }}>
         <TouchableOpacity
           hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
           activeOpacity={0.8}
-          onPress={() => {
-            this.props.onViewOrderDetail(order.orderNumber);
-          }}>
+          onPress={() => onViewOrderDetail(order.id)}>
           <View style={styles.labelView}>
             <View style={styles.labelGroup}>
-              <Icon style={styles.labelIcon} name={status.icon} />
-              <Text style={styles.label}>{order.orderNumber}</Text>
+              {/* <Icon style={styles.labelIcon} name={status.icon} /> */}
+              <Text style={styles.label} numberOfLines={1}>{order.id}</Text>
             </View>
             {/* <Text style={styles.orderDetailLabel}>{Languages.OrderDetails}</Text> */}
             <Icon style={styles.labelNextIcon} name={'chevron-right'} />
@@ -64,7 +62,7 @@ export default class OrderItem extends React.PureComponent {
         <View style={{ padding: 5, paddingTop: 0 }}>
           {this._renderAttribute(
             Languages.OrderTotal,
-            `${currencyFormatter(order.paymentAmount)} ${Constants.VND}`,
+            `${currencyFormatter(order.grandTotal)} ${Constants.VND}`,
             {
               fontWeight: 'bold',
               fontSize: 16,
@@ -73,7 +71,7 @@ export default class OrderItem extends React.PureComponent {
           )}
           {this._renderAttribute(Languages.OrderDate, this._getDateFormat(order.createdAt))}
           {/* {this._renderAttribute(Languages.OrderPayment, this._getDateFormat(order.deliveryAt))} */}
-          {this._renderAttribute(Languages.OrderStatus, status.name)}
+          {this._renderAttribute(Languages.OrderStatus, status)}
         </View>
       </View>
     );

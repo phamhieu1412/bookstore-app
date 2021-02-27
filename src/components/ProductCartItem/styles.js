@@ -74,7 +74,7 @@ export default StyleSheet.create({
     color: '#b7c4cb',
   },
   price: {
-    color: Color.primary,
+    color: '#FF0025',
     fontSize: Styles.FontSize.header,
     fontWeight: 'bold',
   },

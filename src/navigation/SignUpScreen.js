@@ -127,7 +127,10 @@ const SignUpScreen = ({ navigation, onRegisterBookstore }) => {
     }
 
     onRegisterBookstore({
-      username: data.username,
+      full_name: "Người dùng",
+      email: "user@gmail.com",
+      phone: "0912345678",
+      user_name: data.username,
       password: data.password
     }, {
       onSuccess: () => {

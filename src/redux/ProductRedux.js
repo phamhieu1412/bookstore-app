@@ -64,6 +64,9 @@ const types = {
   SAVE_SEARCH_HISTORY: 'SAVE_SEARCH_HISTORY',
   CLEAR_SEARCH_HISTORY: 'CLEAR_SEARCH_HISTORY',
   CLEAR_BOOKS: 'CLEAR_BOOKS',
+  GET_REVIEW_BOOKS_PENDING: 'GET_REVIEW_BOOKS_PENDING',
+  GET_REVIEW_BOOKS_SUCCESS: 'GET_REVIEW_BOOKS_SUCCESS',
+  GET_REVIEW_BOOKS_FAILURE: 'GET_REVIEW_BOOKS_FAILURE',
 
   FETCH_PRODUCTS_BEST_SELLER_PENDING: 'FETCH_PRODUCTS_BEST_SELLER_PENDING',
   FETCH_ALL_PRODUCTS_BEST_SELLER_MORE: 'FETCH_ALL_PRODUCTS_BEST_SELLER_MORE',
@@ -158,6 +161,16 @@ export const actions = {
       });
     }
   },
+  getReviewsBook: async (dispatch, productId) => {
+    dispatch({ type: types.GET_REVIEW_BOOKS_PENDING });
+    const json = await antradeWorker.getReviewsBook(productId);
+
+    if (json.code === 200 && json.data && json.data.items) {
+      dispatch(actions.getReviewBooksSuccess(json.data));
+    } else {
+      dispatch({ type: types.GET_REVIEW_BOOKS_FAILURE });
+    }
+  },
   fetchAllBooks: async (dispatch, page = 1, pageSize = Constants.pagingLimit) => {
     // if (page === 1)
     dispatch({ type: types.FETCH_PRODUCTS_PENDING });
@@ -196,10 +209,10 @@ export const actions = {
     dispatch({ type: types.FETCH_BOOKS_BY_NAME_DETAIL_PENDING });
     const json = await antradeWorker.searchBooks(payload);
 
-    if (json.items) {
+    if (json.code === 200 && json.data && json.data.data) {
       dispatch({
         type: types.FETCH_BOOKS_BY_NAME_DETAIL_SUCCESS,
-        items: json,
+        items: json.data.data,
       });
     } else {
       dispatch({
@@ -211,10 +224,10 @@ export const actions = {
     dispatch({ type: types.FETCH_BOOKS_BY_PRICE_DETAIL_PENDING });
     const json = await antradeWorker.searchBooksByPrice(payload);
 
-    if (json.items) {
+    if (json.data && json.data.data && json.code === 200) {
       dispatch({
         type: types.FETCH_BOOKS_BY_PRICE_DETAIL_SUCCESS,
-        items: json,
+        items: json.data.data,
       });
     } else {
       dispatch({
@@ -408,6 +421,9 @@ export const actions = {
   clearBooks: (dispatch) => {
     dispatch({ type: types.CLEAR_BOOKS });
   },
+  getReviewBooksSuccess: json => {
+    return { type: types.GET_REVIEW_BOOKS_SUCCESS, json };
+  },
 
   _getCachedProduct: (code, viewedProducts) => {
     const cachedProduct = viewedProducts[code];
@@ -464,6 +480,7 @@ const initialState = {
   booksRelate: [],
   booksBestSeller: [],
   stillFetchBestSeller: true,
+  reviewBooks: {},
 };
 
 export const reducer = (state = initialState, action) => {
@@ -645,6 +662,14 @@ export const reducer = (state = initialState, action) => {
         ...state,
         isFetching: false,
         booksByPrice: items.items,
+      };
+    }
+
+    case types.FETCH_BOOKS_BY_NAME_DETAIL_FAIL: {
+      return {
+        ...state,
+        isFetching: false,
+        booksByPrice: [],
       };
     }
 
@@ -859,6 +884,19 @@ export const reducer = (state = initialState, action) => {
         ...initialState,
       };
     }
+    case types.GET_REVIEW_BOOKS_PENDING:
+      return {
+        ...state,
+      };
+    case types.GET_REVIEW_BOOKS_SUCCESS:
+      return {
+        ...state,
+        reviewBooks: action.json,
+      };
+    case types.GET_REVIEW_BOOKS_FAILURE:
+      return {
+        ...state,
+      };
     default: {
       return state;
     }

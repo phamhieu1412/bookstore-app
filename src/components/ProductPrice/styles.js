@@ -9,7 +9,7 @@ export default StyleSheet.create({
     // alignItems: 'flex-start',
   },
   price: {
-    color: Color.primary,
+    color: '#FF0025',
     fontSize: Styles.FontSize.header,
     fontWeight: 'bold',
   },

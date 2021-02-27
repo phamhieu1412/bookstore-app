@@ -13,7 +13,12 @@ export default StyleSheet.create({
     paddingHorizontal: 10,
     marginTop: 15,
   },
-
+  blockPrice: {
+    width: '60%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   // coupon
   couponCodeWrapper: {
     flexDirection: 'row',
@@ -194,12 +199,10 @@ export default StyleSheet.create({
   priceWrapper: {
     flexDirection: 'row',
     justifyContent: 'center',
-    // textAlign: 'right',
   },
   priceLabel: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: Color.Text,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   priceSymbol: {
     fontSize: 11,

@@ -12,7 +12,7 @@ class ProductCatalog extends React.PureComponent {
 
   render() {
     const { categories, selected } = this.props;
-
+    
     return (
       <View>
         <View style={styles.header}>
@@ -26,7 +26,7 @@ class ProductCatalog extends React.PureComponent {
               key={index}
               label={item.name}
               onPress={this.onPress}
-              selected={selected === item.slug}
+              selected={selected.id === item.id}
             />
           ))}
         </View>

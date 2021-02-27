@@ -23,24 +23,34 @@ const types = {
 };
 
 export const actions = {
-  fetchMyOrder: async (dispatch, page = 1, pageSize = 16, filter = {}) => {
+  fetchMyOrder: () => async dispatch => {
     dispatch({ type: types.FETCH_MY_ORDERS_PENDING });
-    const payload = {
-      Page: page,
-      PageSize: pageSize,
-      ...filter,
-    };
-    const json = await antradeWorker.getMyOrders(payload);
-    if (json === undefined || json.error) {
-      dispatch(actions.fetchMyOrdersFailure(Languages.GetDataError));
+
+    const json = await antradeWorker.getListOrders();
+    if (json.data && json.data.data && json.code === 200) {
+      dispatch(actions.fetchMyOrdersSuccess(json.data, 1));
     } else {
-      if (page > 1) {
-        dispatch(actions.fetchMyOrdersMore(json, page));
-      } else {
-        dispatch(actions.fetchMyOrdersSuccess(json, page));
-      }
+      dispatch(actions.fetchMyOrdersFailure(Languages.GetDataError));
     }
   },
+  // fetchMyOrder: async (dispatch, page = 1, pageSize = 16, filter = {}) => {
+    // dispatch({ type: types.FETCH_MY_ORDERS_PENDING });
+    // const payload = {
+    //   Page: page,
+    //   PageSize: pageSize,
+    //   ...filter,
+    // };
+    // const json = await antradeWorker.getListOrders();
+    // if (json === undefined || json.error) {
+    //   dispatch(actions.fetchMyOrdersFailure(Languages.GetDataError));
+    // } else {
+    //   if (page > 1) {
+    //     dispatch(actions.fetchMyOrdersMore(json, page));
+    //   } else {
+    //     dispatch(actions.fetchMyOrdersSuccess(json, page));
+    //   }
+    // }
+  // },
   fetchMyOrderIfNeeded: (page = 1, pageSize = 16, filter = {}) => (dispatch, getState) => {
     const state = getState().myOrders;
     if (
@@ -50,14 +60,16 @@ export const actions = {
       actions.fetchMyOrder(dispatch, page, pageSize, filter);
     }
   },
-  fetchOrderDetail: async (dispatch, orderNumber) => {
+  fetchOrderDetail: (orderId, meta) => async (dispatch) => {
     dispatch({ type: types.FETCH_ORDER_DETAIL_PENDING });
-    const json = await antradeWorker.getOrderDetail(orderNumber);
+    const json = await antradeWorker.getOrderDetail(orderId);
 
-    if (json === undefined || json.error) {
-      dispatch(actions.fetchOrderDetailFailure(Languages.GetDataError));
+    if (json.data && json.data.data && json.code === 200) {
+      dispatch(actions.fetchOrderDetailSuccess(json.data));
+      meta.onSuccess();
     } else {
-      dispatch(actions.fetchOrderDetailSuccess(json));
+      dispatch(actions.fetchOrderDetailFailure(Languages.GetDataError));
+      meta.onFailure();
     }
   },
   cancelOrderItem: async (dispatch, orderNumber, productCode) => {
@@ -81,15 +93,17 @@ export const actions = {
       dispatch(actions.getReviewOrdersSuccess(json));
     }
   },
-  postReviewOrders: async (dispatch, reviewInfo) => {
+  postReviewOrders: async (dispatch, reviewInfo, meta) => {
     dispatch({ type: types.REVIEW_ORDERS_PENDING });
     const json = await antradeWorker.postReviewOrders(reviewInfo);
 
-    if (json === undefined || json.error) {
-      dispatch({ type: types.REVIEW_ORDERS_FAILURE });
-    } else {
+    if (json.data && json.data.data && json.code === 200) {
       dispatch(actions.postReviewOrdersSuccess(json));
-      dispatch(actions.getReviewOrders(dispatch, json.data.orderCode));
+      // dispatch(actions.getReviewOrders(dispatch, json.data.orderCode));
+      meta.onSuccess();
+    } else {
+      dispatch({ type: types.REVIEW_ORDERS_FAILURE });
+      meta.onFailure();
     }
   },
   clearMyOrders: () => ({
@@ -136,6 +150,7 @@ const initialState = {
   stillFetch: true,
   didInvalidate: true,
   reviewOrders: {},
+  orderDetail: {},
 };
 
 export const reducer = (state = initialState, action) => {
@@ -150,6 +165,10 @@ export const reducer = (state = initialState, action) => {
         isFetching: true,
       };
     case types.FETCH_ORDER_DETAIL_PENDING:
+      return {
+        ...state,
+        isDetailFetching: true,
+      };
     case types.CANCEL_ORDER_ITEM_PENDING:
       return {
         ...state,
@@ -160,8 +179,9 @@ export const reducer = (state = initialState, action) => {
       return {
         ...state,
         ...action.json,
+        orders: action.json.data.items,
         currentPage: action.page,
-        stillFetch: !action.json.orders || action.json.orders.length !== 0,
+        stillFetch: !action.json.data.items || action.json.data.items.length !== 0,
         isFetching: false,
         didInvalidate: false,
       };
@@ -183,7 +203,13 @@ export const reducer = (state = initialState, action) => {
         didInvalidate: false,
       };
 
-    case types.FETCH_ORDER_DETAIL_SUCCESS:
+    case types.FETCH_ORDER_DETAIL_SUCCESS: 
+      return {
+        ...state,
+        orderDetail: action.json.data,
+        isDetailFetching: false,
+        didInvalidate: false
+      }
     case types.CANCEL_ORDER_ITEM_SUCCESS:
       normalItems = action.json.order.orderItems.filter(
         item => !item.state || item.state !== 'cancelled'
@@ -200,6 +226,10 @@ export const reducer = (state = initialState, action) => {
       });
 
     case types.FETCH_ORDER_DETAIL_FAILURE:
+      return {
+        ...state,
+        isDetailFetching: false,
+      };
     case types.CANCEL_ORDER_ITEM_FAILURE:
       return {
         ...state,
@@ -222,7 +252,6 @@ export const reducer = (state = initialState, action) => {
       };
     case types.GET_REVIEW_ORDERS_SUCCESS:
       const { data } = action.json;
-
       return {
         ...state,
         reviewOrders: data ? data[data.length - 1] : {},
@@ -241,7 +270,7 @@ export const reducer = (state = initialState, action) => {
     case types.REVIEW_ORDERS_FAILURE:
       return {
         ...state,
-        reviewOrders: action.json.data,
+        // reviewOrders: action.json.data,
         isDetailFetching: false,
       };
 

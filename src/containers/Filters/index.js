@@ -72,9 +72,9 @@ class Filters extends React.Component {
               value={maxPrice}
               onValueChange={this.onValueChange}
               onSlidingComplete={() => {}}
-              minimumTrackTintColor={Color.primary}
+              minimumTrackTintColor="#FF0025"
               maximumTrackTintColor="#bdc2cc"
-              thumbTintColor={Color.primary}
+              thumbTintColor="#FF0025"
               minimumValue={Constants.Filter.minPrice}
               step={Constants.Filter.priceStep}
               maximumValue={Constants.Filter.maxPrice}
@@ -112,8 +112,8 @@ class Filters extends React.Component {
     // // this.props.route.params.onSearch(this.filter);
     this.props.onBack();
     this.props.searchBooksByPrice({
-      max_price: this.filter.maxPrice / 1000,
-      category: this.filter.category.name,
+      max_price: this.filter.maxPrice,
+      category: this.filter.category.id,
     });
   };
 

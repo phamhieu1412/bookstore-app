@@ -44,6 +44,17 @@ class APIWorker {
 
     return undefined;
   };
+  updateUserProfile = async (payload) => {
+    if (this.authzToken) {
+      const res = await this.put('/api/v1/user/profile', {
+        params: payload
+      });
+
+      return res;
+    }
+
+    return undefined;
+  };
   setUserProfile = async (userId, payload) => {
     if (this.authzToken) {
       const res = await this.put(`/api/v1/user/${userId}`, { params: payload });
@@ -110,8 +121,7 @@ class APIWorker {
   };
   registerBookstore = async (payload) => {
     const res = await this.post('/api/v1/user/register', {
-      payload,
-      // params: payload,
+      params: payload,
     });
 
     return res;
@@ -245,18 +255,18 @@ class APIWorker {
     return res;
   };
 
-  getMyOrders = async () => {
+  getListOrders = async () => {
     if (this.authzToken) {
-      const res = await this.get('/api/v1/orders');
+      const res = await this.get('/api/v1/user/purchase');
 
       return res;
     }
 
     return undefined;
   };
-  getOrderDetail = async orderNumber => {
+  getOrderDetail = async orderId => {
     if (this.authzToken) {
-      const res = await this.get(`/api/v1/orders/${orderNumber}`);
+      const res = await this.get(`/api/v1/user/purchase/order/${orderId}`);
 
       return res;
     }
@@ -265,58 +275,67 @@ class APIWorker {
   };
   createNewOrder = async (payload) => {
     if (this.authzToken) {
-      const res = await fetch('https://bookstore-api-v1.herokuapp.com/api/v1/orders', {
-          method: 'POST',
-          body: JSON.stringify(payload),
-          headers: {
-            Authorization: this.authzToken,
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          }
-        }).then(res => {
-          if (res.status >= 200 && res.status <= 299) {
-            return res.json();
-          } else if (res.status >= 300) {
-            res.error = {
-              status: res.status,
-              code: res.code,
-              detail: res.detail,
-            };
-            res.data = {};
-
-            return res;
-          }
-
-          return false;
-        })
-        .then(res => {
-          if (!res) {
-            return { data: {} };
-          } else if (res.error) {
-            return res;
-          }
-
-          return {
-            ...res,
-            data: toCamelCase(res),
-          };
-        })
-        .catch(() => {
-          const res = {
-            error: {
-              status: 0,
-              code: 'UNKNOWN',
-              detail: 'Probably lost connection',
-            },
-            data: {},
-          };
-
-          return res;
-        })
+      const res = await this.post(`/api/v1/checkout/`, {
+        params: payload,
+      });
 
       return res;
     }
+
     return undefined;
+    // if (this.authzToken) {
+    //   const res = await fetch('https://bookstore-api-v1.herokuapp.com/api/v1/orders', {
+    //       method: 'POST',
+    //       body: JSON.stringify(payload),
+    //       headers: {
+    //         Authorization: this.authzToken,
+    //         Accept: 'application/json',
+    //         'Content-Type': 'application/json',
+    //       }
+    //     }).then(res => {
+    //       if (res.status >= 200 && res.status <= 299) {
+    //         return res.json();
+    //       } else if (res.status >= 300) {
+    //         res.error = {
+    //           status: res.status,
+    //           code: res.code,
+    //           detail: res.detail,
+    //         };
+    //         res.data = {};
+
+    //         return res;
+    //       }
+
+    //       return false;
+    //     })
+    //     .then(res => {
+    //       if (!res) {
+    //         return { data: {} };
+    //       } else if (res.error) {
+    //         return res;
+    //       }
+
+    //       return {
+    //         ...res,
+    //         data: toCamelCase(res),
+    //       };
+    //     })
+    //     .catch(() => {
+    //       const res = {
+    //         error: {
+    //           status: 0,
+    //           code: 'UNKNOWN',
+    //           detail: 'Probably lost connection',
+    //         },
+    //         data: {},
+    //       };
+
+    //       return res;
+    //     })
+
+    //   return res;
+    // }
+    // return undefined;
   }
 
   getCouponDetail = async id => {
@@ -382,6 +401,24 @@ class APIWorker {
 
       return res;
     }
+    return undefined;
+  };
+
+  // API Ratings
+  getReviewsBook = async productId => {
+    const res = await this.get(`/api/v1/reviews/${productId}`);
+
+    return res.data;
+  };
+  postReviewOrders = async payload => {
+    if (this.authzToken) {
+      const res = await this.post('/api/v1/reviews/', {
+        params: payload,
+      });
+
+      return res.data;
+    }
+
     return undefined;
   };
 
@@ -859,15 +896,15 @@ class APIWorker {
     return undefined;
   };
 
-  getOrderDetail = async orderNumber => {
-    if (this.authzToken) {
-      const res = await this.get(`/supplier/v1/orders/${orderNumber}`);
+  // getOrderDetail = async orderNumber => {
+  //   if (this.authzToken) {
+  //     const res = await this.get(`/supplier/v1/orders/${orderNumber}`);
 
-      return res.error ? res : res.data;
-    }
+  //     return res.error ? res : res.data;
+  //   }
 
-    return undefined;
-  };
+  //   return undefined;
+  // };
 
   cancelOrderItem = async (orderNumber, productCode) => {
     if (this.authzToken) {
@@ -882,18 +919,6 @@ class APIWorker {
   getReviewOrders = async orderNumber => {
     if (this.authzToken) {
       const res = await this.get(`/v1/order-review/review-orders/${orderNumber}`);
-
-      return res.data;
-    }
-
-    return undefined;
-  };
-
-  postReviewOrders = async reviewInfo => {
-    if (this.authzToken) {
-      const res = await this.post('/v1/order-review/review-orders', {
-        params: reviewInfo
-      });
 
       return res.data;
     }

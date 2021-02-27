@@ -1,13 +1,13 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
-import { Back, CartSearchIcons } from './IconNavigation';
+import { Back } from './IconNavigation';
 import { setBarStyle, setTranslucent, setBackgroundColor } from '../ultils/StatusBar';
 import Color from '../common/Color';
 import Styles from '../common/Styles';
-import OrderDetail from '../containers/OrderDetail';
+import RatingDetail from '../containers/OrderDetail/components/RatingDetail';
 
-class OrderDetailScreen extends PureComponent {
+class RatingScreen extends PureComponent {
   constructor(props) {
     super(props);
 
@@ -32,14 +32,12 @@ class OrderDetailScreen extends PureComponent {
   }
 
   componentDidMount() {
-    const { navigation, route } = this.props;
-    const { orderNumber, justOrdered } = route.params || {};
+    const { navigation } = this.props;
 
     this.props.navigation.setOptions({
-      headerTitle: `Đơn #${orderNumber}`,
-      headerLeft: () =>
-        Back(navigation, Color.white, null, justOrdered ? () => navigation.navigate('Home') : null),
-      headerRight: () => CartSearchIcons(navigation, Color.white, Color.white),
+      headerTitle: `Đánh giá`,
+      headerLeft: () => Back(navigation, Color.white),
+      headerRight: () => null,
 
       headerStyle: [Styles.Common.toolbar(), { backgroundColor: Color.primary }],
       headerTintColor: Color.headerTintColor,
@@ -60,15 +58,14 @@ class OrderDetailScreen extends PureComponent {
   render() {
     const { navigation, route } = this.props;
     const { navigate } = navigation;
-    const { orderNumber, justOrdered } = route.params || {};
-
-    if (!orderNumber) return null;
+    const { id, items } = route.params;
+    if (!id) return null;
 
     return (
-      <OrderDetail
+      <RatingDetail
         navigation={navigation}
-        orderNumber={orderNumber}
-        showSuccessMessage={justOrdered}
+        orderNumber={id}
+        items={items}
         onViewHomeScreen={() => navigate('Home')}
         onViewProduct={product => navigate('DetailScreen', { product })}
       />
@@ -76,4 +73,4 @@ class OrderDetailScreen extends PureComponent {
   }
 }
 
-export default OrderDetailScreen;
+export default RatingScreen;

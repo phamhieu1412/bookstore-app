@@ -41,9 +41,11 @@ export default class MyOrdersScreen extends Component {
   }
 
   render() {
+    const { navigation } = this.props;
     const { navigate } = this.props.navigation;
     return (
       <MyOrders
+        navigation={navigation}
         navigate={this.props.navigation}
         onViewHomeScreen={() => navigate('Home')}
         onViewOrderDetail={orderNumber =>

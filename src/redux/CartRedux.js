@@ -73,7 +73,7 @@ export const actions = {
   createNewOrder: (payload, meta) => async dispatch => {
     const json = await antradeWorker.createNewOrder(payload);
 
-    if (json.id) {
+    if (json.code === 200 && json.data && json.data.data) {
       dispatch({ type: types.CREATE_ORDER_SUCCESS,json });
       meta.onSuccess();
     } else {
@@ -84,9 +84,10 @@ export const actions = {
   getCouponDetail: (id, meta) => async dispatch => {
     const json = await antradeWorker.getCouponDetail(id);
 
-    if (json.data && json.code === 200) {
+    if (json.data && json.code === 200 && json.data.data) {
       dispatch({ type: types.GET_DETAIL_COUPON_SUCCESS, json: json.data });
       meta.onSuccess(json.data.data);
+      dispatch(actions.fetchCart());
     } else {
       dispatch({ type: types.GET_DETAIL_COUPON_FAILURE });
       meta.onFailure();

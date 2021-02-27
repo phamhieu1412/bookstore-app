@@ -19,16 +19,15 @@ export default StyleSheet.create({
     // borderColor: Color.headerTintColor,
   },
   headTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600',
     lineHeight: 20,
-    marginBottom: 10,
+    // marginBottom: 10,
     fontFamily: Constants.fontHeader,
   },
   flatlist: {
     flexDirection: 'row',
     //backgroundColor: "#fff",
-    marginTop: 5,
     paddingTop: 5,
     paddingBottom: 20,
   },

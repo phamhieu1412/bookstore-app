@@ -85,14 +85,15 @@ export default StyleSheet.create({
     marginRight: 10,
   },
   labelNextIcon: {
-    fontSize: Styles.FontSize.tiny,
+    fontSize: 25,
     color: Color.Text,
     // marginRight: 10,
   },
   label: {
     fontFamily: Constants.fontHeader,
-    fontSize: 18,
+    fontSize: 14,
     color: Color.Text,
+    width: '95%',
     // marginLeft: 8,
   },
   orderDetailLabel: {
