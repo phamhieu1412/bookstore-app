@@ -93,15 +93,17 @@ export const actions = {
       dispatch(actions.getReviewOrdersSuccess(json));
     }
   },
-  postReviewOrders: async (dispatch, reviewInfo) => {
+  postReviewOrders: async (dispatch, reviewInfo, meta) => {
     dispatch({ type: types.REVIEW_ORDERS_PENDING });
     const json = await antradeWorker.postReviewOrders(reviewInfo);
 
-    if (json === undefined || json.error) {
-      dispatch({ type: types.REVIEW_ORDERS_FAILURE });
-    } else {
+    if (json.data && json.data.data && json.code === 200) {
       dispatch(actions.postReviewOrdersSuccess(json));
-      dispatch(actions.getReviewOrders(dispatch, json.data.orderCode));
+      // dispatch(actions.getReviewOrders(dispatch, json.data.orderCode));
+      meta.onSuccess();
+    } else {
+      dispatch({ type: types.REVIEW_ORDERS_FAILURE });
+      meta.onFailure();
     }
   },
   clearMyOrders: () => ({
@@ -250,7 +252,6 @@ export const reducer = (state = initialState, action) => {
       };
     case types.GET_REVIEW_ORDERS_SUCCESS:
       const { data } = action.json;
-
       return {
         ...state,
         reviewOrders: data ? data[data.length - 1] : {},
@@ -269,7 +270,7 @@ export const reducer = (state = initialState, action) => {
     case types.REVIEW_ORDERS_FAILURE:
       return {
         ...state,
-        reviewOrders: action.json.data,
+        // reviewOrders: action.json.data,
         isDetailFetching: false,
       };
 

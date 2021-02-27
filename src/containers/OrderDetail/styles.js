@@ -1,6 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 import Color from '../../common/Color';
 import Styles from '../../common/Styles';
+import Device from '../../common/Device';
 
 export default StyleSheet.create({
   container: {
@@ -79,7 +80,7 @@ export default StyleSheet.create({
     justifyContent: 'flex-start',
   },
   rowLabel: {
-    width: 115,
+    width: 180,
     fontSize: 14,
     color: Color.Text,
   },
@@ -94,15 +95,26 @@ export default StyleSheet.create({
     flexDirection: 'row', 
     justifyContent: 'space-between'
   },
-  toggleButtonRating: {
-    alignSelf: 'flex-start',
-    justifyContent: 'space-between',
-    left: 15,
-    width: 100,
-    height: 30.5,
-    backgroundColor: '#FFEBD7',
-    borderBottomLeftRadius: 7,
-    borderBottomRightRadius: 7,
+  viewButttonRating: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    backgroundColor: 'white',
+    paddingBottom: Device.isIphoneX ? 20 : 5,
+    shadowColor: '#171717',
+    shadowOffset: {
+      width: 9,
+      height: 0,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+
+    ...Platform.select({
+      android: {
+        borderTopWidth: 1,
+        borderTopColor: Color.product.InfoBorder,
+      },
+    }),
   },
   toggleButtonOrderItems: {
     alignSelf: 'flex-end',
@@ -127,15 +139,15 @@ export default StyleSheet.create({
 
     elevation: 1,
   },
-  toggleButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+  buttonContent: {
+    margin: 10,
+    paddingVertical: 10,
+    backgroundColor: '#FF0025',
+    opacity: 0.9,
   },
   toggleButtonText: {
-    fontSize: Styles.FontSize.tiny,
-    marginBottom: 8,
-    color: Color.Text,
+    fontSize: Styles.FontSize.big,
+    color: 'white',
     letterSpacing: -0.2,
     textAlign: 'center',
   },

@@ -87,7 +87,23 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === 'ios' ? 0 : -12,
     paddingLeft: 10,
     color: '#05375a',
+    opacity: 0.9,
   },
+  iconCamera: {
+    opacity: 0.7,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#fff',
+    borderRadius: 10,
+  },
+  viewChooseImage: {
+    height: 100,
+    width: 100,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
 
 export default styles;

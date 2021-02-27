@@ -147,7 +147,7 @@ class CategoryScreen extends Component {
             <NavigationBarIcon
               icon="heart"
               numberColor={0}
-              onPress={() => navigation.navigate('WishListScreen')}
+              onPress={() => navigation.navigate('CartScreen')}
               color="black"
             />
             <NavigationBarIcon

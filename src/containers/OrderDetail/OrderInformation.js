@@ -5,7 +5,6 @@ import moment from 'moment';
 import styles from './styles';
 import { currencyFormatter } from '../../ultils/Product';
 import Constants from '../../common/Constants';
-import Color from '../../common/Color';
 import Languages from '../../common/Languages';
 
 export default class OrderInformation extends React.PureComponent {
@@ -31,9 +30,7 @@ export default class OrderInformation extends React.PureComponent {
   };
   
   render() {
-    const { order, pos } = this.props;
-    const { deliveryDate, deliveryTimeFrom, deliveryTimeTo } = this.props.order.shipping;
-    console.log('orderorder', order)
+    const { order } = this.props;
     return (
       <View style={styles.informationContainer}>
         <View style={{ padding: 5 }}>
@@ -41,28 +38,6 @@ export default class OrderInformation extends React.PureComponent {
             fontWeight: 'bold',
           })}
           {this._renderAttribute(Languages.OrderDate, this._getDateFormat(order.createdAt))}
-          {/* {this._renderAttribute(
-            Languages.DeliveryDate,
-            this._getDateTimeFormat(deliveryDate, deliveryTimeFrom, deliveryTimeTo)
-          )} */}
-          {/* {this._renderAttribute(Languages.POSAddress, order.shipping.posAddress, {
-            fontStyle: 'italic',
-          })} */}
-          {/* {order.shipping.posPhoneNumber ? (
-            <View style={[styles.row, { marginBottom: 8 }]}>
-              <Text style={[styles.rowLabel]}>{Languages.POSPhone}</Text>
-              <TouchableOpacity
-                onPress={() => callPhone(order.shipping.posPhoneNumber)}
-                activeOpacity={0.85}
-                style={[styles.rowText, { flexDirection: 'row' }]}
-                hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}>
-                <Icon name={'phone'} color={Color.primary} size={15} />
-                <Text style={{ marginLeft: 5, color: Color.Text }}>
-                  {order.shipping.posPhoneNumber}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          ) : null} */}
           {this._renderAttribute(
             Languages.OrderTotal,
             `${currencyFormatter(order.grandTotal)} ${Constants.VND}`,

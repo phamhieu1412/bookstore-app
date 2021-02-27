@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { AirbnbRating } from 'react-native-ratings';
 
+
 class FormRatingStar extends React.Component {
   constructor(props) {
     super(props);
@@ -11,23 +12,19 @@ class FormRatingStar extends React.Component {
   }
 
   ratingCompleted = rating => {
-    const { reviewOrder, getNumberRating } = this.props;
-    getNumberRating(rating, reviewOrder.name);
+    const { getNumberRating } = this.props;
+    getNumberRating(rating);
   };
 
   render() {
-    const { reviewOrder } = this.props;
+    // const { } = this.props;
 
     return (
       <View style={styles.container}>
-        <Text style={styles.textFeedback}>{reviewOrder.name}</Text>
-
-        <View style={styles.line} />
-
         <AirbnbRating
-          count={3}
-          reviews={['Không tốt', 'Bình thường', 'Tốt']}
-          defaultRating={3}
+          count={5}
+          reviews={['Sách tệ', 'Sách không hay', 'Nội dung bình thường', 'Sách hay', 'Sách hay quá đi']}
+          defaultRating={5}
           reviewSize={16}
           size={22}
           onFinishRating={this.ratingCompleted}

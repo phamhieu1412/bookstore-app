@@ -93,6 +93,7 @@ export default StyleSheet.create({
     fontFamily: Constants.fontHeader,
     fontSize: 14,
     color: Color.Text,
+    width: '95%',
     // marginLeft: 8,
   },
   orderDetailLabel: {

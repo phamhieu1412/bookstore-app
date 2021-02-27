@@ -331,6 +331,9 @@ export default new LocalizedStrings({
     Email: 'Email',
     SupportGroup: 'Nhóm tư vấn (không bắt buộc)',
     ReferralCode: 'Mã giới thiệu',
+    InputName: 'Hãy nhập tên',
+    InputPhonenumber: 'Hãy nhập số điện thoại',
+    InputEmail: 'Hãy nhập email',
     
     // Place holder
     TypeName: 'Điền Họ & Tên',

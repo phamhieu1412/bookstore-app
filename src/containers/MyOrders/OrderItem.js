@@ -21,7 +21,7 @@ export default class OrderItem extends React.PureComponent {
   };
 
   _getDateFormat = date => {
-    return moment(date).format('DD-MM-YYYY HH:mm');
+    return moment(date * 1000).format('DD-MM-YYYY HH:mm');
   };
 
   _getStatus = status => {
@@ -43,7 +43,7 @@ export default class OrderItem extends React.PureComponent {
   render() {
     const { order, onViewOrderDetail } = this.props;
     const status = this._getStatus(order.status);
-    // console.log('order', order)
+
     return (
       <View style={{ margin: cardMargin, marginBottom: 0 }}>
         <TouchableOpacity
@@ -53,7 +53,7 @@ export default class OrderItem extends React.PureComponent {
           <View style={styles.labelView}>
             <View style={styles.labelGroup}>
               {/* <Icon style={styles.labelIcon} name={status.icon} /> */}
-              <Text style={styles.label}>{order.id}</Text>
+              <Text style={styles.label} numberOfLines={1}>{order.id}</Text>
             </View>
             {/* <Text style={styles.orderDetailLabel}>{Languages.OrderDetails}</Text> */}
             <Icon style={styles.labelNextIcon} name={'chevron-right'} />

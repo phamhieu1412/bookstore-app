@@ -90,8 +90,10 @@ class OrderDetail extends React.Component {
     this.setState({ showOrderItems: !this.state.showOrderItems, showRating: false });
   };
 
-  toggleShowRating = () => {
-    this.setState({ showRating: !this.state.showRating, showOrderItems: false });
+  goToRatingScreen = () => {
+    const { order, navigation } = this.props;
+
+    navigation.navigate('RatingScreen', order );
   };
 
   closeConfirmModal = () => {
@@ -151,89 +153,24 @@ class OrderDetail extends React.Component {
     const { showOrderItems, showRating } = this.state;
     const posCode = order && order.shipping && order.shipping.posCode ? order.shipping.posCode : '';
     const selectedPos = this.findPos(posCode);
-    console.log('myOrdersmyOrders', this.props.order)
+
     return (
       <View style={{ position: 'relative', flex: 1 }}>
         {order && order.id ? (
           <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
             {/* Xem khi nao don hang duoc hoan thanh */}
             {showSuccessMessage && <SuccessMessage />}
+
             <StateIndicators order={order} />
+
             <OrderInformation order={order} pos={selectedPos} />
 
-            <View style={order && order.status && order.status === 'completed' ? styles.toggleButton : null}>
-              {/* {
-                order && order.status && order.status === 'completed' ? 
-                  <TouchableOpacity
-                    style={styles.toggleButtonRating}
-                    onPress={this.toggleShowRating}
-                    activeOpacity={0.8}
-                  >
-                    <View style={styles.toggleShardow} />
-                    <View style={styles.toggleButtonContent}>
-                      {reviewOrders.id ? (
-                        <Text style={[styles.toggleButtonText, styles.opacityButton]}>Đã Đánh giá</Text>
-                      ) : (
-                        <Text style={styles.toggleButtonText}>Đánh giá đơn</Text>
-                      )}
-                      <Icon
-                        style={styles.toggleButtonIcon}
-                        name={showRating ? 'chevron-down' : 'chevron-right'}
-                      />
-                    </View>
-                  </TouchableOpacity>
-                  : <></>
-              } */}
-              
-              {/* <TouchableOpacity
-                style={styles.toggleButtonOrderItems}
-                onPress={this.toggleShowOrderItems}
-                activeOpacity={0.8}>
-                <View style={styles.toggleShardow} />
-                <View style={styles.toggleButtonContent}>
-                  <Text style={styles.toggleButtonText}>Chi tiết đơn hàng</Text>
-                  <Icon
-                    style={styles.toggleButtonIcon}
-                    name={showOrderItems ? 'chevron-down' : 'chevron-right'}
-                  />
-                </View>
-              </TouchableOpacity> */}
-            </View>
-            {/* <TouchableOpacity
-              style={styles.toggleButtonOrderItems}
-              onPress={this.toggleShowOrderItems}
-              activeOpacity={0.8}>
-              <View style={styles.toggleShardow} />
-              <View style={styles.toggleButtonContent}>
-                <Text style={styles.toggleButtonText}>Chi tiết đơn hàng</Text>
-                <Icon
-                  style={styles.toggleButtonIcon}
-                  name={showOrderItems ? 'chevron-down' : 'chevron-right'}
-                />
-              </View>
-            </TouchableOpacity> */}
-            {/* {showOrderItems && (
-              <OrderItems
-                order={order}
-                onPress={this.onViewProduct}
-                onLongPress={this.onLongPress}
-              />
-            )} */}
-            {/* {showRating && (
-              <RatingDetail
-                user={user}
-                order={order}
-                postReviewOrders={postReviewOrders}
-                reviewOrders={reviewOrders}
-              />
-            )} */}
-            {/* <Image source={Images.orderDetailBanner} style={styles.banner} resizeMode="contain" /> */}
-            {/* <TouchableOpacity style={styles.goToHome} onPress={this.goToHome} activeOpacity={0.8}>
-              <View style={styles.toggleButtonContent}>
-                <Text style={styles.toggleButtonText}>{Languages.ContinueShopping}</Text>
-                <Icon style={styles.toggleButtonIcon} name="chevron-right" />
-              </View>
-            </TouchableOpacity> */}
+            <OrderItems
+              order={order}
+              onPress={this.onViewProduct}
+              onLongPress={this.onLongPress}
+            />
+
             {/* <ShopButton
               text={Languages.ContinueShopping}
               onPress={this.goToHome}
@@ -241,10 +178,33 @@ class OrderDetail extends React.Component {
             /> */}
           </ScrollView>
         ) : (
-          <OrderEmpty text={'Hiện không thể xem đơn hàng này'} onViewHome={this.goToHome} />
-        )}
+            <OrderEmpty text={'Hiện không thể xem đơn hàng này'} onViewHome={this.goToHome} />
+          )}
         {isFetching ? <Spinner mode="overlay" /> : null}
         {order && order.id ? this.renderConfirmModal() : null}
+        {
+          order && order.status && order.status === 1 ?
+            <View style={styles.viewButttonRating}>
+              {reviewOrders.id ? (
+                <TouchableOpacity
+                  style={styles.buttonContent}
+                  onPress={this.goToRatingScreen}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.toggleButtonText}>Mua lại</Text>
+                </TouchableOpacity>
+              ) : (
+                  <TouchableOpacity
+                    style={styles.buttonContent}
+                    onPress={this.goToRatingScreen}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={styles.toggleButtonText}>Đánh giá</Text>
+                  </TouchableOpacity>
+                )}
+            </View>
+            : <></>
+        }
       </View>
     );
   }

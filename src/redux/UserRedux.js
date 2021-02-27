@@ -94,8 +94,8 @@ export const actions = {
   registerBookstore: (payload, meta) => async (dispatch, getState) => {
     dispatch({ type: types.REGISTER_PENDING });
     const json = await antradeWorker.registerBookstore(payload);
-    console.log('register', json)
-    if (json.code === 200 && json.data) {
+
+    if (json.code === 200 && json.data && json.data.data) {
       dispatch({ type: types.REGISTER_SUCCESS });
       meta.onSuccess();
     } else {
@@ -155,6 +155,15 @@ export const actions = {
       if (json && json.error && json.error.status === 401) {
         actions.logout(dispatch);
       }
+    }
+  },
+  updateUserProfile: (payload, meta) => async dispatch => {
+    const json = await antradeWorker.updateUserProfile(payload);
+
+    if (json.code === 200 && json.data && json.data.data) {
+      meta.onSuccess();
+    } else {
+      meta.onFailure();
     }
   },
   saveUserProfile: (userId, payload, meta) => async dispatch => {
@@ -252,7 +261,7 @@ export const actions = {
   },
   setDefaultAddress: (addressId) => async dispatch => {
     const json = await antradeWorker.setDefaultAddress(addressId);
-    console.log('setDefaultAddress', json)
+
     if (json.data && json.code === 200) {
       toast('Đặt địa chỉ mặc định thành công');
     } else {

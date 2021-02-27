@@ -1,18 +1,32 @@
-import React, { useState } from 'react';
+import React, { Component, useState } from 'react';
 import { View, Text, TouchableOpacity, ImageBackground, TextInput } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import BottomSheet from 'reanimated-bottom-sheet';
 import Animated from 'react-native-reanimated';
 import ImagePicker from 'react-native-image-crop-picker';
+import { useSelector, useDispatch } from 'react-redux';
 
-import { Icon, IconFA, IconFeather } from '../../Omni';
+import { actions as UserActions } from '../../redux/UserRedux';
+import { Icon, IconFA, IconFeather, toast } from '../../Omni';
 import styles from './styles';
-import Languages from '../../common/Languages'
+import Languages from '../../common/Languages';
 
-const EditProfileScreen = () => {
+const EditProfileScreen = (props) => {
+  // mapStateToProps
+  const stateRedux = useSelector(state => state);
+  const userRedux = stateRedux.user;
 
-  const [image, setImage] = useState('https://9mobi.vn/cf/images/ba/2018/4/16/anh-avatar-dep-1.jpg');
+  // mapDispatchToProps
+  const dispatch = useDispatch()
+  const updateUserProfile = (payload, meta) => dispatch(UserActions.updateUserProfile(payload, meta))
+  
+  const [image, setImage] = useState('');
+  const [userName, setUserName] = useState(userRedux.user.nickname);
+  const [userPhone, setUserPhone] = useState(userRedux.user.phone);
+  const [userEmail, setUserEmail] = useState(userRedux.user.email);
   const { colors } = useTheme();
+  const sheetRef = React.useRef(null);
+  const fall = new Animated.Value(1);
 
   const takePhotoFromCamera = () => {
     ImagePicker.openCamera({
@@ -23,7 +37,7 @@ const EditProfileScreen = () => {
     }).then(image => {
       console.log(image);
       setImage(image.path);
-      this.bs.current.snapTo(1);
+      sheetRef.current.snapTo(1);
     });
   }
 
@@ -36,11 +50,11 @@ const EditProfileScreen = () => {
     }).then(image => {
       console.log(image);
       setImage(image.path);
-      this.bs.current.snapTo(1);
+      sheetRef.current.snapTo(1);
     });
   }
 
-  renderInner = () => (
+  const renderInner = () => (
     <View style={styles.panel}>
       <View style={{ alignItems: 'center' }}>
         <Text style={styles.panelTitle}>{Languages.UploadPhoto}</Text>
@@ -54,13 +68,13 @@ const EditProfileScreen = () => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.panelButton}
-        onPress={() => this.bs.current.snapTo(1)}>
+        onPress={() => sheetRef.current.snapTo(1)}>
         <Text style={styles.panelButtonTitle}>{Languages.CANCEL}</Text>
       </TouchableOpacity>
     </View>
   );
 
-  renderHeader = () => (
+  const renderHeader = () => (
     <View style={styles.header}>
       <View style={styles.panelHeader}>
         <View style={styles.panelHandle} />
@@ -68,38 +82,55 @@ const EditProfileScreen = () => {
     </View>
   );
 
-  bs = React.createRef();
-  fall = new Animated.Value(1);
+  const editProfileUser = () => {
+    const vnPhone_regex = /((09|03|07|08|05)+([0-9]{8})\b)/g;
+    const vnEmail_regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    
+    if (vnPhone_regex.test(userPhone) == false) {
+      toast('Số điện thoại của bạn không đúng định dạng!');
+      return;
+    }
+    if (vnEmail_regex.test(String(userEmail).toLowerCase()) == false) {
+      toast('Email của bạn không đúng định dạng!');
+      return;
+    }
 
+    updateUserProfile({
+      first_name: "",
+      last_name: userName,
+      email: userEmail,
+      phone: userPhone,
+    }, {
+      onSuccess: () => {
+        props.navigation.goBack(null);
+        toast('Cập nhập thành công');
+      },
+      onFailure: () => {
+        toast(Languages.ErrorMessageRequest);
+      },
+    });
+  }
+  
   return (
     <View style={styles.container}>
       <BottomSheet
-        ref={this.bs}
+        ref={sheetRef}
         snapPoints={[330, 0]}
-        renderContent={this.renderInner}
-        renderHeader={this.renderHeader}
+        renderContent={renderInner}
+        renderHeader={renderHeader}
         initialSnap={1}
-        callbackNode={this.fall}
+        callbackNode={fall}
         enabledGestureInteraction={true}
       />
       <Animated.View style={{
         margin: 20,
-        opacity: Animated.add(0.1, Animated.multiply(this.fall, 1.0)),
+        opacity: Animated.add(0.1, Animated.multiply(fall, 1.0)),
       }}>
         <View style={{ alignItems: 'center' }}>
-          <TouchableOpacity onPress={() => this.bs.current.snapTo(0)}>
-            <View
-              style={{
-                height: 100,
-                width: 100,
-                borderRadius: 15,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
+          <TouchableOpacity onPress={() => sheetRef.current.snapTo(0)}>
+            <View style={styles.viewChooseImage}>
               <ImageBackground
-                source={{
-                  uri: image,
-                }}
+                source={require('../../images/avatar.jpg')}
                 style={{ height: 100, width: 100 }}
                 imageStyle={{ borderRadius: 15 }}>
                 <View
@@ -112,111 +143,53 @@ const EditProfileScreen = () => {
                     name="camera"
                     size={35}
                     color="#fff"
-                    style={{
-                      opacity: 0.7,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderWidth: 1,
-                      borderColor: '#fff',
-                      borderRadius: 10,
-                    }}
+                    style={styles.iconCamera}
                   />
                 </View>
               </ImageBackground>
             </View>
           </TouchableOpacity>
           <Text style={{ marginTop: 10, fontSize: 18, fontWeight: 'bold' }}>
-            John Doe
+            {userRedux.user && userRedux.user.nickname}
           </Text>
         </View>
 
         <View style={styles.action}>
-          <IconFA name="user-o" color={colors.text} size={20} />
+          <IconFA name="user-o" color="#FF6347" size={20} />
           <TextInput
-            placeholder="First Name"
+            placeholder={Languages.InputName}
+            defaultValue={userRedux.user && userRedux.user.nickname}
             placeholderTextColor="#666666"
             autoCorrect={false}
-            style={[
-              styles.textInput,
-              {
-                color: colors.text,
-              },
-            ]}
+            onChangeText={text => setUserName(text)}
+            style={[styles.textInput, { color: colors.text }]}
           />
         </View>
         <View style={styles.action}>
-          <IconFA name="user-o" color={colors.text} size={20} />
+          <IconFeather name="phone" color="#FF6347" size={20} />
           <TextInput
-            placeholder="Last Name"
-            placeholderTextColor="#666666"
-            autoCorrect={false}
-            style={[
-              styles.textInput,
-              {
-                color: colors.text,
-              },
-            ]}
-          />
-        </View>
-        <View style={styles.action}>
-          <IconFeather name="phone" color={colors.text} size={20} />
-          <TextInput
-            placeholder="Phone"
+            placeholder={Languages.InputPhonenumber}
+            defaultValue={userRedux.user && userRedux.user.phone}
             placeholderTextColor="#666666"
             keyboardType="number-pad"
             autoCorrect={false}
-            style={[
-              styles.textInput,
-              {
-                color: colors.text,
-              },
-            ]}
+            onChangeText={text => setUserPhone(text)}
+            style={[styles.textInput, { color: colors.text }]}
           />
         </View>
         <View style={styles.action}>
-          <IconFA name="envelope-o" color={colors.text} size={20} />
+          <IconFA name="envelope-o" color="#FF6347" size={20} />
           <TextInput
-            placeholder="Email"
+            placeholder={Languages.InputEmail}
+            defaultValue={userRedux.user && userRedux.user.email}
             placeholderTextColor="#666666"
             keyboardType="email-address"
             autoCorrect={false}
-            style={[
-              styles.textInput,
-              {
-                color: colors.text,
-              },
-            ]}
+            onChangeText={text => setUserEmail(text)}
+            style={[styles.textInput, { color: colors.text }]}
           />
         </View>
-        <View style={styles.action}>
-          <IconFA name="globe" color={colors.text} size={20} />
-          <TextInput
-            placeholder="Country"
-            placeholderTextColor="#666666"
-            autoCorrect={false}
-            style={[
-              styles.textInput,
-              {
-                color: colors.text,
-              },
-            ]}
-          />
-        </View>
-        <View style={styles.action}>
-          <Icon name="map-marker-outline" color={colors.text} size={20} />
-          <TextInput
-            placeholder="City"
-            placeholderTextColor="#666666"
-            autoCorrect={false}
-            style={[
-              styles.textInput,
-              {
-                color: colors.text,
-              },
-            ]}
-          />
-        </View>
-        <TouchableOpacity style={styles.commandButton} onPress={() => { }}>
+        <TouchableOpacity style={styles.commandButton} onPress={() => editProfileUser()}>
           <Text style={styles.panelButtonTitle}>{Languages.Edit}</Text>
         </TouchableOpacity>
       </Animated.View>
@@ -225,3 +198,4 @@ const EditProfileScreen = () => {
 };
 
 export default EditProfileScreen;
+

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TextInput, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Dimensions, Image } from 'react-native';
 // import Swiper from 'react-native-swiper';
+import { connect } from 'react-redux';
 
 import Button from '../../../../components/Button/Button';
 import FormRatingStar from './FormRatingStar';
@@ -8,6 +9,7 @@ import ListRatingStar from './ListRatingStar';
 import Constants from '../../../../common/Constants';
 import Color from '../../../../common/Color';
 import Languages from '../../../../common/Languages';
+import { toast } from '../../../../Omni';
 
 class RatingDetail extends Component {
   constructor(props) {
@@ -35,6 +37,7 @@ class RatingDetail extends Component {
       ],
       valueTextReview: '',
       countValueTextReview: 0,
+      countValue: 5,
     };
   }
 
@@ -44,30 +47,47 @@ class RatingDetail extends Component {
     return null;
   };
 
-  getNumberRating = (value, name) => {
-    const { listReviewOrders } = this.state;
-    const listReviewOrdersTemp = [...listReviewOrders];
-
-    for (let i = 0; i < listReviewOrdersTemp.length; i++) {
-      if (listReviewOrdersTemp[i].name === name) {
-        listReviewOrdersTemp[i].score = value;
-      }
-    }
-
-    this.setState({ listReviewOrders: listReviewOrdersTemp });
+  getNumberRating = (value) => {
+    this.setState({ countValue: value });
   };
 
   onPostReviewOrders = () => {
-    const { listReviewOrders, valueTextReview } = this.state;
-    const { order } = this.props;
-    this.props.postReviewOrders({
-      Comment: valueTextReview,
-      DeliveryScore: listReviewOrders[1].score === 1 ? 1 : (listReviewOrders[1].score === 2 ? 3 : 5),
-      Image: '',
-      OrderCode: order.orderNumber,
-      ProductScore: listReviewOrders[0].score === 1 ? 1 : (listReviewOrders[0].score === 2 ? 3 : 5),
-      ServiceScore: listReviewOrders[2].score === 1 ? 1 : (listReviewOrders[2].score === 2 ? 3 : 5),
-    })
+    const { countValue, valueTextReview } = this.state;
+    const { order, navigation, postReviewOrders, items } = this.props;
+    const listReviewTitle = ['Sách tệ', 'Sách không hay', 'Nội dung bình thường', 'Sách hay', 'Sách hay quá đi'];
+    // for (let i = 0; i < items.length; i++) {
+    //   const element = items[i].product.id;
+    //   postReviewOrders({
+    //     title: 'wow',
+    //     rating: 1,
+    //     content: valueTextReview,
+    //     product_id: element,
+    //   }, {
+    //     onSuccess: () => {
+    //       if (i + 1 === items.length) {
+    //         toast('Đánh giá thành công!');
+    //         navigation.goBack(null);
+    //       }
+    //     },
+    //     onFailure: () => {
+    //       toast(Languages.GetDataError);
+    //     },
+    //   });
+    // }
+    postReviewOrders({
+      title: listReviewTitle[countValue - 1],
+      rating: countValue,
+      content: valueTextReview,
+      product_id: items[0].product.id,
+    }, {
+      onSuccess: () => {
+          toast('Đánh giá thành công!');
+          navigation.goBack(null);
+      },
+      onFailure: () => {
+        toast(Languages.GetDataError);
+      },
+    });
   };
 
   changeReview = text => {
@@ -76,52 +96,92 @@ class RatingDetail extends Component {
 
   render() {
     const { listReviewOrders, valueTextReview, countValueTextReview } = this.state;
-    const { reviewOrders, user } = this.props;
+    const { reviewOrders, user, items } = this.props;
     
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>Đánh giá đơn hàng và sản phẩm!</Text>
+        <View style={{ marginTop: 10, marginHorizontal: 10 }}>
+          {
+            items.map(item => (
+              <View
+                key={item.id}
+                style={styles.item}
+              >
+                <Image style={styles.image} source={{ uri: item.product.images[0] }} />
+                <Text>{item.product.title}</Text>
+              </View>
+            ))
+          }
+        </View>
+        
+        <>
+          <FormRatingStar getNumberRating={this.getNumberRating} />
+          
+          <View style={styles.comment}>
+            <TextInput
+              style={styles.textFeedback}
+              multiline
+              numberOfLines={4}
+              maxLength={200}
+              placeholder="Chia sẻ đánh giá của bạn."
+              onChangeText={text => this.changeReview(text)}
+              value={valueTextReview}
+            />
+            <Text style={styles.textCharacter}>{`(${countValueTextReview}/200)`}</Text>
 
-        {reviewOrders.id ? (
+            <Button
+              text={Languages.Review}
+              style={styles.button}
+              textStyle={styles.buttonText}
+              onPress={this.onPostReviewOrders}
+              // disabled={countValueTextReview === 0}
+            />
+          </View>
+        </>
+        {/* {reviewOrders.id ? (
           <>
             <ListRatingStar reviewOrders={reviewOrders} user={user} />
           </>
         ) : (
-          <>
-            {listReviewOrders.map(item => (
-              <FormRatingStar
-                key={item.key}
-                reviewOrder={item}
-                getNumberRating={this.getNumberRating}
-              />
-            ))}
-
-            <View style={styles.comment}>
-              <TextInput
-                style={styles.textFeedback}
-                multiline
-                numberOfLines={4}
-                maxLength={200}
-                placeholder="Chia sẻ đánh giá của bạn."
-                onChangeText={text => this.changeReview(text)}
-                value={valueTextReview}
-              />
-              <Text style={styles.textCharacter}>{`(${countValueTextReview}/200)`}</Text>
-
-              <Button
-                text={Languages.Review}
-                style={styles.button}
-                textStyle={styles.buttonText}
-                onPress={this.onPostReviewOrders}
-                // disabled={countValueTextReview === 0}
-              />
-            </View>
-          </>
-        )}
+          
+        )} */}
       </View>
     );
   }
 }
+
+const mapStateToProps = ({ user }) => ({
+  userProfile: user,
+});
+
+function mergeProps(stateProps, dispatchProps, ownProps) {
+  const { dispatch } = dispatchProps;
+  const { actions: orderActions } = require('../../../../redux/OrderRedux');
+
+  return {
+    ...ownProps,
+    ...stateProps,
+    cancelOrderItem: (orderNumber, productCode) => {
+      orderActions.cancelOrderItem(dispatch, orderNumber, productCode);
+    },
+    getOrderDetail: orderNumber => {
+      orderActions.fetchOrderDetail(dispatch, orderNumber);
+    },
+    postReviewOrders: (reviewInfo, meta) => {
+      orderActions.postReviewOrders(dispatch, reviewInfo, meta);
+    },
+    getReviewOrders: orderNumber => {
+      orderActions.getReviewOrders(dispatch, orderNumber);
+    },
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  undefined,
+  mergeProps
+)(RatingDetail);
 
 const styles = StyleSheet.create({
   container: {
@@ -135,7 +195,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   comment: {
-    flex: 1,
+    // flex: 1,
   },
   textFeedback: {
     position: 'relative',
@@ -152,13 +212,13 @@ const styles = StyleSheet.create({
   },
   button: {
     position: 'absolute',
-    width: (Dimensions.get('window').width * 2) / 10,
-    left: (Dimensions.get('window').width * 4) / 10,
+    width: (Dimensions.get('window').width * 4) / 10,
+    left: (Dimensions.get('window').width * 3) / 10,
     bottom: -3,
     borderRadius: 20,
     paddingVertical: 3,
     // paddingHorizontal: 20,
-    backgroundColor: Color.secondary,
+    backgroundColor: '#FF0025',
   },
   // buttonDisabled: {
   //   backgroundColor: Color.product.Discount,
@@ -175,6 +235,17 @@ const styles = StyleSheet.create({
     right: 30,
     bottom: 15,
   },
+  image: {
+    width: 54,
+    height: 36,
+  },
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 7,
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0,0,0, 0.2)',
+    paddingBottom: 10,
+  }
 });
-
-export default RatingDetail;

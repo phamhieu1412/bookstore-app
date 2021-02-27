@@ -22,6 +22,7 @@ import styles from './ProductDetail_Style';
 // import { logEventViewProduct } from '../../api/eventLogger';
 import Button from '../../components/Button/Button';
 import ProductRelated from '../../components/ProductRelated';
+import ProductRating from '../../components/ProductRating';
 import ProductTitle from '../../components/ProductTitle';
 import ProductMeta from '../../components/ProductMeta';
 import ProductGiftTag from '../../components/ProductGiftTag';
@@ -73,8 +74,9 @@ class Detail extends Component {
 
   componentDidMount() {
     this._navListener = this.props.navigation.addListener('focus', () => {
-      const { getBookDetail, product, params, getPublisherById, getAuthorById, fetchBooksByCategory } = this.props;
+      const { getBookDetail, product, params, getPublisherById, getAuthorById, fetchBooksByCategory, getReviewsBook } = this.props;
       getBookDetail(product.id);
+      getReviewsBook(product.id);
       // getPublisherById(product.publisher_id ? product.publisher_id : product.publisherId);
       // getAuthorById(product.author_id ? product.author_id : product.authorId );
       if(product.category && product.category.id) {
@@ -159,7 +161,7 @@ class Detail extends Component {
   _renderTabView = () => {
     const { productDetail } = this.props;
     if (!productDetail) return null;
-    console.log('productDetail', productDetail)
+
     return (
       <View style={[styles.tabView, { backgroundColor: Color.background }]}>
         <View style={[styles.tabButton]}>
@@ -218,6 +220,24 @@ class Detail extends Component {
   //   } = this.props;
   //   navigate('DetailScreen', params);
   // };
+  _renderProductRating = (title, reviews, reviewObj) => {
+    const { onViewProductScreen, getBookDetail, productDetail } = this.props;
+    return (
+      <ProductRating
+        // onViewProductScreen={product => {
+        //   this.scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });
+        //   getBookDetail(product.product.id);
+        //   // getPublisherById(product.product.publisher_id);
+        //   // getAuthorById(product.product.author_id);
+        //   // fetchCategoriesById(product.product.category_id);
+        // }}
+        title={title}
+        reviews={reviews}
+        reviewObj={reviewObj}
+      />
+    );
+  };
+
   _renderProductRelated = (title, products) => {
     const { onViewProductScreen, getBookDetail, productDetail } = this.props;
     let array = products;
@@ -411,7 +431,6 @@ class Detail extends Component {
       </View>
     );
   };
-
   
   _renderTitle = () => {
     const { productDetail } = this.props;
@@ -422,7 +441,7 @@ class Detail extends Component {
           justifyContent: 'flex-start',
           flexDirection: 'row',
           marginTop: 6,
-          marginBottom: 8,
+          marginBottom: 15,
         }}>
         <View style={styles.infoLeft}>
           <ProductTitle product={productDetail} />
@@ -462,11 +481,11 @@ class Detail extends Component {
   }  
 
   render() {
-    const { product, productDetail, isFetching, publisherDetail, booksRelate } = this.props;
+    const { product, productDetail, isFetching, publisherDetail, booksRelate, reviewBooks } = this.props;
     // const priceObj = getProductPrice(productDetail);
     const onSale = productDetail && productDetail.price && productDetail.price.discountText;
     const isGiftProduct = checkGiftProduct(productDetail);
-    console.log('productDetailproductDetail', productDetail)
+
     return (
       <View style={[styles.container, { backgroundColor: Color.background }]}>
         <ScrollView
@@ -524,11 +543,25 @@ class Detail extends Component {
             {this._renderTitle()}
           </View>
           {this._renderSpecifications()}
+
+          <View style={styles.lineGray} />
+
           {this._renderTabView()}
           {/* {this._renderProductRelated(
             Languages.FrequentlyBoughtTogether,
             booksRelate,
           )} */}
+
+          <View style={styles.lineGray} />
+
+          {reviewBooks && reviewBooks.items && this._renderProductRating(
+            'Đánh giá sách',
+            reviewBooks.items,
+            reviewBooks,
+          )}
+
+          <View style={styles.lineGray} />
+          
           {booksRelate && booksRelate.items && booksRelate.items.length > 0 && this._renderProductRelated(
             Languages.ProductRelated,
             booksRelate.items,
@@ -549,6 +582,7 @@ const mapStateToProps = state => {
     wishListItems: state?.wishList?.wishListItems,
     productDetail: state.products.productDetail,
     booksRelate: state.products.booksRelate,
+    reviewBooks: state.products.reviewBooks,
     // authorDetail: state.products.authorDetail,
     // publisherDetail: state.products.publisherDetail,
     // isFetching: state.products.isFetchingDetail,
@@ -589,6 +623,9 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     },
     fetchBooksByCategory: payload => {
       dispatch(ProductRedux.actions.fetchBooksByCategory(payload));
+    },
+    getReviewsBook: orderNumber => {
+      ProductRedux.actions.getReviewsBook(dispatch, orderNumber);
     },
   };
 }

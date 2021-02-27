@@ -23,14 +23,13 @@ export default class OrderItems extends React.Component {
     const { order, onPress, onLongPress } = this.props;
 
     // disable cancel order item
-    const cancellable = ['pending', 'received'].includes(order.state);
-    const shippingFee =
-      order.shipping && order.shipping.shippingFee !== undefined ? order.shipping.shippingFee : 0;
-
+    const cancellable = ['pending', 'received'].includes(order.status);
+    const shippingFee = order.shipping ? order.shipping : 0;
+    
     return (
       <View>
         <View style={styles.itemContainer}>
-          {order.orderItems.map((o, i) => {
+          {order.items.map((o, i) => {
             const isCancelled =
               o.weight === 0 || (o.state && (o.state === 'cancelled' || o.state === 'returned'));
             const isGiftProduct = !!o.isGiftProduct;
@@ -41,16 +40,16 @@ export default class OrderItems extends React.Component {
                     style={styles.imageWrapper}
                     onPress={() => onPress(o)}
                     activeOpacity={0.8}>
-                    <Image style={styles.image} source={{ uri: o.mobiImage }} />
+                    <Image style={styles.image} source={{ uri: o && o.product && o.product.images && o.product.images[0] }} />
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={{ flex: 1, justifyContent: 'flex-start', marginRight: 7 }}
                     onPress={() => onPress(o)}
                     activeOpacity={0.8}>
                     <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
-                      {o.productName}
+                      {o && o.product && o.product.title && o.product.title}
                     </Text>
-                    <Text style={styles.price}>{o.productUnit}</Text>
+                    <Text style={styles.price}>{o && o.product && o.product.category && o.product.category.name}</Text>
                   </TouchableOpacity>
                   <Text style={[styles.text, { alignSelf: 'flex-end' }]}>{`x${o.quantity}`}</Text>
                   {cancellable ? (
@@ -63,24 +62,24 @@ export default class OrderItems extends React.Component {
                       hitSlop={{ top: 10, bottom: 5, left: 0, right: 5 }}
                       activeOpacity={0.8}>
                       <Text style={[styles.price, { textAlign: 'right' }]}>{`${currencyFormatter(
-                        o.sellingPrice
+                        10
                       )} ${Constants.VND}`}</Text>
                       <Text
                         style={[
                           styles.text,
                           { width: 100, textAlign: 'right' },
-                        ]}>{`${currencyFormatter(isGiftProduct ? 0 : o.paymentAmount)} ${
+                        ]}>{`${currencyFormatter(isGiftProduct ? 0 : 0)} ${
                         Constants.VND
                       }`}</Text>
                     </TouchableOpacity>
                   ) : (
                     <View style={{ width: 100, alignSelf: 'flex-end' }}>
                       <Text style={[styles.price, { textAlign: 'right' }]}>{`${currencyFormatter(
-                        o.sellingPrice
+                        o.price
                       )} ${Constants.VND}`}</Text>
-                      <Text style={[styles.text, { textAlign: 'right' }]}>{`${currencyFormatter(
-                        isGiftProduct ? 0 : o.paymentAmount
-                      )} ${Constants.VND}`}</Text>
+                      <Text style={[styles.text, { textAlign: 'right' }]}>
+                        {`${currencyFormatter(o.price * o.quantity)} ${Constants.VND}`}
+                      </Text>
                     </View>
                   )}
                 </View>
@@ -103,37 +102,33 @@ export default class OrderItems extends React.Component {
               <View style={styles.orderMoneyInfo}>
                 {this._renderAttribute(
                   Languages.SubTotal,
-                  `${currencyFormatter(order.paymentAfterSaleOff)} ${Constants.VND}`,
+                  `${currencyFormatter(order.subtotal)} ${Constants.VND}`,
                   { textAlign: 'right' }
                 )}
                 {this._renderAttribute(
-                  Languages.Discount,
-                  `${currencyFormatter(
-                    order.promotion.discountValue > 0 ? 0 - order.promotion.discountValue : 0
-                  )} ${Constants.VND}`,
+                  'Giảm giá từ mã',
+                  `-${currencyFormatter(order.discount)} ${Constants.VND}`,
+                  { color: Color.checkout.discount, textAlign: 'right' }
+                )}
+                {this._renderAttribute(
+                  'Giảm giá từ sản phẩm',
+                  `-${currencyFormatter(order.itemDiscount)} ${Constants.VND}`,
                   { color: Color.checkout.discount, textAlign: 'right' }
                 )}
                 {this._renderAttribute(
                   'Phí Ship',
-                  `${currencyFormatter(shippingFee)} ${Constants.VND}`,
+                  `+${currencyFormatter(shippingFee)} ${Constants.VND}`,
                   { color: Color.secondary, textAlign: 'right' }
                 )}
-                {order.isPaidFromWallet && order.paymentFromWallet > 0
-                  ? this._renderAttribute(
-                      Languages.PaidFromWallet,
-                      `${currencyFormatter(0 - order.paymentFromWallet)} ${Constants.VND}`,
-                      { color: Color.secondary, textAlign: 'right' }
-                    )
-                  : null}
               </View>
               <View style={styles.orderMoneyTotal}>
                 <View style={styles.lineItemSeperator} />
                 {this._renderAttribute(
                   Languages.OrderTotal,
-                  `${currencyFormatter(order.paymentAmount)} ${Constants.VND}`,
+                  `${currencyFormatter(order.grandTotal)} ${Constants.VND}`,
                   {
                     fontWeight: 'bold',
-                    color: Color.primary,
+                    color: '#FF0025',
                     textAlign: 'right',
                     paddingTop: 5,
                     paddingBottom: 5,
@@ -145,7 +140,6 @@ export default class OrderItems extends React.Component {
                     paddingTop: 7,
                     paddingBottom: 10,
                     paddingLeft: 10,
-                    // paddingRight: 15,
                     justifyContent: 'center',
                   }
                 )}
@@ -153,6 +147,7 @@ export default class OrderItems extends React.Component {
             </View>
           </View>
           <View style={styles.lineItemSeperator} />
+          <View style={{ marginTop: 20, height: 20 }} />
         </View>
       </View>
     );

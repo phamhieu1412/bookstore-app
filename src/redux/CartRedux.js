@@ -87,6 +87,7 @@ export const actions = {
     if (json.data && json.code === 200 && json.data.data) {
       dispatch({ type: types.GET_DETAIL_COUPON_SUCCESS, json: json.data });
       meta.onSuccess(json.data.data);
+      dispatch(actions.fetchCart());
     } else {
       dispatch({ type: types.GET_DETAIL_COUPON_FAILURE });
       meta.onFailure();

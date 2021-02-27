@@ -275,7 +275,7 @@ class Checkout extends Component {
   render() {
     const { carts, cartToken, user, wallet, updateCart, updateDefaultShippingAddress, navigation } = this.props;
     const { showScrollIndicator, valueComment, valueCouponCode, coupon } = this.state;
-    console.log('user', user.defaultAddress)
+
     if (!user || !user.user) {
       return <View />;
     }

@@ -16,6 +16,7 @@ import CartScreen from './CartScreen';
 import CheckoutScreen from './CheckoutScreen';
 import MyOrdersScreen from './MyOrdersScreen';
 import OrderDetailScreen from './OrderDetailScreen';
+import RatingScreen from './RatingScreen';
 // import MyMessagesScreen from './MyMessagesScreen';
 // import WishListScreen from './WishListScreen';
 import SearchScreen from './SearchScreen';
@@ -266,6 +267,13 @@ class AppNavigator extends React.Component {
           <Stack.Screen
             name="OrderDetailScreen"
             component={OrderDetailScreen}
+            options={() => ({
+              headerTitleAlign: 'left',
+            })}
+          />
+          <Stack.Screen
+            name="RatingScreen"
+            component={RatingScreen}
             options={() => ({
               headerTitleAlign: 'left',
             })}

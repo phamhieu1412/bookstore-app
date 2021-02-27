@@ -44,6 +44,17 @@ class APIWorker {
 
     return undefined;
   };
+  updateUserProfile = async (payload) => {
+    if (this.authzToken) {
+      const res = await this.put('/api/v1/user/profile', {
+        params: payload
+      });
+
+      return res;
+    }
+
+    return undefined;
+  };
   setUserProfile = async (userId, payload) => {
     if (this.authzToken) {
       const res = await this.put(`/api/v1/user/${userId}`, { params: payload });
@@ -110,8 +121,7 @@ class APIWorker {
   };
   registerBookstore = async (payload) => {
     const res = await this.post('/api/v1/user/register', {
-      payload,
-      // params: payload,
+      params: payload,
     });
 
     return res;
@@ -391,6 +401,24 @@ class APIWorker {
 
       return res;
     }
+    return undefined;
+  };
+
+  // API Ratings
+  getReviewsBook = async productId => {
+    const res = await this.get(`/api/v1/reviews/${productId}`);
+
+    return res.data;
+  };
+  postReviewOrders = async payload => {
+    if (this.authzToken) {
+      const res = await this.post('/api/v1/reviews/', {
+        params: payload,
+      });
+
+      return res.data;
+    }
+
     return undefined;
   };
 
@@ -891,18 +919,6 @@ class APIWorker {
   getReviewOrders = async orderNumber => {
     if (this.authzToken) {
       const res = await this.get(`/v1/order-review/review-orders/${orderNumber}`);
-
-      return res.data;
-    }
-
-    return undefined;
-  };
-
-  postReviewOrders = async reviewInfo => {
-    if (this.authzToken) {
-      const res = await this.post('/v1/order-review/review-orders', {
-        params: reviewInfo
-      });
 
       return res.data;
     }

@@ -49,14 +49,18 @@ class UserProfile extends Component {
 
   componentDidMount() {
     this._navListener = this.props.navigation.addListener('focus', () => {
-      const { loadUserProfile, userProfile } = this.props;
-      // const { userProfile, loadUserProfile, fetchPOS, loadAddressList } = this.props;
+      const { loadUserProfile, userProfile, getAddressList, fetchMyOrder } = this.props;
+
       if (userProfile.token) {
         loadUserProfile();
+        getAddressList();
+        fetchMyOrder();
       }
-      // fetchPOS();
-      // loadAddressList();
     });
+  }
+
+  componentWillUnmount() {
+    this._navListener();
   }
 
   goToLoginScreen = () => {
@@ -182,11 +186,22 @@ class UserProfile extends Component {
   }
 
   render() {
-    const { userProfile, navigation } = this.props;
+    const { navigation, userProfile, myOrders } = this.props;
     const user = userProfile.user || {};
+    const defaultAddress = userProfile.defaultAddress || {};
     const token = userProfile.token || '';
     const name = getName(user);
+    const { orders } = myOrders;
+    let arrayMyOrders = [];
 
+    // tinh tong so don hang voi trang thai dat hang, dong hang, van chuyen
+    for (let i = 0; i < orders.length; i++) {
+      const element = orders[i];
+      if(element.status === 1 || element.status === 2 || element.status === 3) {
+        arrayMyOrders.push(element);
+      }
+    }
+    
     if (!user || !token) {
       return (
         <View style={styles.container}>
@@ -232,7 +247,17 @@ class UserProfile extends Component {
           <View style={styles.userInfoSection}>
             <View style={styles.row}>
               <Icon name="map-marker-radius" color="#777777" size={20} />
-              <Text style={{ color: "#777777", marginLeft: 20 }}>Kolkata, India</Text>
+              {
+                defaultAddress && defaultAddress.address ? (
+                  <Text style={{ color: "#777777", marginLeft: 20 }}>
+                    {defaultAddress.address}, {defaultAddress.district}, {defaultAddress.city}
+                  </Text>
+                ) : (
+                  <Text style={{ color: "#777777", marginLeft: 20 }}>
+                    Hãy thêm địa chỉ!!!
+                  </Text>
+                )
+              }
             </View>
             <View style={styles.row}>
               <Icon name="phone" color="#777777" size={20} />
@@ -253,7 +278,7 @@ class UserProfile extends Component {
               <Caption>{Languages.Wallet}</Caption>
             </View>
             <View style={styles.infoBox}>
-              <Title>12</Title>
+              <Title>{arrayMyOrders.length}</Title>
               <Caption>{Languages.Orders}</Caption>
             </View>
           </View>
@@ -309,14 +334,16 @@ class UserProfile extends Component {
   }
 }
 
-const mapStateToProps = ({ user }) => ({
+const mapStateToProps = ({ user, myOrders }) => ({
   userProfile: user,
+  myOrders,
 });
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
   const { dispatch } = dispatchProps;
   const { actions: UserActions } = require('../../redux/UserRedux');
   const { actions: CartActions } = require('../../redux/CartRedux');
+  const { actions: OrderActions } = require('../../redux/OrderRedux');
 
   return {
     ...ownProps,
@@ -327,6 +354,12 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     },
     loadUserProfile: () => {
       dispatch(UserActions.loadUserProfile());
+    },
+    getAddressList: () => {
+      dispatch(UserActions.loadAddressList());
+    },
+    fetchMyOrder: () => {
+      dispatch(OrderActions.fetchMyOrder());
     },
   };
 }

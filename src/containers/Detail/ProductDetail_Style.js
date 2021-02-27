@@ -17,6 +17,10 @@ export default StyleSheet.create({
     flex: 1,
     backgroundColor: Color.background,
   },
+  lineGray: {
+    height: 10,
+    backgroundColor: 'rgba(0,0,0,0.1)',
+  },
   naviBar: {
     height: 64,
     position: 'absolute',
