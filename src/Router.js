@@ -114,6 +114,7 @@ class Router extends React.PureComponent {
 
   fetchCommonData() {
     const {
+      fetchCart,
       // fetchTopCategories,
       fetchCategories,
       // fetchWishList,
@@ -149,6 +150,7 @@ class Router extends React.PureComponent {
     // }
     refetchBooks();
     getBooksBestSeller();
+    fetchCart();
   }
 
   onViewNotification = item => {
@@ -282,6 +284,9 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
       ProductActions.fetchAllBooks(dispatch, 1);
     },
     getBooksBestSeller: () => ProductActions.getBooksBestSeller(dispatch, 1),
+    fetchCart: () => {
+      dispatch(CartActions.fetchCart());
+    },
   };
 };
 

@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { View, StyleSheet, StatusBar, Platform, Linking } from 'react-native';
+import { View, StyleSheet, Platform, Linking } from 'react-native';
 import { connect } from 'react-redux';
 
 import { toast } from '../Omni';
 import { FocusSearch, CartWishListIcons } from './IconNavigation';
 import { setBarStyle, setTranslucent, setBackgroundColor } from '../ultils/StatusBar';
-import { checkPromotionGiftProducts } from '../ultils/Product';
 import Languages from '../common/Languages';
 import Constants from '../common/Constants';
 import Color from '../common/Color';
@@ -276,12 +275,6 @@ class HomeScreen extends Component {
 
     return (
       <View style={{ flex: 1 }}>
-        <StatusBar
-          barStyle="light-content"
-          animated={false}
-          backgroundColor="transparent"
-          translucent
-        />
         <ParallaxHeader
           backgroundImage={banners}
           onPressImage={this.goToBannerLink}

@@ -69,7 +69,7 @@ class CheckoutBottomActions extends Component {
     //   }
     //   totalPayment = totalMoney - discountMoney;
     // }
-    console.log('aa', carts.infoCart)
+
     return (
       <View style={[cartStyles.bottomView, { height }, isAbsolute && cartStyles.floatView]}>
         <View style={cartStyles.buttonContainer}>

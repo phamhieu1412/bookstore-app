@@ -25,17 +25,13 @@ export default class OrderItem extends React.PureComponent {
   };
 
   _getStatus = status => {
-    const statusList = {
-      checkout: { name: 'Đặt hàng', icon: 'check-circle' },
-      pending: { name: 'Đặt hàng', icon: 'check-circle' },
-      received: { name: 'Đặt hàng', icon: 'check-circle' },
-      processing: { name: 'Đặt hàng', icon: 'check-circle' },
-      shipping: { name: 'Đóng gói', icon: 'packing-heart' },
-      shipped: { name: 'Tới POS', icon: 'layout' },
-      completed: { name: 'Nhận hàng', icon: 'user-check' },
-      cancelled: { name: 'Đã hủy', icon: 'trash' },
-      returned: { name: 'Đã trả lại', icon: 'trash' },
-    };
+    const statusList = [
+      { name: 'Đã hủy', icon: 'trash' },
+      { name: 'Đặt hàng', icon: 'check-circle' },
+      { name: 'Đóng gói', icon: 'packing-heart' },
+      { name: 'Vận chuyển', icon: 'layout' },
+      { name: 'Nhận hàng', icon: 'user-check' },
+    ];
 
     return statusList[status] || 'Đặt hàng';
   };
@@ -71,7 +67,7 @@ export default class OrderItem extends React.PureComponent {
           )}
           {this._renderAttribute(Languages.OrderDate, this._getDateFormat(order.createdAt))}
           {/* {this._renderAttribute(Languages.OrderPayment, this._getDateFormat(order.deliveryAt))} */}
-          {this._renderAttribute(Languages.OrderStatus, status)}
+          {this._renderAttribute(Languages.OrderStatus, status.name)}
         </View>
       </View>
     );

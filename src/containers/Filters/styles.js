@@ -6,7 +6,6 @@ export default {
   container: {
     flex: 1,
     backgroundColor: Color.background,
-    marginTop: 10,
   },
   content: {
     flex: 1,

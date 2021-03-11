@@ -204,7 +204,7 @@ class UserProfile extends Component {
     
     if (!user || !token) {
       return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: Color.background }]}>
           <ScrollView ref="scrollView">
             <UserProfileHeader
               // onLogout={this._handleLogout}
@@ -229,9 +229,7 @@ class UserProfile extends Component {
           <View style={styles.userInfoSection}>
             <View style={{ flexDirection: 'row', marginTop: 15 }}>
               <Avatar.Image
-                source={{
-                  uri: 'https://api.adorable.io/avatars/80/abott@adorable.png',
-                }}
+                source={require('../../images/avatar.jpg')}
                 size={80}
               />
               <View style={{ marginLeft: 20 }}>
