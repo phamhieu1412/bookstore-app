@@ -19,8 +19,7 @@ class CartIcons extends Component {
       noCart,
       withUser,
     } = this.props;
-    // const totalCart = carts.orderItems?.length;
-    const totalCart = 0;
+    const totalCart = carts.orderItems && carts.orderItems.length ? carts.orderItems.length : 0;
     const user = userProfile.user || {};
     const token = userProfile.token || '';
     // const wishListTotal = wishList.wishListItems.length;

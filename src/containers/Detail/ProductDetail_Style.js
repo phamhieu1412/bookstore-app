@@ -19,7 +19,7 @@ export default StyleSheet.create({
   },
   lineGray: {
     height: 10,
-    backgroundColor: 'rgba(0,0,0,0.1)',
+    backgroundColor: '#f2f2f2',
   },
   naviBar: {
     height: 64,

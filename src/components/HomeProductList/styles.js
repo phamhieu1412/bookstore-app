@@ -38,5 +38,6 @@ export default StyleSheet.create({
     width: 150,
     borderTopEndRadius: 20,
     borderBottomEndRadius: 20,
+    overflow: 'hidden',
   },
 });

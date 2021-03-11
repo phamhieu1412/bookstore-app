@@ -27,12 +27,8 @@ export default class OrderInformation extends React.PureComponent {
 
   render() {
     const { order } = this.props;
-    const stateGroups = [
-      ['1'],
-      ['2'],
-      ['3'],
-      ['4'],
-    ];
+    // console.log('order', order)
+    const stateGroups = [[1], [2], [3], [4]];
     const steps = [
       {
         icon: 'check-circle',
